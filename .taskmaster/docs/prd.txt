@@ -1,0 +1,458 @@
+<context>
+# Overview  
+SellerFin is the marketplace that makes seller-financed deals actually close. A platform where qualified buyers, confident sellers, and smart deal structures come together — powered by AI that improves deal velocity, trust, and profitability for everyone involved.
+
+**Marketplace only for MVP** — no lending, no servicing.
+
+**Primary Target:**
+- Small business buyers & sellers
+- Independent business brokers
+
+**Additional Asset Types** (visible for early adoption, labeled "Coming Soon"):
+- Real estate (commercial/residential)
+- Vehicles, RVs, boats, equipment, land
+
+We will optimize all workflows for business listings first.
+
+# Core Features  
+
+## 1. Listing Creation
+- Supports multiple asset types (Business full model, Real Estate/Vehicles/RVs/Boats/Equipment basic fields)
+- Financing structure fields: Asking price, Down payment, Seller financing (% or amount), Optional bank/SBA loan portion, Interest rate + term (years)
+- Seller can publish listing with required fields only
+- Listing appears in search in <5 minutes
+
+## 2. Marketplace Search & Filters
+- Filters: Asset type, Price range, Minimum seller financing %, Down payment range, Location (City/State), Keyword search
+- Sorting: Newest, Most viewed, Highest seller-finance %
+
+## 3. AI Deal Co-Pilot (Basic)
+- "Suggest Terms" button (pre-fill financing fields)
+- "Estimate Payment" button (monthly payment display)
+- Inputs: Price, Asset type, Seller terms, Basic buyer assumptions (default if unknown)
+- Outputs: Suggested down payment %, Suggested interest rate + amortization term, Estimated monthly payment range
+- Latency: < 2 seconds
+
+## 4. Dealroom + NDA Gating
+- States: Discovery, NDA required, NDA accepted → confidential docs visible
+- Includes: In-app messaging, Document viewer, Timeline of interactions and permissions
+
+## 5. Buyer Profile & Basic Qualification Badge
+- Buyer Inputs: Liquidity available, Industry experience (Y/N), Max monthly payment, Regions of interest
+- Outputs: "Qualified Buyer" badge shown to sellers if liquidity + profile complete
+- Improves seller trust and filtering
+
+## 6. Monetization v1.2
+- Paid Listing Upgrade (single purchase)
+- Featured Placement (premium package)
+- Pro Seller Subscription (monthly recurring)
+- Stripe integration required
+
+# User Experience  
+
+## User Personas
+- **Small Business Buyers**: Seeking to acquire businesses with seller financing
+- **Small Business Sellers**: Wanting to sell their business with flexible financing terms
+- **Business Brokers**: Facilitating deals between buyers and sellers
+
+## Key User Flows (must work Day 1)
+1. Browse listings → filter by financing terms
+2. Create listing → publish → receive inquiries
+3. Buyer submits inquiry → NDA → unlock confidential docs
+4. In-app messaging → deal discussions (Dealroom)
+5. AI suggests basic terms and payment estimates
+
+</context>
+<PRD>
+# Technical Architecture  
+
+## System Components
+- Frontend: React/Next.js application
+- Backend: Node.js/Express API
+- Database: PostgreSQL with Prisma ORM
+- Authentication: JWT-based auth system
+- Payment Processing: Stripe integration
+- AI Service: Integration for deal co-pilot features
+- File Storage: Document storage for confidential files
+- Real-time: WebSocket or similar for messaging
+
+## Data Models
+
+### User Model
+```prisma
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  role          UserRole @default(BUYER)
+  listings      Listing[]
+  buyerProfile  BuyerProfile?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum UserRole {
+  BUYER
+  SELLER
+  BROKER
+  ADMIN
+}
+```
+
+### Listing Model (Core)
+```prisma
+model Listing {
+  id              String          @id @default(cuid())
+  userId          String
+  user            User            @relation(fields: [userId], references: [id])
+  assetType       AssetType
+  title           String
+  description     String
+  askingPrice     Int
+  locationCity    String
+  locationState   String
+  status          ListingStatus   @default(ACTIVE)
+  financingTerms  FinancingTerms?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+enum AssetType {
+  BUSINESS
+  REAL_ESTATE
+  VEHICLE
+  RV
+  BOAT
+  EQUIPMENT
+  OTHER
+}
+
+enum ListingStatus {
+  ACTIVE
+  PENDING
+  SOLD
+  ARCHIVED
+}
+```
+
+### Financing Terms Model
+```prisma
+model FinancingTerms {
+  id                String   @id @default(cuid())
+  listingId         String   @unique
+  listing           Listing  @relation(fields: [listingId], references: [id])
+  downPayment       Int
+  sellerCarry       Int
+  bankPortion       Int?
+  interestRate      Float?
+  termYears         Int?
+}
+```
+
+### Buyer Profile Model
+```prisma
+model BuyerProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  liquidity         Int
+  experience        Boolean
+  maxMonthlyPayment Int?
+  regions           String[]
+  user              User     @relation(fields: [userId], references: [id])
+  createdAt         DateTime @default(now())
+}
+```
+
+### Dealroom Model
+```prisma
+model Dealroom {
+  id          String   @id @default(cuid())
+  buyerId     String
+  sellerId    String
+  listingId   String
+  ndaAccepted Boolean  @default(false)
+  messages    Message[]
+  createdAt   DateTime @default(now())
+}
+```
+
+### Message Model
+```prisma
+model Message {
+  id          String   @id @default(cuid())
+  dealroomId  String
+  dealroom    Dealroom @relation(fields: [dealroomId], references: [id])
+  senderId    String
+  content     String
+  createdAt   DateTime @default(now())
+}
+```
+
+### Additional Models Needed
+- Document model for NDA and confidential files
+- Timeline/Activity log model for dealroom interactions
+
+## APIs and Integrations
+
+### AI Integration Layer (Minimal)
+
+**Endpoints:**
+- `POST /api/ai/suggest-terms`
+  - Input: Price, Asset type, Seller terms, Basic buyer assumptions
+  - Output: Suggested down payment %, Suggested interest rate + amortization term
+  - Response includes confidence scores for each suggestion
+  
+- `POST /api/ai/estimate-payment`
+  - Input: Price, Down payment, Interest rate, Term (years)
+  - Output: Estimated monthly payment range
+  - Response includes confidence scores
+
+**Guardrails:**
+- Include confidence scores in all AI responses
+- Use RAG (Retrieval-Augmented Generation) for standard industry norms
+- Vector database: pgvector for storing and retrieving industry standard financing terms
+- Latency requirement: < 2 seconds for both endpoints
+- Rate limiting: Prevent abuse and manage costs
+- Caching: Cache common calculations to improve performance
+
+**Technical Implementation:**
+- Vector embeddings for industry norms and financing patterns
+- pgvector extension in PostgreSQL for similarity search
+- RAG pipeline: Query vector DB → Retrieve relevant norms → Generate suggestions with context
+- Confidence scoring: Based on data quality, industry match, and historical patterns
+
+### Other Integrations
+- Stripe API: Payment processing for monetization features
+- Email Service: Notifications and communications
+- File Storage API: Secure document storage and retrieval
+
+## Infrastructure Requirements
+- Cloud hosting (AWS/Azure/GCP)
+- Database: Managed PostgreSQL with pgvector extension
+- Vector database: pgvector for AI RAG functionality
+- CDN for static assets
+- SSL/TLS encryption
+- Backup and disaster recovery
+- Monitoring and logging
+- AI service endpoint (OpenAI, Anthropic, or custom) with rate limiting
+
+# Development Roadmap & Milestones
+
+## Milestone v1.0 Core (Weeks 1-3)
+
+**Timeline:** Weeks 1-3
+
+**Deliverables:**
+- Listings (creation, management, display)
+- Search functionality with filters
+- User profiles (buyer and seller)
+- In-app messaging system
+- NDA gating and document sharing
+- Dealroom creation and management
+- **Staging deployment required at end of v1.0**
+
+**Detailed Scope:**
+- Foundation & Core Infrastructure
+  - Project setup and architecture
+  - Database schema design and Prisma setup
+  - Authentication system (JWT)
+  - User registration and login
+  - Basic user roles and permissions
+  - API structure and routing
+
+- Listing Management
+  - Listing creation form (all asset types)
+  - Business listing full data model
+  - Other asset types basic fields
+  - Listing publishing workflow
+  - Listing status management
+  - Seller dashboard for managing listings
+
+- Marketplace & Search
+  - Marketplace homepage
+  - Search functionality
+  - Filter system (asset type, price, financing terms, location)
+  - Sort options (newest, most viewed, highest seller-finance %)
+  - Listing detail pages
+  - Search results pagination
+
+- Dealroom & NDA
+  - NDA document system
+  - NDA gating logic (Discovery → NDA Required → NDA Accepted)
+  - Dealroom creation and management
+  - In-app messaging system
+  - Document viewer and sharing
+  - Activity timeline
+  - Permission management
+
+## Milestone v1.1 Trust (Weeks 3-5)
+
+**Timeline:** Weeks 3-5
+
+**Deliverables:**
+- Buyer profile creation and management
+- Qualification badge system
+- Buyer qualification inputs (liquidity, experience, payment capacity, regions)
+- Qualification badge logic and display
+- SBA loan hints and guidance
+- Enhanced buyer dashboard
+- Saved listings/favorites
+
+**Detailed Scope:**
+- Buyer Features
+  - Buyer profile creation
+  - Qualification inputs (liquidity, experience, payment capacity, regions)
+  - Qualification badge logic
+  - Buyer dashboard
+  - Saved listings/favorites
+  - SBA loan integration hints
+
+## Milestone v1.2 Monetization (Weeks 5-8)
+
+**Timeline:** Weeks 5-8
+
+**Deliverables:**
+- Stripe integration setup
+- Paid Listing Upgrade feature (single purchase)
+- Featured Placement package (premium package)
+- Pro Seller Subscription (monthly recurring)
+- Payment processing and webhooks
+- Subscription management
+- Billing dashboard for sellers
+- Revenue tracking and reporting
+
+**Detailed Scope:**
+- Monetization Features
+  - Stripe integration setup
+  - Paid Listing Upgrade feature
+  - Featured Placement package
+  - Pro Seller Subscription (recurring)
+  - Payment processing
+  - Subscription management
+  - Billing dashboard
+
+## Future Phases (Post-MVP)
+
+### Phase: AI Deal Co-Pilot
+- AI service integration setup
+- pgvector extension installation and configuration
+- Vector database setup for industry norms (RAG)
+- `POST /api/ai/suggest-terms` endpoint implementation
+- `POST /api/ai/estimate-payment` endpoint implementation
+- Confidence score calculation and inclusion
+- RAG pipeline: Vector search → Context retrieval → AI generation
+- Input validation and processing
+- Response handling and display
+- Rate limiting and caching
+- Performance optimization (< 2 seconds latency)
+
+### Phase: Polish & Launch
+- UI/UX refinements
+- Performance optimization
+- Security audit
+- Testing (unit, integration, e2e)
+- Documentation
+- Production deployment setup
+- Launch preparation
+
+# Logical Dependency Chain
+
+## Milestone v1.0 Core (Weeks 1-3)
+**Foundation First (Must Build First)**
+1. **Project Setup** → Database schema → Authentication → User management
+   - These are prerequisites for everything else
+   - No other features can work without users and auth
+
+**Quick to Visible Frontend**
+2. **Listing Creation** → **Marketplace Display** → **Search & Filters**
+   - Get something visible working quickly
+   - Sellers can create, buyers can browse
+   - This creates the core marketplace loop
+
+**Deal Facilitation**
+3. **Dealroom** → **NDA Gating** → **Messaging**
+   - Core deal-making functionality
+   - Must work for MVP to be functional
+   - **Staging deployment required at end of v1.0**
+
+## Milestone v1.1 Trust (Weeks 3-5)
+**Buyer Engagement**
+4. **Buyer Profile** → **Qualification Badge** → **SBA Hints**
+   - Builds trust and enables filtering
+   - Can be built in parallel with listing features
+   - Enhances seller confidence in buyers
+
+## Milestone v1.2 Monetization (Weeks 5-8)
+**Revenue Generation**
+5. **Stripe Integration** → **Paid Features** → **Pro Subscription**
+   - Can be built after core marketplace works
+   - Stripe integration is independent
+   - Can be added incrementally (listing upgrade → featured → subscription)
+
+## Future: AI Deal Co-Pilot (Post-MVP)
+**AI Enhancement**
+6. **AI Service Setup** → **RAG Pipeline** → **AI Endpoints**
+   - Can be built independently
+   - Enhances the deal-making process
+   - Requires pgvector and vector database setup
+
+## Atomic Feature Scoping
+- Each milestone should be atomic and deployable
+- v1.0 must be fully functional marketplace
+- v1.1 adds trust signals
+- v1.2 adds revenue streams
+- Can improve features iteratively within each milestone
+
+# Risks and Mitigations  
+
+## Technical Challenges
+- **AI Service Integration**: Risk of latency > 2 seconds
+  - Mitigation: Implement caching, optimize API calls, consider edge computing
+  
+- **Stripe Integration Complexity**: Payment processing can be complex
+  - Mitigation: Use Stripe's well-documented SDK, implement incrementally, test thoroughly
+  
+- **Real-time Messaging**: WebSocket complexity and scaling
+  - Mitigation: Use managed service (Socket.io, Pusher) or serverless WebSocket solution
+
+## MVP Scope Management
+- **Feature Creep**: Risk of adding too many features
+  - Mitigation: Strictly adhere to MVP scope, use "Coming Soon" labels for future features
+  
+- **Asset Type Complexity**: Supporting multiple asset types could be overwhelming
+  - Mitigation: Start with Business listings (full model), others get basic fields only
+
+## Resource Constraints
+- **Development Timeline**: MVP needs to launch quickly
+  - Mitigation: Prioritize core flows, use existing libraries/frameworks, focus on business listings first
+  
+- **AI Service Costs**: AI features could be expensive at scale
+  - Mitigation: Implement rate limiting, caching, optimize prompts, monitor usage
+
+# Appendix  
+
+## Success Metrics (from section 6 of prior plan)
+- Seller listings created
+- Buyer inquiries generated
+- NDA acceptance rate
+- Dealroom conversations initiated
+- AI co-pilot usage
+- Revenue from monetization features
+
+## Technical Specifications
+- Frontend: React/Next.js with TypeScript
+- Backend: Node.js/Express with TypeScript
+- Database: PostgreSQL with Prisma ORM
+- Authentication: JWT tokens
+- Payment: Stripe API
+- Hosting: Cloud platform (TBD)
+- AI Service: To be determined (OpenAI, Anthropic, or custom)
+
+## Security Requirements
+- Password hashing (bcrypt)
+- JWT token security
+- HTTPS/SSL
+- Secure document storage
+- NDA document integrity
+- Payment data security (PCI compliance via Stripe)
+

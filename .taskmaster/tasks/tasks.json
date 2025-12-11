@@ -1,0 +1,464 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Project Setup and Configuration",
+        "description": "Initialize the project repository with Next.js frontend and Node.js/Express backend, configure TypeScript, and set up the development environment.",
+        "details": "1. Create a monorepo structure with separate directories for frontend and backend\n2. Initialize Next.js frontend with TypeScript:\n   ```bash\n   npx create-next-app@latest frontend --typescript\n   ```\n3. Initialize Node.js/Express backend with TypeScript:\n   ```bash\n   mkdir backend\n   cd backend\n   npm init -y\n   npm install express typescript ts-node @types/node @types/express\n   npx tsc --init\n   ```\n4. Configure tsconfig.json for both frontend and backend\n5. Set up ESLint and Prettier for code quality\n6. Create basic folder structure for both projects\n7. Configure environment variables (.env files)\n8. Set up Git repository with .gitignore\n9. Create README.md with setup instructions",
+        "testStrategy": "1. Verify that both frontend and backend projects compile without errors\n2. Ensure all dependencies are correctly installed\n3. Confirm that development servers can be started\n4. Validate TypeScript configuration\n5. Test environment variable loading",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Database Schema Design and Prisma Setup",
+        "description": "Set up PostgreSQL database, configure Prisma ORM, and implement the data models as defined in the PRD.",
+        "details": "1. Install PostgreSQL locally or set up a cloud instance\n2. Install Prisma in the backend project:\n   ```bash\n   npm install prisma @prisma/client\n   npx prisma init\n   ```\n3. Configure the database connection in .env\n4. Implement the data models in schema.prisma as specified in the PRD:\n   - User model with roles\n   - Listing model with asset types\n   - FinancingTerms model\n   - BuyerProfile model\n   - Dealroom model\n   - Message model\n   - Document model for NDAs and confidential files\n   - Activity log model for dealroom interactions\n5. Create initial migrations:\n   ```bash\n   npx prisma migrate dev --name init\n   ```\n6. Generate Prisma client:\n   ```bash\n   npx prisma generate\n   ```\n7. Create a database service layer for interacting with the models",
+        "testStrategy": "1. Verify database connection\n2. Test migrations run successfully\n3. Validate schema against PRD requirements\n4. Create test data and verify CRUD operations\n5. Test relationships between models\n6. Ensure proper indexing for performance",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Authentication System Implementation",
+        "description": "Implement JWT-based authentication system with user registration, login, and role-based access control.",
+        "details": "1. Install required packages:\n   ```bash\n   npm install bcrypt jsonwebtoken cookie-parser\n   npm install @types/bcrypt @types/jsonwebtoken @types/cookie-parser --save-dev\n   ```\n2. Create authentication middleware:\n   - JWT token generation and validation\n   - Role-based access control\n   - Password hashing with bcrypt\n3. Implement authentication routes:\n   - POST /api/auth/register\n   - POST /api/auth/login\n   - POST /api/auth/logout\n   - GET /api/auth/me\n4. Create user service for database operations\n5. Implement password reset functionality\n6. Set up secure cookie handling for JWT storage\n7. Configure CORS for frontend-backend communication",
+        "testStrategy": "1. Test user registration with validation\n2. Test login with correct and incorrect credentials\n3. Verify JWT token generation and validation\n4. Test role-based access control\n5. Verify password hashing security\n6. Test token expiration and refresh\n7. Validate CORS configuration",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "User Management System",
+        "description": "Implement user registration, profile management, and role-based functionality for buyers, sellers, brokers, and admins.",
+        "details": "1. Create user controller with CRUD operations\n2. Implement user registration flow with email verification\n3. Create user profile management endpoints:\n   - GET /api/users/:id\n   - PUT /api/users/:id\n   - DELETE /api/users/:id\n4. Implement role-specific functionality:\n   - Buyer-specific endpoints\n   - Seller-specific endpoints\n   - Broker-specific endpoints\n   - Admin management console endpoints\n5. Create user service layer for database operations\n6. Implement input validation and sanitization\n7. Add pagination for user listing endpoints",
+        "testStrategy": "1. Test user CRUD operations\n2. Verify role-based access control\n3. Test input validation and error handling\n4. Verify email verification flow\n5. Test pagination and filtering\n6. Validate that user data is properly sanitized\n7. Test performance with multiple users",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Listing Creation and Management",
+        "description": "Implement the listing creation form and management system for all asset types with a focus on business listings.",
+        "details": "1. Create listing controller with CRUD operations\n2. Implement listing creation endpoints:\n   - POST /api/listings\n   - PUT /api/listings/:id\n   - DELETE /api/listings/:id\n   - GET /api/listings/:id\n   - GET /api/listings\n3. Create financing terms endpoints:\n   - POST /api/listings/:id/financing\n   - PUT /api/listings/:id/financing\n4. Implement asset type-specific validation:\n   - Business (full model)\n   - Real Estate (basic fields)\n   - Vehicle, RV, Boat, Equipment (basic fields)\n5. Create listing service layer for database operations\n6. Implement listing status management (ACTIVE, PENDING, SOLD, ARCHIVED)\n7. Add seller dashboard endpoints for listing management",
+        "testStrategy": "1. Test listing CRUD operations\n2. Verify asset type-specific validation\n3. Test financing terms calculations\n4. Verify listing status transitions\n5. Test seller dashboard functionality\n6. Validate required fields for publishing\n7. Test performance with multiple listings",
+        "priority": "high",
+        "dependencies": [
+          2,
+          4
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Marketplace Search and Filtering",
+        "description": "Implement the marketplace search functionality with filters for asset type, price range, financing terms, location, and keyword search.",
+        "details": "1. Create search controller with filtering capabilities\n2. Implement search endpoints:\n   - GET /api/search\n   - GET /api/listings/featured\n3. Implement filters:\n   - Asset type filter\n   - Price range filter\n   - Minimum seller financing % filter\n   - Down payment range filter\n   - Location (City/State) filter\n   - Keyword search\n4. Add sorting options:\n   - Newest\n   - Most viewed\n   - Highest seller-finance %\n5. Implement pagination for search results\n6. Create search service layer with optimized queries\n7. Add view count tracking for listings",
+        "testStrategy": "1. Test each filter individually and in combination\n2. Verify sorting functionality\n3. Test pagination\n4. Verify keyword search accuracy\n5. Test performance with large dataset\n6. Validate view count tracking\n7. Test edge cases with unusual filter combinations",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Frontend Authentication and User Management",
+        "description": "Implement frontend components for user registration, login, and profile management with role-based UI elements.",
+        "details": "1. Create authentication context with React Context API\n2. Implement login form component\n3. Create registration form with validation\n4. Implement protected routes with role-based access\n5. Create user profile management pages:\n   - Profile view\n   - Profile edit\n   - Password change\n6. Implement role-specific navigation\n7. Add authentication state persistence\n8. Create logout functionality\n9. Implement form validation with error messages",
+        "testStrategy": "1. Test login with valid and invalid credentials\n2. Verify registration form validation\n3. Test protected routes access control\n4. Verify profile management functionality\n5. Test role-specific UI elements\n6. Validate form error handling\n7. Test authentication persistence across page refreshes",
+        "priority": "high",
+        "dependencies": [
+          3,
+          4
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Frontend Listing Creation and Management",
+        "description": "Implement frontend components for creating, editing, and managing listings with asset type-specific forms.",
+        "details": "1. Create listing creation form components:\n   - Multi-step form process\n   - Asset type selection\n   - Business listing form (full fields)\n   - Other asset types (basic fields)\n   - Financing terms section\n2. Implement listing management dashboard:\n   - Listing overview\n   - Edit listing\n   - Delete listing\n   - Change listing status\n3. Create asset type-specific form validation\n4. Implement image upload functionality\n5. Add financing calculator component\n6. Create listing preview before publishing\n7. Implement form state management with React hooks",
+        "testStrategy": "1. Test form submission with valid and invalid data\n2. Verify multi-step form navigation\n3. Test asset type-specific validation\n4. Verify image upload functionality\n5. Test financing calculator accuracy\n6. Validate listing preview\n7. Test form state persistence between steps",
+        "priority": "high",
+        "dependencies": [
+          5,
+          7
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Frontend Marketplace and Search",
+        "description": "Implement frontend components for the marketplace homepage, search results, and listing detail pages with filtering and sorting.",
+        "details": "1. Create marketplace homepage component\n2. Implement search filter components:\n   - Asset type filter\n   - Price range filter\n   - Financing terms filters\n   - Location filter\n   - Keyword search\n3. Create search results component with sorting options\n4. Implement listing card component\n5. Create listing detail page\n6. Add pagination for search results\n7. Implement responsive design for all components\n8. Create loading states and error handling",
+        "testStrategy": "1. Test filter functionality\n2. Verify sorting options\n3. Test pagination\n4. Verify listing detail page displays correct information\n5. Test responsive design on different screen sizes\n6. Validate loading states and error handling\n7. Test performance with many search results",
+        "priority": "high",
+        "dependencies": [
+          6,
+          7
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "NDA System Implementation",
+        "description": "Implement the NDA document system with gating logic for confidential listing information.",
+        "details": "1. Create document model and controller\n2. Implement NDA template storage\n3. Create NDA endpoints:\n   - POST /api/listings/:id/nda\n   - GET /api/listings/:id/nda\n   - PUT /api/listings/:id/nda/accept\n4. Implement NDA gating logic:\n   - Discovery state\n   - NDA required state\n   - NDA accepted state\n5. Create document storage service\n6. Implement secure document viewing\n7. Add NDA acceptance tracking\n8. Create NDA status checking middleware",
+        "testStrategy": "1. Test NDA generation\n2. Verify NDA acceptance flow\n3. Test gating logic for confidential information\n4. Verify secure document viewing\n5. Test NDA status transitions\n6. Validate document storage security\n7. Test performance with multiple documents",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Dealroom and Messaging System",
+        "description": "Implement the dealroom functionality with in-app messaging, document sharing, and activity timeline.",
+        "details": "1. Create dealroom controller with CRUD operations\n2. Implement messaging endpoints:\n   - POST /api/dealrooms/:id/messages\n   - GET /api/dealrooms/:id/messages\n3. Create dealroom creation endpoint:\n   - POST /api/dealrooms\n   - GET /api/dealrooms\n   - GET /api/dealrooms/:id\n4. Implement document sharing within dealrooms\n5. Create activity timeline tracking\n6. Implement real-time messaging with WebSockets\n7. Add permission management for dealroom access\n8. Create notification system for new messages",
+        "testStrategy": "1. Test dealroom creation\n2. Verify messaging functionality\n3. Test document sharing\n4. Verify activity timeline accuracy\n5. Test real-time message delivery\n6. Validate permission management\n7. Test notifications for new messages\n8. Test performance with many messages",
+        "priority": "high",
+        "dependencies": [
+          10
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Frontend NDA and Dealroom",
+        "description": "Implement frontend components for NDA viewing, acceptance, and dealroom interaction with messaging.",
+        "details": "1. Create NDA viewer component\n2. Implement NDA acceptance flow\n3. Create dealroom interface:\n   - Message list\n   - Message composer\n   - Document sharing\n   - Activity timeline\n4. Implement real-time message updates\n5. Create document viewer component\n6. Add notification indicators for new messages\n7. Implement responsive design for dealroom\n8. Create loading states and error handling",
+        "testStrategy": "1. Test NDA viewing and acceptance\n2. Verify messaging interface\n3. Test document sharing and viewing\n4. Verify real-time updates\n5. Test notification system\n6. Validate responsive design\n7. Test performance with many messages",
+        "priority": "high",
+        "dependencies": [
+          10,
+          11
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Buyer Profile and Qualification System",
+        "description": "Implement the buyer profile creation and qualification badge system based on liquidity, experience, and other factors.",
+        "details": "1. Create buyer profile controller with CRUD operations\n2. Implement buyer profile endpoints:\n   - POST /api/buyer-profile\n   - GET /api/buyer-profile\n   - PUT /api/buyer-profile\n3. Create qualification badge logic based on:\n   - Liquidity available\n   - Industry experience\n   - Max monthly payment\n   - Regions of interest\n4. Implement profile completeness calculation\n5. Create buyer dashboard endpoints\n6. Add saved listings functionality\n7. Implement SBA loan hints and guidance",
+        "testStrategy": "1. Test buyer profile creation and updating\n2. Verify qualification badge logic\n3. Test profile completeness calculation\n4. Verify saved listings functionality\n5. Test SBA loan hints\n6. Validate buyer dashboard data\n7. Test performance with multiple profiles",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Frontend Buyer Profile and Dashboard",
+        "description": "Implement frontend components for buyer profile creation, qualification badge display, and buyer dashboard.",
+        "details": "1. Create buyer profile form component\n2. Implement qualification badge display\n3. Create buyer dashboard:\n   - Profile overview\n   - Saved listings\n   - Active inquiries\n   - Dealroom access\n4. Implement SBA loan guidance component\n5. Create profile completeness indicator\n6. Add regions of interest selector\n7. Implement form validation\n8. Create responsive design for all components",
+        "testStrategy": "1. Test profile form submission\n2. Verify qualification badge display\n3. Test dashboard functionality\n4. Verify saved listings display\n5. Test SBA loan guidance\n6. Validate profile completeness indicator\n7. Test responsive design",
+        "priority": "medium",
+        "dependencies": [
+          7,
+          13
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Stripe Integration Setup",
+        "description": "Implement Stripe integration for payment processing, including API setup, webhooks, and basic payment flow.",
+        "details": "1. Install Stripe packages:\n   ```bash\n   npm install stripe\n   ```\n2. Configure Stripe API keys in environment variables\n3. Create payment service with Stripe SDK\n4. Implement webhook handling:\n   - POST /api/webhooks/stripe\n5. Create customer management:\n   - Create Stripe customers for users\n   - Store Stripe customer IDs\n6. Implement basic payment endpoints:\n   - POST /api/payments/create-payment-intent\n   - POST /api/payments/confirm-payment\n7. Set up webhook event handling for payment status updates\n8. Implement error handling and logging",
+        "testStrategy": "1. Test Stripe API connection\n2. Verify webhook handling\n3. Test payment creation and confirmation\n4. Verify customer creation\n5. Test webhook events processing\n6. Validate error handling\n7. Test with Stripe test mode",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Paid Listing Upgrade Feature",
+        "description": "Implement the paid listing upgrade feature with Stripe integration for single purchases.",
+        "details": "1. Create listing upgrade model and controller\n2. Implement upgrade purchase endpoints:\n   - POST /api/listings/:id/upgrade\n   - GET /api/listings/:id/upgrade\n3. Create upgrade options configuration\n4. Implement Stripe payment integration for upgrades\n5. Add upgrade status to listing model\n6. Create upgrade benefits implementation:\n   - Enhanced visibility\n   - Additional images\n   - Extended description\n7. Implement upgrade expiration handling",
+        "testStrategy": "1. Test upgrade purchase flow\n2. Verify Stripe payment integration\n3. Test upgrade benefits application\n4. Verify upgrade status tracking\n5. Test upgrade expiration\n6. Validate error handling\n7. Test with Stripe test mode",
+        "priority": "medium",
+        "dependencies": [
+          5,
+          15
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Featured Placement Package",
+        "description": "Implement the featured placement premium package with Stripe integration and enhanced visibility features.",
+        "details": "1. Create featured placement model and controller\n2. Implement featured placement endpoints:\n   - POST /api/listings/:id/feature\n   - GET /api/listings/:id/feature\n3. Create featured listings section in marketplace\n4. Implement Stripe payment integration for featured placement\n5. Add featured status to listing model\n6. Create featured benefits implementation:\n   - Top of search results\n   - Special badge\n   - Enhanced card design\n7. Implement featured placement expiration handling",
+        "testStrategy": "1. Test featured placement purchase flow\n2. Verify Stripe payment integration\n3. Test featured benefits application\n4. Verify featured status tracking\n5. Test featured placement expiration\n6. Validate error handling\n7. Test with Stripe test mode",
+        "priority": "medium",
+        "dependencies": [
+          16
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Pro Seller Subscription",
+        "description": "Implement the Pro Seller Subscription with recurring payments through Stripe and enhanced seller features.",
+        "details": "1. Create subscription model and controller\n2. Implement subscription endpoints:\n   - POST /api/subscriptions\n   - GET /api/subscriptions\n   - PUT /api/subscriptions/cancel\n3. Create subscription plans configuration\n4. Implement Stripe subscription integration\n5. Add subscription status to user model\n6. Create pro seller benefits implementation:\n   - Multiple active listings\n   - Analytics dashboard\n   - Priority support\n   - Automatic upgrades\n7. Implement subscription management and cancellation",
+        "testStrategy": "1. Test subscription purchase flow\n2. Verify Stripe subscription integration\n3. Test pro seller benefits application\n4. Verify subscription status tracking\n5. Test subscription cancellation\n6. Validate renewal process\n7. Test with Stripe test mode",
+        "priority": "medium",
+        "dependencies": [
+          15
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Frontend Monetization Features",
+        "description": "Implement frontend components for paid listing upgrades, featured placement, and pro seller subscription management.",
+        "details": "1. Create payment form components with Stripe Elements\n2. Implement listing upgrade UI:\n   - Upgrade options display\n   - Payment flow\n   - Confirmation\n3. Create featured placement UI:\n   - Featured options\n   - Payment flow\n   - Preview\n4. Implement subscription management UI:\n   - Plan selection\n   - Payment flow\n   - Subscription management\n   - Cancellation\n5. Create billing dashboard for sellers\n6. Implement payment history display\n7. Add responsive design for all payment components",
+        "testStrategy": "1. Test payment form with Stripe Elements\n2. Verify upgrade UI flow\n3. Test featured placement UI\n4. Verify subscription management\n5. Test billing dashboard\n6. Validate payment history display\n7. Test responsive design",
+        "priority": "medium",
+        "dependencies": [
+          16,
+          17,
+          18
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Billing Dashboard and Revenue Tracking",
+        "description": "Implement a billing dashboard for sellers with payment history, subscription status, and revenue tracking.",
+        "details": "1. Create billing controller with reporting endpoints\n2. Implement billing dashboard endpoints:\n   - GET /api/billing/history\n   - GET /api/billing/subscription\n   - GET /api/billing/revenue\n3. Create payment history tracking\n4. Implement subscription status display\n5. Add revenue reporting for platform administrators\n6. Create invoice generation functionality\n7. Implement export options for billing data",
+        "testStrategy": "1. Test billing history retrieval\n2. Verify subscription status display\n3. Test revenue reporting\n4. Verify invoice generation\n5. Test data export functionality\n6. Validate accuracy of financial calculations\n7. Test with various payment scenarios",
+        "priority": "medium",
+        "dependencies": [
+          18
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "AI Service Integration Setup",
+        "description": "Set up the AI service integration for the deal co-pilot features with proper configuration and API connections.",
+        "details": "1. Research and select appropriate AI service provider (OpenAI, Anthropic, or custom)\n2. Configure API keys and environment variables\n3. Create AI service wrapper class\n4. Implement rate limiting and usage tracking\n5. Set up error handling and fallbacks\n6. Create caching layer for AI responses\n7. Implement logging for AI interactions\n8. Set up monitoring for AI service performance",
+        "testStrategy": "1. Test AI service connection\n2. Verify rate limiting functionality\n3. Test caching mechanism\n4. Verify error handling and fallbacks\n5. Test logging and monitoring\n6. Validate response format\n7. Test performance and latency",
+        "priority": "low",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "pgvector Extension and Vector Database Setup",
+        "description": "Install and configure the pgvector extension for PostgreSQL and set up the vector database for RAG functionality.",
+        "details": "1. Install pgvector extension in PostgreSQL:\n   ```sql\n   CREATE EXTENSION vector;\n   ```\n2. Update Prisma schema to include vector fields:\n   ```prisma\n   model IndustryNorm {\n     id          String   @id @default(cuid())\n     assetType   AssetType\n     description String\n     embedding   Unsupported(\"vector\")\n     createdAt   DateTime @default(now())\n   }\n   ```\n3. Create migration for vector tables\n4. Implement vector embedding generation\n5. Create seed data for industry norms\n6. Implement similarity search functionality\n7. Create vector database service layer",
+        "testStrategy": "1. Test pgvector extension installation\n2. Verify vector field creation\n3. Test embedding generation\n4. Verify similarity search accuracy\n5. Test performance with large vector dataset\n6. Validate seed data loading\n7. Test vector database service functions",
+        "priority": "low",
+        "dependencies": [
+          2,
+          21
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "AI Deal Co-Pilot Endpoints",
+        "description": "Implement the AI deal co-pilot endpoints for suggesting terms and estimating payments with RAG functionality.",
+        "details": "1. Create AI controller with co-pilot endpoints:\n   - POST /api/ai/suggest-terms\n   - POST /api/ai/estimate-payment\n2. Implement RAG pipeline:\n   - Query vector DB for relevant norms\n   - Retrieve context\n   - Generate suggestions with context\n3. Create confidence score calculation\n4. Implement input validation and processing\n5. Add response formatting with confidence scores\n6. Create caching for common calculations\n7. Implement performance optimization for < 2 seconds latency",
+        "testStrategy": "1. Test terms suggestion accuracy\n2. Verify payment estimation calculations\n3. Test RAG pipeline functionality\n4. Verify confidence score calculation\n5. Test caching mechanism\n6. Validate response format\n7. Test latency requirements",
+        "priority": "low",
+        "dependencies": [
+          22
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Frontend AI Deal Co-Pilot Integration",
+        "description": "Implement frontend components for the AI deal co-pilot features, including term suggestions and payment estimation.",
+        "details": "1. Create \"Suggest Terms\" button component\n2. Implement \"Estimate Payment\" button component\n3. Create AI suggestion display with confidence indicators\n4. Implement payment range visualization\n5. Add loading states for AI operations\n6. Create error handling for AI service failures\n7. Implement responsive design for AI components",
+        "testStrategy": "1. Test suggestion button functionality\n2. Verify payment estimation display\n3. Test confidence indicator visualization\n4. Verify loading states\n5. Test error handling\n6. Validate responsive design\n7. Test user experience flow",
+        "priority": "low",
+        "dependencies": [
+          23
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Staging Deployment and Testing",
+        "description": "Set up staging environment, deploy the application, and perform comprehensive testing before production release.",
+        "details": "1. Configure cloud hosting environment (AWS/Azure/GCP)\n2. Set up managed PostgreSQL database with pgvector\n3. Configure CI/CD pipeline for automated deployment\n4. Implement environment-specific configurations\n5. Deploy frontend and backend to staging\n6. Perform comprehensive testing:\n   - Functional testing\n   - Performance testing\n   - Security testing\n   - Cross-browser testing\n7. Create monitoring and logging setup\n8. Implement backup and disaster recovery",
+        "testStrategy": "1. Verify deployment process\n2. Test all core user flows in staging\n3. Perform load testing\n4. Verify security measures\n5. Test on multiple browsers and devices\n6. Validate monitoring and alerting\n7. Test backup and restore procedures",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32"
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Term Sheet Builder with Seller Financing",
+        "description": "Implement a term sheet builder that allows sellers to create and buyers to view financing term sheets with interactive amortization previews, including interest rate, duration, down payment, and payment calculations.",
+        "details": "1. Create TermSheet model extending the FinancingTerms model:\n   ```typescript\n   interface TermSheet extends FinancingTerms {\n     id: string;\n     listingId: string;\n     title: string;\n     description?: string;\n     isDefault: boolean;\n     createdAt: Date;\n     updatedAt: Date;\n   }\n   ```\n\n2. Update Prisma schema to include TermSheet model with appropriate relations to Listing model.\n\n3. Implement term sheet controller with CRUD endpoints:\n   - POST /api/listings/:id/term-sheets\n   - GET /api/listings/:id/term-sheets\n   - GET /api/listings/:id/term-sheets/:sheetId\n   - PUT /api/listings/:id/term-sheets/:sheetId\n   - DELETE /api/listings/:id/term-sheets/:sheetId\n\n4. Create amortization calculation service:\n   ```typescript\n   class AmortizationService {\n     calculateAmortizationSchedule(principal: number, interestRate: number, termMonths: number, downPayment: number): AmortizationSchedule;\n     calculateMonthlyPayment(principal: number, interestRate: number, termMonths: number): number;\n     calculateTotalInterest(schedule: AmortizationSchedule): number;\n   }\n   ```\n\n5. Implement term sheet builder component in React:\n   - Form inputs for interest rate, duration, down payment\n   - Real-time validation with appropriate constraints\n   - Preview of monthly payment calculation\n   - Amortization schedule visualization\n   - Save/update functionality\n\n6. Create interactive amortization preview component:\n   - Monthly payment breakdown\n   - Principal vs. interest visualization\n   - Payment schedule table with sorting/filtering\n   - Export to PDF/CSV functionality\n\n7. Implement seller term sheet management UI:\n   - Create multiple term sheet options\n   - Set default term sheet\n   - Compare different financing scenarios\n   - Duplicate and modify existing term sheets\n\n8. Create buyer-facing term sheet viewer:\n   - Read-only view of term sheet details\n   - Interactive amortization calculator for \"what-if\" scenarios\n   - Highlight key terms and conditions\n   - Interest saved compared to standard rates\n\n9. Implement caching for expensive amortization calculations to improve performance.",
+        "testStrategy": "1. Unit test the AmortizationService:\n   - Verify payment calculation accuracy with known examples\n   - Test edge cases (zero down payment, short/long terms)\n   - Validate amortization schedule generation\n\n2. Test term sheet CRUD operations:\n   - Create term sheets with various parameters\n   - Verify retrieval of term sheets for a listing\n   - Test updating term sheet parameters\n   - Verify deletion and proper cleanup\n\n3. Integration test the term sheet builder UI:\n   - Test form validation for all inputs\n   - Verify real-time calculation updates\n   - Test saving and loading term sheets\n   - Validate error handling for invalid inputs\n\n4. Test the amortization preview component:\n   - Verify correct rendering of payment schedule\n   - Test interactive features (sorting, filtering)\n   - Validate visualization accuracy\n   - Test export functionality\n\n5. End-to-end test the complete term sheet workflow:\n   - Create a listing as a seller\n   - Add multiple term sheets with different parameters\n   - View the listing as a buyer\n   - Interact with the term sheet viewer\n   - Verify calculations match between builder and viewer\n\n6. Performance test the amortization calculations:\n   - Benchmark calculation time for various loan parameters\n   - Verify caching improves performance for repeated calculations\n   - Test with extreme values (very large loans, long terms)",
+        "status": "done",
+        "dependencies": [
+          2,
+          5
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "Financial Analysis Dashboard Integration",
+        "description": "Implement an automated financial snapshots feature that calculates and displays EBITDA, DSCR, and valuation multiple indicators for business listings to provide essential financial analysis for buyers.",
+        "details": "1. Create a FinancialAnalysis service to handle calculations:\n   ```typescript\n   class FinancialAnalysisService {\n     calculateEBITDA(revenue: number, expenses: number): number;\n     calculateDSCR(netOperatingIncome: number, debtServicePayment: number): number;\n     calculateValuationMultiples(ebitda: number, askingPrice: number): {\n       ebitdaMultiple: number;\n       revenueMultiple?: number;\n     };\n   }\n   ```\n\n2. Extend the Listing model to include financial data fields:\n   ```typescript\n   interface ListingFinancials {\n     revenue: number;\n     expenses: number;\n     netProfit: number;\n     ebitda?: number;\n     dscr?: number;\n     valuationMultiples?: {\n       ebitdaMultiple: number;\n       revenueMultiple?: number;\n     };\n   }\n   ```\n\n3. Update the Prisma schema to include financial data fields for business listings.\n\n4. Create API endpoints for financial analysis:\n   - GET /api/listings/:id/financials\n   - POST /api/listings/:id/financials (for sellers to update)\n\n5. Implement integration with the Term Sheet Builder (Task #26) to use financial data in payment calculations:\n   - Connect DSCR calculations to financing terms\n   - Use valuation multiples to suggest appropriate asking prices\n\n6. Create a financial snapshot component for the listing detail page:\n   - Display EBITDA, DSCR, and valuation multiples in an easy-to-understand format\n   - Include tooltips explaining each metric\n   - Add visual indicators for good/average/poor financial health\n\n7. Implement permission controls to ensure only sellers can edit financial data and all buyers can view the analysis.\n\n8. Add data validation to ensure financial calculations are based on valid inputs:\n   - Prevent negative values for revenue/expenses\n   - Validate DSCR calculations when debt service is zero\n   - Handle edge cases in multiple calculations\n\n9. Create a financial trends visualization if historical data is available:\n   - Line charts for revenue, expenses, and EBITDA\n   - DSCR trend over projected loan period\n\n10. Implement caching for financial calculations to improve performance on listing detail pages.",
+        "testStrategy": "1. Unit test the FinancialAnalysisService:\n   - Verify EBITDA calculation with various revenue and expense scenarios\n   - Test DSCR calculation with different debt service values\n   - Validate valuation multiple calculations with edge cases\n   - Test with zero values and extremely large numbers\n\n2. Integration test the financial data API endpoints:\n   - Test GET endpoint returns correct financial data\n   - Verify POST endpoint properly updates financial information\n   - Test permission controls for different user roles\n   - Validate error handling for invalid financial data\n\n3. Test the integration with Term Sheet Builder:\n   - Verify DSCR calculations affect financing terms appropriately\n   - Test that valuation multiples are correctly used in price suggestions\n\n4. UI testing for the financial snapshot component:\n   - Verify all metrics display correctly with different data sets\n   - Test tooltips and explanatory content\n   - Validate visual indicators for financial health\n   - Test responsive design on different screen sizes\n\n5. Performance testing:\n   - Measure rendering time for financial dashboard\n   - Test caching effectiveness for repeated calculations\n   - Verify performance with multiple concurrent users viewing financial data\n\n6. User acceptance testing:\n   - Have financial experts review calculation accuracy\n   - Get feedback on the clarity and usefulness of the financial snapshot\n   - Verify buyers find the information valuable for decision-making",
+        "status": "done",
+        "dependencies": [
+          5,
+          26,
+          2
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "Buyer Profile Gating for NDA Access",
+        "description": "Implement a security feature that requires buyers to complete their profile with capital available range and experience information before they can access NDA-protected documents.",
+        "details": "1. Update the BuyerProfile model to include required fields for NDA access:\n   ```typescript\n   interface BuyerProfile {\n     // Existing fields\n     capitalAvailableMin: number;\n     capitalAvailableMax: number;\n     yearsOfExperience: number;\n     industryExperience: string[];\n     profileCompleteness: number;\n     canAccessNDA: boolean; // New field to track NDA access eligibility\n   }\n   ```\n\n2. Create a middleware to check profile completeness before NDA access:\n   ```typescript\n   const ndaProfileGateMiddleware = async (req, res, next) => {\n     const userId = req.user.id;\n     const buyerProfile = await prisma.buyerProfile.findUnique({\n       where: { userId }\n     });\n     \n     if (!buyerProfile) {\n       return res.status(403).json({ \n         error: 'Profile required', \n         message: 'You must create a buyer profile before accessing confidential information' \n       });\n     }\n     \n     // Check required fields\n     const hasRequiredFields = \n       buyerProfile.capitalAvailableMin !== null &&\n       buyerProfile.capitalAvailableMax !== null &&\n       buyerProfile.yearsOfExperience !== null &&\n       buyerProfile.industryExperience?.length > 0;\n       \n     if (!hasRequiredFields) {\n       return res.status(403).json({ \n         error: 'Incomplete profile', \n         message: 'Please complete your buyer profile with capital range and experience information' \n       });\n     }\n     \n     // Update canAccessNDA flag if needed\n     if (!buyerProfile.canAccessNDA) {\n       await prisma.buyerProfile.update({\n         where: { userId },\n         data: { canAccessNDA: true }\n       });\n     }\n     \n     next();\n   };\n   ```\n\n3. Modify the NDA document access endpoints to use the new middleware:\n   ```typescript\n   router.get('/api/listings/:id/nda', \n     authMiddleware, \n     ndaProfileGateMiddleware, \n     ndaController.getNDA\n   );\n   \n   router.put('/api/listings/:id/nda/accept', \n     authMiddleware, \n     ndaProfileGateMiddleware, \n     ndaController.acceptNDA\n   );\n   ```\n\n4. Update the frontend buyer profile form to indicate required fields for NDA access:\n   - Add visual indicators for required fields\n   - Add helper text explaining these fields are required for confidential information access\n   - Implement validation to ensure capital range and experience fields are completed\n\n5. Create a profile completeness calculator function that factors in NDA requirements:\n   ```typescript\n   function calculateProfileCompleteness(profile: BuyerProfile): number {\n     const requiredFields = [\n       'firstName', 'lastName', 'email', 'phone',\n       'capitalAvailableMin', 'capitalAvailableMax',\n       'yearsOfExperience', 'industryExperience'\n     ];\n     \n     const completedFields = requiredFields.filter(field => \n       profile[field] !== null && profile[field] !== undefined && \n       (Array.isArray(profile[field]) ? profile[field].length > 0 : true)\n     );\n     \n     return Math.round((completedFields.length / requiredFields.length) * 100);\n   }\n   ```\n\n6. Implement a notification system to inform buyers when they attempt to access NDA documents without a complete profile:\n   - Create a modal component explaining the requirements\n   - Add a direct link to complete their profile\n   - Track incomplete profile access attempts for analytics\n\n7. Add API endpoint to check NDA access eligibility:\n   ```typescript\n   router.get('/api/buyer/nda-eligibility', authMiddleware, async (req, res) => {\n     const userId = req.user.id;\n     const buyerProfile = await prisma.buyerProfile.findUnique({\n       where: { userId }\n     });\n     \n     if (!buyerProfile) {\n       return res.json({ eligible: false, reason: 'profile_missing' });\n     }\n     \n     const hasRequiredFields = \n       buyerProfile.capitalAvailableMin !== null &&\n       buyerProfile.capitalAvailableMax !== null &&\n       buyerProfile.yearsOfExperience !== null &&\n       buyerProfile.industryExperience?.length > 0;\n       \n     return res.json({ \n       eligible: hasRequiredFields,\n       reason: hasRequiredFields ? null : 'incomplete_profile',\n       missingFields: !hasRequiredFields ? getMissingFields(buyerProfile) : []\n     });\n   });\n   ```\n\n8. Update the buyer dashboard to show NDA access status and guide users to complete their profile if needed",
+        "testStrategy": "1. Unit test the ndaProfileGateMiddleware:\n   - Test with missing buyer profile\n   - Test with incomplete profile (missing capital range)\n   - Test with incomplete profile (missing experience)\n   - Test with complete profile\n   - Verify canAccessNDA flag is properly set\n\n2. Integration test the NDA access flow:\n   - Attempt to access NDA documents with no profile\n   - Attempt to access with incomplete profile\n   - Complete profile and verify access is granted\n   - Verify the middleware correctly blocks/allows requests\n\n3. Test the profile completeness calculator:\n   - Verify calculation with various profile states\n   - Ensure NDA-required fields are properly weighted\n   - Test edge cases (empty profile, fully complete profile)\n\n4. UI testing:\n   - Verify required field indicators are displayed correctly\n   - Test form validation for capital range and experience fields\n   - Verify helpful error messages guide users to complete their profile\n   - Test the notification modal when attempting to access NDA documents\n\n5. API endpoint testing:\n   - Test the NDA eligibility endpoint with various profile states\n   - Verify correct response format and status codes\n   - Test with authenticated and unauthenticated users\n\n6. End-to-end testing:\n   - Complete user journey from registration to NDA access\n   - Verify all steps in the profile completion process\n   - Test the experience when a user attempts to access NDA documents before completing their profile\n\n7. Security testing:\n   - Verify that NDA documents cannot be accessed through API manipulation\n   - Test that the middleware cannot be bypassed\n   - Ensure profile data is properly validated",
+        "status": "done",
+        "dependencies": [
+          4,
+          10,
+          13
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "Document Generation Engine with E-Signing Integration",
+        "description": "Implement a document generation engine that creates legal documents (NDA, LOI, Term Sheet) from templates with e-signing integration for digital signatures.",
+        "details": "1. Create a DocumentTemplate model and schema:\n```typescript\ninterface DocumentTemplate {\n  id: string;\n  type: 'NDA' | 'LOI' | 'TERM_SHEET';\n  name: string;\n  content: string; // HTML/markdown with variable placeholders\n  variables: string[]; // List of variable names used in template\n  isDefault: boolean;\n  createdAt: Date;\n  updatedAt: Date;\n}\n```\n\n2. Implement template storage and management:\n   - Create a template repository in the database\n   - Implement CRUD operations for templates\n   - Add version control for templates with history tracking\n\n3. Create document generation service:\n```typescript\nclass DocumentGenerationService {\n  async generateDocument(templateId: string, data: Record<string, any>): Promise<string>;\n  async createPDF(htmlContent: string): Promise<Buffer>;\n  async storeGeneratedDocument(documentType: string, listingId: string, content: Buffer): Promise<string>;\n}\n```\n\n4. Implement e-signing integration:\n   - Research and select e-signing provider (DocuSign, HelloSign, etc.)\n   - Create an adapter interface for e-signing service\n   - Implement authentication with the e-signing API\n   - Create document signing request flow\n   - Handle webhooks for signature status updates\n\n5. Create document endpoints:\n   - GET /api/templates (list available templates)\n   - GET /api/templates/:id (get specific template)\n   - POST /api/templates (create new template - admin only)\n   - PUT /api/templates/:id (update template - admin only)\n   - POST /api/documents/generate (generate document from template)\n   - POST /api/documents/:id/sign (initiate signing process)\n   - GET /api/documents/:id/status (check signing status)\n\n6. Implement document versioning:\n   - Track document versions with timestamps\n   - Store all versions of generated documents\n   - Provide access to document history\n\n7. Create frontend components:\n   - Template selection interface\n   - Document preview component\n   - Variable input form\n   - E-signing initiation UI\n   - Signature status tracking\n\n8. Implement security measures:\n   - Ensure documents are only accessible to authorized users\n   - Implement encryption for document storage\n   - Add audit logging for all document operations\n\n9. Create integration with existing NDA system:\n   - Connect to existing NDA gating logic\n   - Ensure compatibility with NDA acceptance tracking\n   - Extend the NDA model to support the new template system",
+        "testStrategy": "1. Unit test the DocumentGenerationService:\n   - Test template variable replacement with various data inputs\n   - Verify PDF generation with different content types\n   - Test error handling for missing variables\n   - Validate document storage functionality\n\n2. Test e-signing integration:\n   - Verify authentication with e-signing provider\n   - Test document submission to e-signing service\n   - Validate webhook handling for signature events\n   - Test error scenarios and retry mechanisms\n\n3. Integration testing:\n   - End-to-end test of document generation flow\n   - Verify template selection and variable input\n   - Test document preview functionality\n   - Validate e-signing process from initiation to completion\n\n4. Security testing:\n   - Verify access controls for templates and documents\n   - Test encryption of stored documents\n   - Validate audit logging functionality\n   - Ensure proper error handling doesn't expose sensitive information\n\n5. Performance testing:\n   - Test document generation with large templates\n   - Verify system performance with multiple concurrent users\n   - Test PDF generation speed and optimization\n\n6. Compatibility testing:\n   - Verify integration with existing NDA system\n   - Test compatibility with different document types\n   - Validate template rendering across browsers\n\n7. User acceptance testing:\n   - Test the complete document generation and signing flow\n   - Verify usability of template customization\n   - Validate document versioning and history tracking",
+        "status": "done",
+        "dependencies": [
+          2,
+          5,
+          10
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 30,
+        "title": "Vector Database Implementation with pgvector",
+        "description": "Implement vector database functionality using pgvector for document storage and semantic search across listings, documents, and content.",
+        "details": "1. Ensure pgvector extension is properly installed and configured:\n   ```sql\n   CREATE EXTENSION IF NOT EXISTS vector;\n   ```\n\n2. Update Prisma schema to include vector columns for relevant models:\n   ```prisma\n   model Listing {\n     // existing fields\n     contentEmbedding Unsupported(\"vector(1536)\") // For OpenAI embeddings\n   }\n\n   model Document {\n     // existing fields\n     contentEmbedding Unsupported(\"vector(1536)\")\n   }\n\n   model Content {\n     id String @id @default(cuid())\n     type String // blog, faq, help, etc.\n     title String\n     content String @db.Text\n     contentEmbedding Unsupported(\"vector(1536)\")\n     createdAt DateTime @default(now())\n     updatedAt DateTime @updatedAt\n   }\n   ```\n\n3. Create a migration for the vector columns:\n   ```bash\n   npx prisma migrate dev --name add_vector_columns\n   ```\n\n4. Implement an embedding generation service:\n   ```typescript\n   import { OpenAI } from 'openai';\n   import { PrismaClient } from '@prisma/client';\n\n   const openai = new OpenAI({\n     apiKey: process.env.OPENAI_API_KEY,\n   });\n   const prisma = new PrismaClient();\n\n   export async function generateEmbedding(text: string): Promise<number[]> {\n     const response = await openai.embeddings.create({\n       model: \"text-embedding-ada-002\",\n       input: text,\n     });\n     return response.data[0].embedding;\n   }\n\n   export async function updateListingEmbedding(listingId: string): Promise<void> {\n     const listing = await prisma.listing.findUnique({\n       where: { id: listingId },\n     });\n     \n     if (!listing) throw new Error('Listing not found');\n     \n     // Combine relevant text fields for embedding\n     const textToEmbed = `${listing.title} ${listing.description} ${listing.assetType}`;\n     const embedding = await generateEmbedding(textToEmbed);\n     \n     await prisma.listing.update({\n       where: { id: listingId },\n       data: {\n         contentEmbedding: embedding,\n       },\n     });\n   }\n   ```\n\n5. Create a semantic search service:\n   ```typescript\n   export async function semanticSearch(query: string, limit: number = 10): Promise<any[]> {\n     const queryEmbedding = await generateEmbedding(query);\n     \n     // Raw SQL query for vector similarity search\n     const results = await prisma.$queryRaw`\n       SELECT id, title, description, \n         1 - (contentEmbedding <=> ${queryEmbedding}::vector) as similarity\n       FROM \"Listing\"\n       WHERE contentEmbedding IS NOT NULL\n       ORDER BY similarity DESC\n       LIMIT ${limit};\n     `;\n     \n     return results;\n   }\n   ```\n\n6. Implement API endpoints for semantic search:\n   ```typescript\n   // routes/search.ts\n   import { Router } from 'express';\n   import { semanticSearch } from '../services/vectorService';\n\n   const router = Router();\n\n   router.get('/semantic', async (req, res) => {\n     try {\n       const { query, limit = 10 } = req.query;\n       if (!query || typeof query !== 'string') {\n         return res.status(400).json({ error: 'Query parameter is required' });\n       }\n       \n       const results = await semanticSearch(query, Number(limit));\n       return res.json(results);\n     } catch (error) {\n       console.error('Semantic search error:', error);\n       return res.status(500).json({ error: 'Failed to perform semantic search' });\n     }\n   });\n\n   export default router;\n   ```\n\n7. Create a background job to generate embeddings for existing content:\n   ```typescript\n   async function generateEmbeddingsForAllContent() {\n     // Process listings\n     const listings = await prisma.listing.findMany({\n       where: { contentEmbedding: null },\n     });\n     \n     for (const listing of listings) {\n       try {\n         await updateListingEmbedding(listing.id);\n         console.log(`Generated embedding for listing ${listing.id}`);\n         // Add delay to avoid rate limiting\n         await new Promise(resolve => setTimeout(resolve, 200));\n       } catch (error) {\n         console.error(`Failed to generate embedding for listing ${listing.id}:`, error);\n       }\n     }\n     \n     // Similar process for documents and other content\n   }\n   ```\n\n8. Implement frontend components for semantic search:\n   ```tsx\n   // components/SemanticSearchBar.tsx\n   import { useState } from 'react';\n   import axios from 'axios';\n\n   export default function SemanticSearchBar() {\n     const [query, setQuery] = useState('');\n     const [results, setResults] = useState([]);\n     const [loading, setLoading] = useState(false);\n     \n     const handleSearch = async () => {\n       if (!query.trim()) return;\n       \n       setLoading(true);\n       try {\n         const response = await axios.get('/api/search/semantic', {\n           params: { query }\n         });\n         setResults(response.data);\n       } catch (error) {\n         console.error('Search failed:', error);\n       } finally {\n         setLoading(false);\n       }\n     };\n     \n     return (\n       <div>\n         <div className=\"search-container\">\n           <input\n             type=\"text\"\n             value={query}\n             onChange={(e) => setQuery(e.target.value)}\n             placeholder=\"Search for similar listings...\"\n           />\n           <button onClick={handleSearch} disabled={loading}>\n             {loading ? 'Searching...' : 'Search'}\n           </button>\n         </div>\n         \n         {results.length > 0 && (\n           <div className=\"results-container\">\n             {results.map((item) => (\n               <div key={item.id} className=\"result-item\">\n                 <h3>{item.title}</h3>\n                 <p>{item.description}</p>\n                 <span>Similarity: {(item.similarity * 100).toFixed(2)}%</span>\n               </div>\n             ))}\n           </div>\n         )}\n       </div>\n     );\n   }\n   ```\n\n9. Add vector search capabilities to the existing search functionality:\n   - Integrate semantic search with the existing keyword search\n   - Implement hybrid search combining vector similarity with traditional filters\n   - Add relevance scoring based on vector similarity",
+        "testStrategy": "1. Test pgvector extension installation:\n   - Verify the extension is properly installed in the database\n   - Test creating and querying vector columns\n\n2. Test embedding generation:\n   - Verify embeddings are generated correctly for different types of content\n   - Test handling of different text lengths and formats\n   - Validate error handling for API rate limits\n\n3. Test semantic search functionality:\n   - Create test data with known semantic relationships\n   - Verify search results return semantically related items\n   - Test with various queries and validate relevance of results\n   - Benchmark search performance with different dataset sizes\n\n4. Test API endpoints:\n   - Verify semantic search endpoint returns correct results\n   - Test error handling for invalid inputs\n   - Validate response format and structure\n\n5. Test integration with existing search:\n   - Verify that semantic search works alongside traditional filters\n   - Test hybrid search scenarios combining vector similarity with exact matches\n   - Validate that search results are properly ranked by relevance\n\n6. Performance testing:\n   - Measure query performance with large datasets (1000+ vectors)\n   - Test concurrent search requests\n   - Optimize indexes for vector columns if needed\n\n7. Frontend component testing:\n   - Verify the semantic search UI works as expected\n   - Test loading states and error handling\n   - Validate display of search results and similarity scores\n\n8. End-to-end testing:\n   - Test the complete flow from content creation to embedding generation to search\n   - Verify that newly added content becomes searchable",
+        "status": "done",
+        "dependencies": [
+          2
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 31,
+        "title": "Buyer Intent Score Calculation System",
+        "description": "Implement a real-time buyer intent scoring system that tracks and calculates buyer intent based on NDA signed status, profile completeness, message activity, and document access patterns.",
+        "details": "1. Create a BuyerIntentScore model and schema:\n```typescript\ninterface BuyerIntentScore {\n  id: string;\n  userId: string;\n  listingId: string;\n  ndaSignedScore: number;\n  profileCompletenessScore: number;\n  messageActivityScore: number;\n  documentAccessScore: number;\n  totalScore: number;\n  lastCalculated: Date;\n}\n```\n\n2. Implement the BuyerIntentScoreService:\n```typescript\nclass BuyerIntentScoreService {\n  // Calculate score based on NDA status\n  calculateNdaSignedScore(userId: string, listingId: string): Promise<number>;\n  \n  // Calculate score based on profile completeness\n  calculateProfileCompletenessScore(userId: string): Promise<number>;\n  \n  // Calculate score based on message activity\n  calculateMessageActivityScore(userId: string, listingId: string): Promise<number>;\n  \n  // Calculate score based on document access patterns\n  calculateDocumentAccessScore(userId: string, listingId: string): Promise<number>;\n  \n  // Calculate total buyer intent score\n  calculateTotalScore(userId: string, listingId: string): Promise<number>;\n}\n```\n\n3. Create API endpoints for buyer intent score:\n   - GET /api/listings/:id/buyer-intent\n   - GET /api/users/:id/buyer-intent\n\n4. Implement real-time score calculation triggers:\n   - When NDA is signed\n   - When profile is updated\n   - When messages are sent/read\n   - When documents are accessed\n\n5. Create database indexes for efficient score retrieval:\n```sql\nCREATE INDEX idx_buyer_intent_user_listing ON buyer_intent_scores(userId, listingId);\nCREATE INDEX idx_buyer_intent_listing ON buyer_intent_scores(listingId);\n```\n\n6. Implement scoring algorithm with configurable weights:\n```typescript\nconst SCORE_WEIGHTS = {\n  ndaSigned: 0.25,\n  profileCompleteness: 0.20,\n  messageActivity: 0.30,\n  documentAccess: 0.25\n};\n```\n\n7. Add buyer intent score display to seller dashboard:\n   - Create a component to show buyer intent scores\n   - Implement sorting by intent score\n   - Add visual indicators for high-intent buyers\n\n8. Implement caching mechanism for score calculations to improve performance:\n```typescript\n// Cache scores for 15 minutes\nconst CACHE_TTL = 15 * 60 * 1000;\n```\n\n9. Create background job to periodically recalculate scores for active listings:\n```typescript\n// Run every hour\ncron.schedule('0 * * * *', async () => {\n  await buyerIntentScoreService.recalculateAllActiveScores();\n});\n```\n\n10. Implement analytics for tracking score effectiveness:\n    - Track correlation between high scores and successful deals\n    - Store historical score data for trend analysis",
+        "testStrategy": "1. Unit test the BuyerIntentScoreService:\n   - Test each individual score component calculation\n   - Verify total score calculation with different input scenarios\n   - Test edge cases (no messages, incomplete profile, etc.)\n\n2. Integration test the score calculation triggers:\n   - Verify score updates when NDA is signed\n   - Test score changes when profile is updated\n   - Confirm score adjustments when messages are exchanged\n   - Validate score changes when documents are accessed\n\n3. Test the API endpoints:\n   - Verify correct scores are returned for specific user/listing pairs\n   - Test authorization rules (sellers can only see scores for their listings)\n   - Validate error handling for invalid requests\n\n4. Performance testing:\n   - Measure calculation time for scores with different data volumes\n   - Test caching effectiveness\n   - Verify system performance with concurrent score calculations\n\n5. End-to-end testing:\n   - Test score display in seller dashboard\n   - Verify sorting and filtering by intent score\n   - Validate visual indicators for high-intent buyers\n\n6. Regression testing:\n   - Ensure score calculations don't affect other system functionality\n   - Verify database performance isn't degraded by score calculations\n\n7. User acceptance testing:\n   - Validate that scores accurately reflect buyer intent\n   - Confirm sellers find the score useful for prioritization",
+        "status": "done",
+        "dependencies": [
+          4,
+          10,
+          11,
+          13
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 32,
+        "title": "Amortization Schedule Data Infrastructure",
+        "description": "Create data models and API endpoints to store, retrieve, and calculate amortization schedules for seller financing deals, including payment schedules, principal/interest breakdowns, and payment history tracking.",
+        "details": "1. Create AmortizationSchedule model in Prisma schema:\n   ```prisma\n   model AmortizationSchedule {\n     id          String   @id @default(uuid())\n     listingId   String\n     listing     Listing  @relation(fields: [listingId], references: [id])\n     createdAt   DateTime @default(now())\n     updatedAt   DateTime @updatedAt\n     \n     // Loan parameters\n     loanAmount        Decimal\n     interestRate      Decimal\n     termMonths        Int\n     paymentFrequency  String  // monthly, quarterly, etc.\n     startDate         DateTime\n     balloonPayment    Decimal?\n     balloonMonths     Int?\n     \n     // Generated schedule\n     payments          Payment[]\n   }\n   \n   model Payment {\n     id                  String   @id @default(uuid())\n     amortizationId      String\n     amortizationSchedule AmortizationSchedule @relation(fields: [amortizationId], references: [id])\n     paymentNumber       Int\n     paymentDate         DateTime\n     paymentAmount       Decimal\n     principalAmount     Decimal\n     interestAmount      Decimal\n     remainingBalance    Decimal\n     isPaid              Boolean  @default(false)\n     actualPaymentDate   DateTime?\n     actualPaymentAmount Decimal?\n   }\n   ```\n\n2. Create amortization schedule controller with the following endpoints:\n   - POST /api/listings/:id/amortization - Create new amortization schedule\n   - GET /api/listings/:id/amortization - Get all amortization schedules for a listing\n   - GET /api/listings/:id/amortization/:scheduleId - Get specific amortization schedule\n   - PUT /api/listings/:id/amortization/:scheduleId - Update amortization schedule\n   - DELETE /api/listings/:id/amortization/:scheduleId - Delete amortization schedule\n   - GET /api/listings/:id/amortization/:scheduleId/payments - Get all payments for a schedule\n   - PUT /api/listings/:id/amortization/:scheduleId/payments/:paymentId - Update payment status\n\n3. Implement amortization calculation service:\n   ```typescript\n   class AmortizationService {\n     // Calculate full amortization schedule\n     calculateSchedule(params: AmortizationParams): Payment[] {\n       // Implementation of amortization formula\n       // Handle regular payments and balloon payments\n       // Calculate principal/interest breakdown for each payment\n     }\n     \n     // Calculate single payment details\n     calculatePayment(params: AmortizationParams): PaymentDetails {\n       // Calculate monthly payment amount using formula:\n       // P = L[c(1 + c)^n]/[(1 + c)^n - 1]\n       // where P = payment, L = loan amount, c = interest rate, n = term\n     }\n     \n     // Recalculate schedule after payment or parameter changes\n     recalculateRemainingSchedule(scheduleId: string, afterPaymentNumber: number): Payment[] {\n       // Recalculate remaining payments after a certain point\n     }\n   }\n   ```\n\n4. Create data validation middleware:\n   - Validate loan parameters (amount, rate, term)\n   - Ensure valid date formats\n   - Validate payment frequency options\n\n5. Implement payment tracking functionality:\n   - Track actual vs. scheduled payments\n   - Calculate late fees and penalties\n   - Update remaining balance after payments\n\n6. Create integration with financing terms:\n   - Link amortization schedules to listing financing terms\n   - Auto-generate schedules from financing terms\n   - Update schedules when financing terms change\n\n7. Implement export functionality:\n   - Export amortization schedule to CSV\n   - Export amortization schedule to PDF\n   - Generate payment summary reports",
+        "testStrategy": "1. Unit test amortization calculation service:\n   - Test various loan parameters (different amounts, rates, terms)\n   - Verify correct principal/interest breakdown\n   - Test edge cases (zero interest, very short/long terms)\n   - Validate balloon payment calculations\n   - Test different payment frequencies\n\n2. Integration test API endpoints:\n   - Test schedule creation with valid parameters\n   - Verify error handling with invalid parameters\n   - Test retrieval of schedules and payments\n   - Verify update functionality for schedules\n   - Test payment status updates\n\n3. Database validation tests:\n   - Verify correct storage of decimal values\n   - Test relationship between listings, schedules, and payments\n   - Validate date handling and timezone consistency\n\n4. Performance testing:\n   - Test calculation speed for long-term loans (30+ years)\n   - Verify database query performance with multiple schedules\n   - Test concurrent access to payment records\n\n5. Integration testing with other components:\n   - Test integration with financing terms\n   - Verify term sheet builder uses correct amortization data\n   - Test export functionality for CSV and PDF formats\n\n6. Validation testing:\n   - Verify mathematical accuracy of calculations\n   - Compare results with industry-standard amortization calculators\n   - Validate rounding behavior for currency values",
+        "status": "done",
+        "dependencies": [
+          2,
+          5
+        ],
+        "priority": "high",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-12-07T18:06:28.444Z",
+      "updated": "2025-12-09T06:42:01.012Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
