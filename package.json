@@ -9,10 +9,14 @@
     "start": "next start",
     "lint": "next lint",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
-    "postinstall": "prisma generate"
+    "db:seed": "npx ts-node scripts/seed-sample-listings.ts",
+    "postinstall": "prisma generate",
+    "deploy:staging": "vercel --prod",
+    "deploy:preview": "vercel"
   },
   "keywords": [
     "seller-financing",
@@ -24,6 +28,11 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
     "@hookform/resolvers": "^5.2.2",
+    "@jpisnice/shadcn-ui-mcp-server": "^1.1.4",
+    "@modelcontextprotocol/server-aws-kb-retrieval": "^0.6.2",
+    "@modelcontextprotocol/server-brave-search": "^0.6.2",
+    "@modelcontextprotocol/server-github": "^2025.4.8",
+    "@modelcontextprotocol/server-sequential-thinking": "^2025.11.25",
     "@prisma/client": "^6.19.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-avatar": "^1.1.11",
@@ -70,6 +79,7 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "prisma": "^6.19.0"
+    "prisma": "^6.19.0",
+    "shadcn": "^3.6.0"
   }
 }
