@@ -24,6 +24,46 @@ A modern marketplace platform that connects business sellers with qualified buye
 - **Forms**: React Hook Form with Zod validation
 - **Real-time**: Socket.io for live features
 
+## 🤖 Claude Skills Integration
+
+This project includes a comprehensive collection of **200+ Claude skills and agents** for enhanced development capabilities:
+
+### 🎯 **Core Skills Available**
+
+#### **Fintech Development**
+- **`fintech-developer`** - Payment processing, financial calculations, compliance (PCI DSS, KYC/AML)
+- **`automation-engineer`** - CI/CD pipelines, GitHub Actions, testing automation
+- **`cloud-infrastructure-architect`** - AWS services, Terraform, containerization, security
+
+#### **Full-Stack Development**
+- **`nextjs-fullstack-architect`** - Advanced Next.js App Router, Server Components, API design
+- **`ui-ux-designer`** - User research, wireframing, accessibility, design systems
+- **`design-system-architect`** - Component libraries, design tokens, Storybook integration
+
+#### **Plus 100+ Additional Skills**
+- Development, testing, deployment, documentation, business analysis, and more!
+
+### 📚 **Skills Documentation**
+- **Main Index**: [`.claude/skills/README.md`](.claude/skills/README.md)
+- **Agent Collection**: [`.claude/agents/`](.claude/agents/) (108 specialized agents)
+- **Usage Examples**: See skills documentation for specific workflows
+
+### 🧮 **Example: Amortization Calculator**
+
+Test the fintech-developer skill:
+```bash
+npx tsx lib/financial/test-amortization.ts
+```
+
+**Sample Output:**
+```
+Business Purchase: $1,000,000
+Down Payment: $200,000
+Financed Amount: $800,000
+Monthly Payment: $9,083.84
+Total Interest: $290,060.58
+```
+
 ## Quick Start
 
 ### Prerequisites
