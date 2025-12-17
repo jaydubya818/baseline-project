@@ -1,90 +1,200 @@
-# Seller Financing Platform - MVP
+# SellerFi - Seller Financing Marketplace Platform
 
-A comprehensive seller financing application/platform built with AI agent orchestration.
+A modern marketplace platform that connects business sellers with qualified buyers and facilitates seller financing deals. Built with Next.js, TypeScript, Prisma, and Tailwind CSS.
 
-## Project Overview
+## Features
 
-This platform enables sellers to offer financing options to their customers, providing a seamless payment experience and increasing sales conversion.
+- **Authentication System**: Secure user registration, login, and verification
+- **Business Listings**: Create and manage business sale listings with detailed information
+- **Buyer Dashboard**: Browse available listings with advanced filtering and search
+- **Deal Rooms**: Private communication spaces for buyer-seller negotiations
+- **Document Management**: Secure handling of business documents and due diligence
+- **Seller Financing**: Integrated tools for managing seller-financed deals
+- **Real-time Communication**: Live chat and messaging system
+- **PDF Generation**: Automated document generation for deals
+
+## Technology Stack
+
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **Styling**: Tailwind CSS, shadcn/ui components, Framer Motion
+- **Backend**: Next.js API Routes, NextAuth.js authentication
+- **Database**: Prisma ORM (PostgreSQL)
+- **Payments**: Stripe integration
+- **UI Components**: Radix UI primitives, Lucide icons
+- **Forms**: React Hook Form with Zod validation
+- **Real-time**: Socket.io for live features
+
+## 🤖 Claude Skills Integration
+
+This project includes a comprehensive collection of **200+ Claude skills and agents** for enhanced development capabilities:
+
+### 🎯 **Core Skills Available**
+
+#### **Fintech Development**
+- **`fintech-developer`** - Payment processing, financial calculations, compliance (PCI DSS, KYC/AML)
+- **`automation-engineer`** - CI/CD pipelines, GitHub Actions, testing automation
+- **`cloud-infrastructure-architect`** - AWS services, Terraform, containerization, security
+
+#### **Full-Stack Development**
+- **`nextjs-fullstack-architect`** - Advanced Next.js App Router, Server Components, API design
+- **`ui-ux-designer`** - User research, wireframing, accessibility, design systems
+- **`design-system-architect`** - Component libraries, design tokens, Storybook integration
+
+#### **Plus 100+ Additional Skills**
+- Development, testing, deployment, documentation, business analysis, and more!
+
+### 📚 **Skills Documentation**
+- **Main Index**: [`.claude/skills/README.md`](.claude/skills/README.md)
+- **Agent Collection**: [`.claude/agents/`](.claude/agents/) (108 specialized agents)
+- **Usage Examples**: See skills documentation for specific workflows
+
+### 🧮 **Example: Amortization Calculator**
+
+Test the fintech-developer skill:
+```bash
+npx tsx lib/financial/test-amortization.ts
+```
+
+**Sample Output:**
+```
+Business Purchase: $1,000,000
+Down Payment: $200,000
+Financed Amount: $800,000
+Monthly Payment: $9,083.84
+Total Interest: $290,060.58
+```
 
 ## Quick Start
 
-### 1. Add Your PRD
-Place your MVP PRD markdown file in the `docs/` directory as `PRD.md`
+### Prerequisites
+- Node.js 18+
+- PostgreSQL database
+- Stripe account (for payments)
 
-### 2. Initialize Development with Agent Orchestrator
+### Installation
+
+1. Clone the repository:
 ```bash
-@agent-organizer "Analyze the PRD in docs/PRD.md and create a comprehensive development plan for the seller financing platform MVP"
+git clone <repository-url>
+cd seller-financing-platform
 ```
 
-### 3. Recommended Agent Workflow
+2. Install dependencies:
+```bash
+npm install
+```
 
-#### Phase 1: Planning & Architecture
-- `@product-manager` - Analyze PRD and create user stories
-- `@backend-architect` - Design API architecture
-- `@security-auditor` - Security requirements for financial platform
-- `@finance-tracker` - Financial calculations and compliance
+3. Set up environment variables:
+```bash
+cp .env.example .env.local
+# Edit .env.local with your configuration
+```
 
-#### Phase 2: Development
-- `@backend-developer` - API implementation
-- `@react-pro` - Frontend dashboard
-- `@api-developer` - Payment integrations
-- `@database-specialist` - Data modeling
+4. Set up the database:
+```bash
+npm run db:migrate
+npm run db:generate
+```
 
-#### Phase 3: Quality & Security
-- `@security-auditor` - Financial data security audit
-- `@code-reviewer` - Code quality review
-- `@test-automator` - Comprehensive test suite
-- `@legal-compliance-checker` - Financial regulations compliance
+5. Seed sample data (optional):
+```bash
+npm run db:seed
+```
 
-#### Phase 4: Deployment
-- `@cloud-architect` - Infrastructure design
-- `@devops-engineer` - CI/CD pipeline
-- `@deployment-engineer` - Production deployment
+6. Start the development server:
+```bash
+npm run dev
+```
+
+The application will be available at [http://localhost:3000](http://localhost:3000).
 
 ## Project Structure
 
 ```
 seller-financing-platform/
-├── docs/
-│   ├── PRD.md              # Product Requirements Document
-│   ├── architecture.md     # System architecture
-│   └── api-spec.md         # API specifications
-├── src/
-│   ├── backend/            # Backend services
-│   ├── frontend/           # Frontend application
-│   └── shared/             # Shared types/utilities
-└── README.md               # This file
+├── app/                    # Next.js app directory
+│   ├── (auth)/            # Authentication pages
+│   ├── (main)/            # Main application pages
+│   │   ├── buyer/         # Buyer dashboard and features
+│   │   └── listings/      # Business listings
+│   ├── api/               # API routes
+│   │   ├── auth/          # Authentication endpoints
+│   │   ├── listings/      # Listings management
+│   │   ├── dealrooms/     # Deal room functionality
+│   │   └── broker/        # Broker services
+│   └── globals.css        # Global styles
+├── components/            # Reusable UI components
+├── lib/                   # Utility functions and configurations
+├── prisma/               # Database schema and migrations
+├── public/               # Static assets
+└── types/                # TypeScript type definitions
 ```
 
-## Key Features (MVP)
-
-- Seller onboarding and verification
-- Customer financing application flow
-- Credit decision engine integration
-- Payment processing
-- Dashboard and reporting
-- Compliance and security
-
-## Technology Stack
-
-To be determined by agent-organizer based on PRD analysis.
-
-## Development Commands
+## Available Scripts
 
 ```bash
-# Start development with orchestrator
-@agent-organizer "Review PRD and create development plan"
-
-# Set up automated sprint management
-@ai-scrum-master "Initialize sprint management for seller financing platform"
-
-# Begin backend development
-@backend-architect "Design API architecture for seller financing platform"
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run db:migrate   # Run database migrations
+npm run db:push      # Push schema changes
+npm run db:studio    # Open Prisma Studio
+npm run db:seed      # Seed sample data
 ```
 
-## Next Steps
+## Key Features
 
-1. Add your PRD.md file to the `docs/` directory
-2. Run `@agent-organizer` to analyze and create development plan
-3. Follow the agent recommendations for implementation
+### For Sellers
+- List businesses for sale with detailed financials
+- Manage inquiries and communications with potential buyers
+- Configure seller financing terms and options
+- Track deal progress and documentation
+
+### For Buyers
+- Browse and search business listings
+- Apply advanced filters (industry, price range, location)
+- Access deal rooms for secure communications
+- Submit and track financing applications
+
+### Deal Management
+- Private deal rooms for buyer-seller communication
+- Document upload and sharing
+- Real-time messaging and notifications
+- Automated due diligence workflows
+
+## Environment Variables
+
+Key environment variables needed:
+
+```bash
+DATABASE_URL=         # PostgreSQL connection string
+NEXTAUTH_URL=         # Your app URL
+NEXTAUTH_SECRET=      # NextAuth.js secret
+STRIPE_SECRET_KEY=    # Stripe secret key
+STRIPE_PUBLISHABLE_KEY= # Stripe publishable key
+```
+
+## Deployment
+
+### Staging
+```bash
+npm run deploy:preview
+```
+
+### Production
+```bash
+npm run deploy:staging
+```
+
+## Contributing
+
+1. Create a feature branch from `master`
+2. Make your changes following the existing code style
+3. Run tests and linting
+4. Submit a pull request
+
+## License
+
+MIT License
 
