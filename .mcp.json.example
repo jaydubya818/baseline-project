@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "npx",
+      "args": [
+        "shadcn@latest",
+        "mcp"
+      ]
+    },
+    "shadcn-ui": {
+      "command": "npx",
+      "args": [
+        "@jpisnice/shadcn-ui-mcp-server"
+      ]
+    },
+    "vercel": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@robinson_ai_systems/vercel-mcp"
+      ],
+      "env": {
+        "VERCEL_TOKEN": "your-vercel-api-token-here"
+      }
+    }
+  }
+}
