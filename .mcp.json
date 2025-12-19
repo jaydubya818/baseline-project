@@ -12,6 +12,16 @@
       "args": [
         "@jpisnice/shadcn-ui-mcp-server"
       ]
+    },
+    "vercel": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@robinson_ai_systems/vercel-mcp"
+      ],
+      "env": {
+        "VERCEL_TOKEN": "YOUR_VERCEL_TOKEN_HERE"
+      }
     }
   }
 }
