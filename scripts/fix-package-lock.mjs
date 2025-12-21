@@ -23,25 +23,7 @@ const lockfile = JSON.parse(lockfileContent);
 
 let fixCount = 0;
 
-function fixNode(node) {
-  if (!node || typeof node !== 'object') return;
-  
-  // Check if this node has both dev and optional flags
-  if (node.dev === true && node.optional === true) {
-    // Replace with devOptional
-    delete node.dev;
-    delete node.optional;
-    node.devOptional = true;
-    fixCount++;
-  }
-  
-  // Recursively check all nested objects
-  for (const key in node) {
-    if (typeof node[key] === 'object' && node[key] !== null) {
-      fixNode(node[key]);
-    }
-  }
-}
+
 
 // Fix both node_modules and packages sections
 if (lockfile.packages) {

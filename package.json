@@ -37,7 +37,8 @@
     "check:lockfile": "node scripts/check-package-lock.mjs",
     "fix:lockfile": "node scripts/fix-package-lock.mjs",
     "rag:ingest": "tsx scripts/rag-ingest.ts",
-    "rag:gate": "tsx scripts/rag-redaction-gate.ts"
+    "rag:gate": "tsx scripts/rag-redaction-gate.ts",
+    "audit:csp": "tsx scripts/audit-csp-compliance.ts"
   },
   "keywords": [
     "seller-financing",
@@ -139,11 +140,13 @@
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/coverage-v8": "^4.0.15",
+    "critters": "^0.0.23",
     "eslint-config-next": "^16.0.10",
     "jsdom": "^25.0.1",
     "prisma": "^6.19.0",
     "shadcn": "^3.6.0",
     "sharp": "^0.34.5",
+    "tsx": "^4.19.2",
     "vitest": "^4.0.15"
   }
 }
