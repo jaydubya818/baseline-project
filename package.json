@@ -32,7 +32,12 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
     "playwright:install": "playwright install",
-    "pretest:e2e": "npm run playwright:install"
+    "pretest:e2e": "npm run playwright:install",
+    "generate:icons": "node scripts/generate-icons.mjs",
+    "check:lockfile": "node scripts/check-package-lock.mjs",
+    "fix:lockfile": "node scripts/fix-package-lock.mjs",
+    "rag:ingest": "tsx scripts/rag-ingest.ts",
+    "rag:gate": "tsx scripts/rag-redaction-gate.ts"
   },
   "keywords": [
     "seller-financing",
@@ -138,6 +143,7 @@
     "jsdom": "^25.0.1",
     "prisma": "^6.19.0",
     "shadcn": "^3.6.0",
+    "sharp": "^0.34.5",
     "vitest": "^4.0.15"
   }
 }
