@@ -27,7 +27,17 @@ async function verifyDealroomStatuses() {
 
     let totalActive = 0
     let totalClosed = 0
-    const activeStatuses = ["DISCOVERY", "NDA_PENDING", "NDA_SIGNED", "LOI_PENDING", "LOI_SIGNED", "UNDER_CONTRACT"]
+    const activeStatuses = [
+      "DISCOVERY",
+      "NDA_PENDING",
+      "NDA_SIGNED",
+      "INITIAL_REVIEW",
+      "DUE_DILIGENCE",
+      "NEGOTIATION",
+      "LOI_PENDING",
+      "LOI_SIGNED",
+      "UNDER_CONTRACT",
+    ]
     const closedStatuses = ["CLOSED_WON", "CLOSED_LOST"]
     const validStatuses = [...activeStatuses, ...closedStatuses]
 
