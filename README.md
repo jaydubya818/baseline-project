@@ -169,8 +169,8 @@ Key environment variables needed:
 
 ```bash
 DATABASE_URL=         # PostgreSQL connection string
-NEXTAUTH_URL=         # Your app URL
-NEXTAUTH_SECRET=      # NextAuth.js secret
+NEXTAUTH_URL=         # Your app URL (used for OAuth redirects)
+AUTH_SECRET=          # NextAuth v5 secret (generate with: openssl rand -base64 32)
 STRIPE_SECRET_KEY=    # Stripe secret key
 STRIPE_PUBLISHABLE_KEY= # Stripe publishable key
 ```
