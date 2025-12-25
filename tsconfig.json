@@ -43,6 +43,7 @@
     "tests/**",
     "e2e/**",
     "playwright/**",
-    "scripts/**"
+    "scripts/**",
+    "vendor/**"
   ]
 }

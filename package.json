@@ -38,7 +38,9 @@
     "fix:lockfile": "node scripts/fix-package-lock.mjs",
     "rag:ingest": "tsx scripts/rag-ingest.ts",
     "rag:gate": "tsx scripts/rag-redaction-gate.ts",
-    "audit:csp": "tsx scripts/audit-csp-compliance.ts"
+    "audit:csp": "tsx scripts/audit-csp-compliance.ts",
+    "ai:bootstrap": "bash scripts/bootstrap-ai-tooling.sh",
+    "ai:help": "echo '\n🤖 SellerFi AI Tooling\n=====================\n\nDocs:     docs/AI_TOOLING.md\nRules:    .cursor/rules/ai-tooling.mdc\n\nVendor:\n  → vendor/claude-mem/\n  → vendor/agent-skills-for-context-engineering/\n\nCommands:\n  npm run ai:bootstrap  - Initialize/update AI tooling\n  npm run ai:help       - Show this help\n\nSee docs/AI_TOOLING.md for full setup instructions.\n'"
   },
   "keywords": [
     "seller-financing",

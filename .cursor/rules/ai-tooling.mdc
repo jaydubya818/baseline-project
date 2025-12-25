@@ -1,0 +1,217 @@
+---
+description: AI tooling workflows for context engineering and memory management
+globs: "**/*"
+alwaysApply: true
+---
+
+# AI Tooling Guidelines for SellerFi
+
+This rule provides workflows and prompt templates for using claude-mem and context engineering skills effectively.
+
+---
+
+## Context Engineering Checklist
+
+### Before Coding
+
+- [ ] **Understand the task scope** - What problem are we solving?
+- [ ] **Check for prior work** - "Did we implement something similar before?"
+- [ ] **Load relevant skills** - Browse `vendor/agent-skills-for-context-engineering/skills/`
+- [ ] **Review existing patterns** - Check similar files in the codebase first
+- [ ] **Identify dependencies** - What systems/APIs does this touch?
+
+### Before Opening PR
+
+- [ ] **Run quality gates**: `npm run lint && npm run type-check && npm run build`
+- [ ] **Write/update tests** - Unit tests, integration tests, E2E if applicable
+- [ ] **Check console guards** - No `console.log` in production paths
+- [ ] **Verify RBAC** - Role-based access controls are correct
+- [ ] **Check error handling** - Errors are caught and logged properly
+- [ ] **Summarize work** - Document what was accomplished for future sessions
+- [ ] **Verify no secrets stored** - Check for accidental credential storage
+
+---
+
+## Memory Workflow (claude-mem)
+
+### What to Remember
+
+- ✅ Architectural decisions and their rationale
+- ✅ Bug fixes and their root causes
+- ✅ Patterns established in the codebase
+- ✅ API contracts and interfaces
+- ✅ Test strategies that worked
+
+### What NOT to Store
+
+- ❌ API keys, secrets, tokens (use `<private>` tags)
+- ❌ Database credentials
+- ❌ User PII
+- ❌ Stripe/NextAuth secrets
+
+### How to Summarize Sessions
+
+At the end of a coding session, summarize:
+```
+## Session Summary
+- **Goal**: What we set out to do
+- **Accomplished**: What was completed
+- **Decisions**: Key decisions made and why
+- **Next Steps**: What remains to be done
+- **Blockers**: Any issues encountered
+```
+
+---
+
+## Reusable Prompt Templates
+
+### 1. Plan → Implement → Test (SellerFi-safe)
+
+Use this template for feature development:
+
+```markdown
+## Task: [Feature Name]
+
+### 1. PLAN
+- **Objective**: [Clear goal statement]
+- **Affected Files**: [List files to modify]
+- **Dependencies**: [APIs, services, components needed]
+- **Risk Assessment**: [What could go wrong?]
+
+### 2. IMPLEMENT
+Follow these SellerFi conventions:
+- Use Tailwind for styling
+- Use Framer Motion for animations
+- Use Zod for API validation
+- Follow existing patterns in similar components
+
+### 3. TEST
+- [ ] Unit tests pass: `npm run test:run`
+- [ ] Type check passes: `npm run type-check`
+- [ ] Lint passes: `npm run lint`
+- [ ] Build succeeds: `npm run build`
+- [ ] E2E tests (if applicable): `npm run test:e2e`
+
+### 4. VERIFY
+- [ ] No console.log statements in production code
+- [ ] Error handling is complete
+- [ ] Loading states are handled
+- [ ] Edge cases are covered
+```
+
+---
+
+### 2. Production Hardening + Playwright + Console Guard
+
+Use this template when preparing code for production:
+
+```markdown
+## Production Hardening Checklist
+
+### Performance
+- [ ] No N+1 queries
+- [ ] Appropriate caching applied
+- [ ] Large lists are paginated or virtualized
+- [ ] Images are optimized
+
+### Error Handling
+- [ ] All API routes have try/catch
+- [ ] User-friendly error messages
+- [ ] Errors logged to Sentry
+- [ ] Graceful degradation for failures
+
+### Console Guard
+- [ ] Remove all console.log statements
+- [ ] Replace debug logs with proper logging
+- [ ] No sensitive data in error messages
+
+### Playwright E2E Tests
+```typescript
+// Example test structure
+test.describe('Feature Name', () => {
+  test('should handle happy path', async ({ page }) => {
+    await page.goto('/feature');
+    await expect(page.getByRole('heading')).toContainText('Expected');
+  });
+
+  test('should handle error state', async ({ page }) => {
+    // Test error handling
+  });
+
+  test('should be accessible', async ({ page }) => {
+    // Accessibility checks
+  });
+});
+```
+
+### Security
+- [ ] Input validation on all endpoints
+- [ ] Output encoding for XSS prevention
+- [ ] CSRF protection verified
+- [ ] Rate limiting in place
+```
+
+---
+
+### 3. PR Review with Security + RBAC + Stripe + NextAuth
+
+Use this template for thorough PR reviews:
+
+```markdown
+## PR Review Checklist
+
+### Security Review
+- [ ] **Input Validation**: All user inputs validated with Zod
+- [ ] **SQL Injection**: Using Prisma parameterized queries
+- [ ] **XSS Prevention**: Output properly encoded
+- [ ] **CSRF**: Tokens verified for mutations
+- [ ] **Secrets**: No hardcoded credentials
+
+### RBAC (Role-Based Access Control)
+- [ ] **Middleware**: Protected routes use auth middleware
+- [ ] **Role Checks**: `session.user.role` verified before actions
+- [ ] **Listing Ownership**: Users can only modify their own listings
+- [ ] **Admin Routes**: Admin-only routes properly protected
+
+### Stripe Integration
+- [ ] **Webhook Verification**: Signatures validated
+- [ ] **Idempotency**: Duplicate events handled gracefully
+- [ ] **Error Handling**: Payment failures show user-friendly messages
+- [ ] **Subscription State**: Plan limits enforced correctly
+- [ ] **Test Mode**: Test keys used in development
+
+### NextAuth
+- [ ] **Session Handling**: Sessions checked before protected actions
+- [ ] **Callback URLs**: Validated and whitelisted
+- [ ] **Token Refresh**: Long sessions handled properly
+- [ ] **Logout**: Sessions properly invalidated
+
+### General Quality
+- [ ] **Types**: No `any` types without justification
+- [ ] **Tests**: New code has test coverage
+- [ ] **Documentation**: Complex logic is documented
+- [ ] **Performance**: No obvious N+1 queries or memory leaks
+```
+
+---
+
+## Quick Reference: Skills to Load
+
+| Task Type | Recommended Skills |
+|-----------|-------------------|
+| New API endpoint | `tool-design`, `context-fundamentals` |
+| Complex feature | `multi-agent-patterns`, `memory-systems` |
+| Debugging | `context-degradation`, `evaluation` |
+| Performance work | `context-optimization`, `context-compression` |
+| Setting up tests | `evaluation`, `advanced-evaluation` |
+| Project planning | `project-development` |
+
+Skills are located at: `vendor/agent-skills-for-context-engineering/skills/`
+
+---
+
+## Related Documentation
+
+- [AI_TOOLING.md](mdc:docs/AI_TOOLING.md) - Full setup and usage guide
+- [claude-mem README](mdc:vendor/claude-mem/README.md) - Memory system documentation
+- [Agent Skills README](mdc:vendor/agent-skills-for-context-engineering/README.md) - Skills overview
