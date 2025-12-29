@@ -52,3 +52,6 @@ next-env.d.ts
 # uploads (user-generated content)
 /uploads
 !/uploads/.gitkeep
+
+# vendor dependencies
+/vendor/
