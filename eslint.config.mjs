@@ -18,6 +18,7 @@ export default [
       "kb/**",
       "public/**",
       "scripts/**",
+      "vendor/**",
       "quick-link-test.js",
       "tailwind.config.js",
     ],
@@ -35,6 +36,12 @@ export default [
       "react/no-unescaped-entities": "off",
       "prefer-const": "warn",
       "no-var": "warn",
+    },
+  },
+  {
+    files: ["tests/**", "e2e/**", "**/*.spec.ts", "**/*.test.ts"],
+    rules: {
+      "react-hooks/rules-of-hooks": "off",
     },
   },
 ];
