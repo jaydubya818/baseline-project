@@ -270,7 +270,7 @@ From `e2e/entitlements.spec.ts`:
 | seller-premium@test.com | password123 | SELLER | PREMIUM |
 | seller-managed@test.com | password123 | SELLER | MANAGED |
 | admin@test.com | password123 | ADMIN | - |
-| jaydubya818@yahoo.com | Alan818west | ADMIN (Super) | - |
+| [SUPER_ADMIN_EMAIL] | [SUPER_ADMIN_PASSWORD] | ADMIN (Super) | - |
 
 ---
 

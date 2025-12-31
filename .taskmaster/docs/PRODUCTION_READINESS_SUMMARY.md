@@ -31,7 +31,7 @@ All 9 test accounts created and seeded:
 | Seller | Premium | seller-premium@test.com | ✅ |
 | Seller | Managed | seller-managed@test.com | ✅ |
 | Admin | - | admin@test.com | ✅ |
-| Super Admin | - | jaydubya818@yahoo.com | ✅ |
+| Super Admin | - | [SUPER_ADMIN_EMAIL] | ✅ |
 
 ### Phase 2: Buyer Tier Validation ✅
 - **Free**: Access to public listings, upgrade prompts shown
@@ -126,7 +126,7 @@ All 9 test accounts created and seeded:
 - Restored buyer/seller pricing dropdown options
 
 ### Super Admin Email ✅
-- Fixed typo: `jaydubya818a@yahoo.com` → `jaydubya818@yahoo.com`
+- Fixed typo in Super Admin email address (corrected in seed data)
 
 ### Error Page Stack Traces ✅
 - Hidden in production mode

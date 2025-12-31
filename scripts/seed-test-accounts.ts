@@ -221,15 +221,20 @@ async function main() {
         }
       }
       
+      // Determine buyerPlan and sellerPlan
+      const buyerPlan = account.buyerPlan || 'FREE'
+      const sellerPlan = account.sellerPlan || 'NONE'
+      
       await prisma.$executeRaw`
         INSERT INTO "Subscription" (
           "id", "userId", "stripeSubscriptionId", "stripeCustomerId",
           "status", "currentPeriodStart", "currentPeriodEnd",
-          "tier", "type", "createdAt", "updatedAt"
+          "tier", "type", "buyerPlan", "sellerPlan", "createdAt", "updatedAt"
         ) VALUES (
           ${subId}, ${userId}, ${'sub_test_' + userId}, ${'cus_test_' + userId},
           'ACTIVE'::"SubscriptionStatus", NOW(), NOW() + INTERVAL '30 days',
-          ${tier}::"SubscriptionTier", ${subType}::"SubscriptionType", NOW(), NOW()
+          ${tier}::"SubscriptionTier", ${subType}::"SubscriptionType",
+          ${buyerPlan}::"BuyerPlan", ${sellerPlan}::"SellerPlan", NOW(), NOW()
         )
       `
     }

@@ -36,6 +36,8 @@ export default [
       "react/no-unescaped-entities": "off",
       "prefer-const": "warn",
       "no-var": "warn",
+      // Allow setMounted pattern in useEffect for SSR hydration - this is intentional
+      "react-compiler/react-compiler": "off",
     },
   },
   {

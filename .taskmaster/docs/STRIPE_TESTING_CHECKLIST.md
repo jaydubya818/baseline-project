@@ -219,7 +219,7 @@ stripe trigger customer.subscription.deleted
 ### Phase 5: Billing Admin Dashboard Verification
 
 #### Test Case 5.1: Subscription Visibility
-1. Login as admin (`jaydubya818@yahoo.com`)
+1. Login as admin (`[SUPER_ADMIN_EMAIL]`)
 2. Navigate to `/super-admin/subscriptions`
 3. **Verify:**
    - [ ] All subscriptions listed

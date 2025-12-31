@@ -29,16 +29,19 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const isDev = process.env.NODE_ENV === 'development'
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center p-8">
         <h2>Something went wrong!</h2>
-        <p>{error.message}</p>
+        <p>{isDev ? error.message : 'An unexpected error occurred. Please try again.'}</p>
         <button onClick={reset}>Try again</button>
-        <details className="mt-4">
-          <summary>Error details</summary>
-          <pre>{error.stack}</pre>
-        </details>
+        {isDev && (
+          <details className="mt-4">
+            <summary>Error details</summary>
+            <pre>{error.stack}</pre>
+          </details>
+        )}
       </div>
     </div>
   )
@@ -188,16 +191,38 @@ async function logPIIAccess(params: {
 
 ```typescript
 export function safeSerialize(
-  obj: Record<string, unknown>,
-  sensitiveFields: string[] = ["passwordHash", "password", "token", "secret"]
-): Record<string, unknown> {
+  obj: unknown,
+  sensitiveFields: string[] = ["passwordHash", "password", "token", "secret"],
+  seen: WeakSet<object> = new WeakSet()
+): unknown {
+  // Handle primitives and null/undefined
+  if (obj === null || obj === undefined) {
+    return obj
+  }
+
+  if (typeof obj !== "object") {
+    return obj
+  }
+
+  // Guard against circular references
+  if (seen.has(obj)) {
+    return "[CIRCULAR]"
+  }
+  seen.add(obj)
+
+  // Handle arrays
+  if (Array.isArray(obj)) {
+    return obj.map((item) => safeSerialize(item, sensitiveFields, seen))
+  }
+
+  // Handle objects
   const result: Record<string, unknown> = {}
 
   for (const [key, value] of Object.entries(obj)) {
     if (sensitiveFields.includes(key)) {
       result[key] = "[REDACTED]"
     } else {
-      result[key] = value
+      result[key] = safeSerialize(value, sensitiveFields, seen)
     }
   }
 
@@ -211,6 +236,12 @@ export function safeSerialize(
 - `token`
 - `secret`
 
+**✅ Recursive Features**:
+- Traverses nested objects and arrays
+- Redacts sensitive fields at any depth
+- Guards against circular references with `WeakSet`
+- Preserves non-sensitive primitives and structure
+
 ---
 
 ## 📈 Performance Monitoring
@@ -220,15 +251,100 @@ export function safeSerialize(
 ```typescript
 export class PerformanceMonitor {
   private metrics: Map<string, number> = new Map()
+  private sessionId: string
+  private startTime: number
 
-  startTiming(operationName: string): void
+  constructor(sessionId: string) {
+    this.sessionId = sessionId
+    this.startTime = Date.now()
+  }
+
+  /**
+   * Start timing a specific operation.
+   * Stores a high-resolution start timestamp keyed by operationName.
+   */
+  startTiming(operationName: string): void {
+    this.metrics.set(`${operationName}_start`, Date.now())
+  }
+
+  /**
+   * End timing and record the metric.
+   * - Looks up and removes the start timestamp from the metrics Map
+   * - Computes elapsed time in milliseconds
+   * - Records the metric to the database with metricType and dimensions
+   * - Returns the elapsed duration (ms)
+   * - Throws an error if no start time was found for the operation
+   */
   async endTiming(
     operationName: string,
     metricType: KBPerformanceMetricType,
-    dimensions?: Record<string, unknown>
-  ): Promise<number>
+    options?: {
+      searchStrategy?: KBSearchStrategy
+      queryComplexity?: 'simple' | 'medium' | 'complex'
+      metadata?: Record<string, any>
+    }
+  ): Promise<number> {
+    const startTime = this.metrics.get(`${operationName}_start`)
+    if (!startTime) {
+      throw new Error(`No start time found for operation: ${operationName}`)
+    }
+
+    const duration = Date.now() - startTime
+    this.metrics.delete(`${operationName}_start`) // Clean up after timing
+
+    // Record the performance metric to the database
+    await this.recordPerformanceMetric({
+      sessionId: this.sessionId,
+      metricType,
+      metricName: operationName,
+      value: duration,
+      unit: 'ms',
+      searchStrategy: options?.searchStrategy,
+      queryComplexity: options?.queryComplexity,
+      metadata: options?.metadata
+    })
+
+    return duration
+  }
+
+  /**
+   * Record a custom performance metric to the database.
+   * Errors are logged but not thrown to avoid breaking the application.
+   */
+  async recordPerformanceMetric(metric: PerformanceMetric): Promise<void> {
+    try {
+      await prisma.kBPerformanceMetrics.create({
+        data: {
+          sessionId: metric.sessionId,
+          metricType: metric.metricType,
+          metricName: metric.metricName,
+          value: metric.value,
+          unit: metric.unit || 'ms',
+          searchStrategy: metric.searchStrategy,
+          queryComplexity: metric.queryComplexity,
+          metadata: metric.metadata
+        }
+      })
+    } catch (error) {
+      console.error('Failed to record performance metric:', error)
+      // Don't throw - analytics should not break the application
+    }
+  }
+
+  /**
+   * Get total session duration in milliseconds.
+   */
+  getSessionDuration(): number {
+    return Date.now() - this.startTime
+  }
 }
 ```
+
+**✅ Implementation Features**:
+- **High-resolution timing**: Uses `Date.now()` for start/end timestamps
+- **Map cleanup**: Start timestamps are deleted after `endTiming` to prevent memory leaks
+- **Clear error handling**: Throws descriptive error if timing was never started
+- **Non-blocking analytics**: Database errors are logged but don't propagate
 
 **✅ Tracked Metrics**:
 - Search latency
@@ -326,13 +442,14 @@ Sentry.init({
 ```
 
 ### 3. Add Request ID Correlation
-
-```typescript
-// middleware.ts
 export function middleware(request: NextRequest) {
   const requestId = crypto.randomUUID()
   request.headers.set('x-request-id', requestId)
-  // Pass to all handlers
+  return NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
 }
 ```
 

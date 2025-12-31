@@ -32,8 +32,10 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.test
 !.env.staging
 !.env.example
+!.env.test.example
 
 # MCP configuration (contains API tokens)
 .mcp.json
