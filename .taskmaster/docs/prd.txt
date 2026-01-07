@@ -456,3 +456,593 @@ model Message {
 - NDA document integrity
 - Payment data security (PCI compliance via Stripe)
 
+---
+
+# Authentication & Security Specification
+
+This section defines the complete authentication, session management, and security requirements for the SellerFi platform.
+
+## 1. Authentication Mechanism
+
+### 1.1 Session Strategy
+- **Primary Method**: NextAuth.js v5 with JWT session strategy
+- **Token Storage**: HTTP-only cookies (`next-auth.session-token` / `__Secure-next-auth.session-token` in production)
+- **Session Duration**: 30 days default, configurable via `AUTH_SECRET` environment variable
+
+### 1.2 Supported Authentication Providers
+1. **Credentials (Email/Password)**
+   - Email + password validation
+   - bcrypt password verification (12 rounds)
+   - Default role: `BUYER` for new registrations
+
+2. **OAuth Providers**
+   - Google OAuth 2.0
+   - Default role: `BUYER` for social sign-ups
+
+### 1.3 Authentication Endpoints
+
+#### `POST /api/auth/signup` - User Registration
+**Request Body:**
+```json
+{
+  "email": "string (required, valid email)",
+  "password": "string (required, min 8 characters)",
+  "firstName": "string (optional)",
+  "lastName": "string (optional)",
+  "role": "BUYER | SELLER (optional, default: BUYER)"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "success": true,
+  "userId": "cuid",
+  "email": "user@example.com",
+  "role": "BUYER"
+}
+```
+
+#### `POST /api/auth/[...nextauth]` - Login (NextAuth Handler)
+Handled by NextAuth.js credentials provider.
+
+**Credentials Input:**
+```json
+{
+  "email": "string (valid email)",
+  "password": "string (min 6 characters)"
+}
+```
+
+**Session JWT Payload:**
+```json
+{
+  "id": "user_cuid",
+  "email": "user@example.com",
+  "name": "User Name",
+  "role": "BUYER | SELLER | BROKER | ADMIN",
+  "iat": 1704067200,
+  "exp": 1706659200
+}
+```
+
+### 1.4 Protected Routes (Middleware)
+
+**Admin Routes** (require session + ADMIN role):
+- `/super-admin/*`
+- `/api/admin/*`
+
+**Authenticated Routes** (require valid session):
+- `/api/user/*`
+- `/api/buyer/*`
+- `/api/dealrooms/*` (ownership-verified)
+- `/api/listings/*` (ownership-verified for mutations)
+
+**Public Routes**:
+- `/api/auth/signup`
+- `/api/auth/forgot-password`
+- `/api/auth/reset-password`
+- `/api/auth/verify`
+- `/api/listings` (GET - read-only)
+- `/api/health`
+
+---
+
+## 2. Email Verification
+
+### 2.1 Token Specification
+- **Format**: 64-character alphanumeric string (cryptographically random)
+- **Character Set**: `A-Z`, `a-z`, `0-9`
+- **Generation**: `crypto` library random selection (not UUID)
+- **Storage**: `VerificationToken` table with compound key (`identifier_token`)
+
+### 2.2 Token Types & Expiration
+
+| Token Type | Identifier Prefix | Expiration | Use Case |
+|------------|------------------|------------|----------|
+| Email Verification | (none) | 24 hours | New account signup |
+| Password Reset | `reset:` | 1 hour | Forgot password |
+| Email Change | `change:` | 24 hours | Profile email update |
+
+### 2.3 Verification Endpoints
+
+#### `GET /api/auth/verify?token={token}` - Verify Email
+**Query Parameters:**
+- `token`: 64-character verification token
+
+**Behavior:**
+1. Validate token exists and not expired
+2. Distinguish between standard verification and email change
+3. Mark `emailVerified = true` in user record
+4. Delete token (one-time use)
+5. Send welcome email
+6. Redirect to `/auth/verify?success=true`
+
+**Error Redirects:**
+- `?error=missing_token` - No token provided
+- `?error=invalid_token` - Token expired or not found
+- `?error=user_not_found` - User no longer exists
+- `?error=email_taken` - Email change target already exists
+- `?error=server_error` - Internal error
+
+#### `POST /api/auth/resend-verification` - Resend Verification
+**Request Body:**
+```json
+{
+  "email": "string (valid email)"
+}
+```
+
+**Response (Always 200 - prevents enumeration):**
+```json
+{
+  "success": true,
+  "message": "If an account exists with this email, you will receive a verification link."
+}
+```
+
+**Behavior:**
+- Silent success if user doesn't exist (prevents email enumeration)
+- Silent success if already verified
+- Creates new token and sends email if user exists and unverified
+
+---
+
+## 3. Password Reset & Change
+
+### 3.1 Forgot Password Flow
+
+#### `POST /api/auth/forgot-password` - Request Reset
+**Request Body:**
+```json
+{
+  "email": "string (valid email)"
+}
+```
+
+**Response (Always 200 - prevents enumeration):**
+```json
+{
+  "success": true,
+  "message": "If an account exists with this email, you will receive a password reset link."
+}
+```
+
+**Behavior:**
+1. Look up user by email (case-insensitive)
+2. If user exists: generate reset token, send email
+3. Always return success (prevents email enumeration)
+
+#### `POST /api/auth/reset-password` - Complete Reset
+**Request Body:**
+```json
+{
+  "token": "string (64-char token)",
+  "password": "string (min 8 characters)"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Password has been reset successfully."
+}
+```
+
+**Error Responses:**
+- `400`: Invalid/expired token, validation errors
+- `404`: User account not found
+- `500`: Server error
+
+### 3.2 Password Change (Authenticated)
+
+#### `PATCH /api/user/password` - Change Password
+**Headers Required:** Valid session cookie
+
+**Request Body:**
+```json
+{
+  "currentPassword": "string (required)",
+  "newPassword": "string (min 8 characters)"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Password updated successfully"
+}
+```
+
+**Error Responses:**
+- `400`: Validation error, incorrect current password, OAuth account
+- `401`: Not authenticated
+- `500`: Server error
+
+---
+
+## 4. Session Management & Logout
+
+### 4.1 Session Configuration
+- **Strategy**: JWT (stateless)
+- **Cookie Names**: 
+  - Development: `next-auth.session-token`
+  - Production: `__Secure-next-auth.session-token`
+- **Cookie Flags**: `HttpOnly`, `Secure` (production), `SameSite=Lax`
+- **Session Refresh**: Automatic on each request (sliding expiration)
+
+### 4.2 Logout
+
+#### `POST /api/auth/[...nextauth]` (signOut action)
+Handled by NextAuth.js `signOut()` client function.
+
+**Behavior:**
+1. Clear session cookie
+2. Redirect to specified `callbackUrl` or homepage
+
+**Session Invalidation:**
+- JWT tokens are stateless - logout clears client cookie only
+- For forced invalidation: update `AUTH_SECRET` to invalidate all sessions
+
+### 4.3 Session Retrieval
+
+**Server-Side:**
+```typescript
+import { auth } from "@/lib/auth"
+const session = await auth()
+// session.user: { id, email, name, role }
+```
+
+**Client-Side:**
+```typescript
+import { useSession } from "next-auth/react"
+const { data: session } = useSession()
+```
+
+---
+
+## 5. Input Validation Rules
+
+### 5.1 Registration & Profile Updates
+
+#### Email Validation
+```typescript
+z.string().email("Invalid email address")
+```
+- Must be valid RFC 5322 email format
+- Case-insensitive comparison (stored lowercase)
+- Unique constraint enforced at database level
+
+#### Password Complexity Policy
+```typescript
+z.string().min(8, "Password must be at least 8 characters")
+```
+
+**Requirements:**
+- Minimum 8 characters
+- No maximum length (bcrypt handles up to 72 bytes)
+- No character class requirements (future enhancement)
+- bcrypt hashing with 12 salt rounds
+
+**Future Enhancements (Recommended):**
+```typescript
+// Enhanced password policy (not yet implemented)
+z.string()
+  .min(8, "Password must be at least 8 characters")
+  .max(128, "Password must not exceed 128 characters")
+  .regex(/[a-z]/, "Password must contain a lowercase letter")
+  .regex(/[A-Z]/, "Password must contain an uppercase letter")
+  .regex(/[0-9]/, "Password must contain a number")
+  .regex(/[^a-zA-Z0-9]/, "Password must contain a special character")
+```
+
+#### Name Fields
+```typescript
+firstName: z.string().optional()
+lastName: z.string().optional()
+```
+- Optional for registration
+- No character restrictions
+- Max length: Database column limit (255 characters)
+
+#### Role Selection
+```typescript
+role: z.enum(["BUYER", "SELLER"]).optional().default("BUYER")
+```
+- Only BUYER or SELLER selectable at registration
+- BROKER and ADMIN assigned administratively
+
+---
+
+## 6. Standardized Error Handling
+
+### 6.1 Error Response Schema
+All API errors follow this consistent JSON structure:
+
+```typescript
+interface ErrorResponse {
+  error: string           // Human-readable error message
+  code?: string           // Machine-readable error code (optional)
+  details?: object        // Additional context (optional)
+}
+
+interface SuccessResponse {
+  success: true
+  message?: string
+  [key: string]: any      // Additional response data
+}
+```
+
+### 6.2 HTTP Status Codes
+
+| Code | Meaning | Usage |
+|------|---------|-------|
+| `200` | OK | Successful GET, PATCH, DELETE |
+| `201` | Created | Successful POST creating resource |
+| `400` | Bad Request | Validation errors, malformed input, business logic violations |
+| `401` | Unauthorized | Missing or invalid authentication |
+| `403` | Forbidden | Authenticated but lacks permission |
+| `404` | Not Found | Resource doesn't exist |
+| `409` | Conflict | Duplicate resource (e.g., email already exists) |
+| `429` | Too Many Requests | Rate limit exceeded |
+| `500` | Internal Server Error | Unexpected server errors |
+
+### 6.3 Validation Error Response (400)
+```json
+{
+  "error": "Invalid email address"
+}
+```
+
+For Zod validation errors, the first issue message is returned.
+
+### 6.4 Authentication Error Response (401)
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+### 6.5 Authorization Error Response (403)
+```json
+{
+  "error": "Access denied. Admin privileges required."
+}
+```
+
+### 6.6 Not Found Error Response (404)
+```json
+{
+  "error": "Account not found"
+}
+```
+
+### 6.7 Conflict Error Response (409)
+```json
+{
+  "error": "An account with this email already exists"
+}
+```
+
+Note: Currently returned as `400` in signup - should be migrated to `409`.
+
+### 6.8 Rate Limit Error Response (429)
+```json
+{
+  "error": "Too many requests. Please try again later.",
+  "retryAfter": 900
+}
+```
+
+**Response Headers:**
+```
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1704070800000
+Retry-After: 900
+```
+
+### 6.9 Server Error Response (500)
+```json
+{
+  "error": "Failed to create account. Please try again."
+}
+```
+
+In development mode, additional error details may be included for debugging.
+
+---
+
+## 7. Rate Limiting & Throttling
+
+### 7.1 Rate Limiter Configuration
+
+Located in `lib/rate-limit.ts`:
+
+| Limiter | Interval | Max Requests | Use Case |
+|---------|----------|--------------|----------|
+| `api` | 1 minute | 100 | General API endpoints |
+| `auth` | 15 minutes | 10 | Login, signup, password reset |
+| `search` | 1 minute | 30 | Search endpoints |
+| `upload` | 1 hour | 20 | File uploads |
+| `ai` | 1 minute | 10 | AI-powered endpoints |
+| `messaging` | 1 minute | 60 | Dealroom messaging |
+
+### 7.2 Sensitive Endpoint Limits
+
+#### Registration (`POST /api/auth/signup`)
+- **Limit**: 10 attempts per 15 minutes per IP
+- **Lockout**: Return 429 until window expires
+- **Identifier**: IP address
+
+#### Login (`POST /api/auth/[...nextauth]`)
+- **Limit**: 10 attempts per 15 minutes per IP
+- **Lockout**: Return 429 until window expires
+- **Future Enhancement**: Account lockout after 5 failed attempts
+
+#### Password Reset Request (`POST /api/auth/forgot-password`)
+- **Limit**: 5 attempts per 15 minutes per IP
+- **Limit**: 3 attempts per hour per email address
+- **Lockout**: Return 429 until window expires
+
+#### Password Reset Completion (`POST /api/auth/reset-password`)
+- **Limit**: 10 attempts per 15 minutes per IP
+- **Lockout**: Return 429 until window expires
+
+#### Email Verification Resend (`POST /api/auth/resend-verification`)
+- **Limit**: 5 attempts per 15 minutes per IP
+- **Limit**: 3 attempts per hour per email address
+- **Lockout**: Return 429 until window expires
+
+### 7.3 Rate Limit Implementation
+
+```typescript
+import { rateLimiters, getClientIP, createIdentifier, withRateLimit } from "@/lib/rate-limit"
+
+export async function POST(request: NextRequest) {
+  const ip = getClientIP(request)
+  const { headers, isLimited, result } = withRateLimit(
+    rateLimiters.auth,
+    createIdentifier(null, ip, "auth:signup")
+  )
+
+  if (isLimited) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later.", retryAfter: result.retryAfter },
+      { status: 429, headers }
+    )
+  }
+  
+  // Continue with request handling...
+}
+```
+
+### 7.4 Rate Limit Headers
+
+All rate-limited responses include:
+- `X-RateLimit-Remaining`: Requests remaining in current window
+- `X-RateLimit-Reset`: Unix timestamp when window resets
+- `Retry-After`: Seconds until retry allowed (only on 429 responses)
+
+### 7.5 Lockout Behavior
+
+**Current Implementation:**
+- Temporary lockout based on rate limit window
+- No persistent account lockout
+- In-memory storage (resets on server restart)
+
+**Future Enhancements (Recommended):**
+1. **Account Lockout**: Lock account after 5 consecutive failed logins
+2. **Progressive Delays**: Increase delay after each failed attempt
+3. **Admin Unlock**: Provide admin interface to unlock accounts
+4. **Email Notification**: Notify user of suspicious login attempts
+5. **Redis-based Storage**: Persistent rate limiting across server instances
+
+---
+
+## 8. Security Headers & CSP
+
+### 8.1 Content Security Policy (CSP)
+Implemented via middleware (`middleware.ts`):
+
+- Nonce-based script and style enforcement
+- Strict CSP in production
+- Relaxed CSP in development for hot reloading
+
+### 8.2 Additional Security Headers
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- HTTPS enforced in production
+
+---
+
+## 9. RBAC (Role-Based Access Control)
+
+### 9.1 User Roles
+```prisma
+enum UserRole {
+  BUYER
+  SELLER
+  BROKER
+  ADMIN
+}
+```
+
+### 9.2 Permission Matrix
+
+| Resource | BUYER | SELLER | BROKER | ADMIN |
+|----------|-------|--------|--------|-------|
+| View listings | ✓ | ✓ | ✓ | ✓ |
+| Create listings | ✗ | ✓ | ✓ | ✓ |
+| Edit own listings | ✗ | ✓ | ✓ | ✓ |
+| Delete any listing | ✗ | ✗ | ✗ | ✓ |
+| Access dealrooms | ✓ (own) | ✓ (own) | ✓ (own) | ✓ (all) |
+| View full phone numbers | ✗ | ✗ | ✗ | ✓ |
+| Access admin dashboard | ✗ | ✗ | ✗ | ✓ |
+| Moderate content | ✗ | ✗ | ✗ | ✓ |
+
+### 9.3 Super Admin
+- Identified by email address match against `SUPER_ADMIN_EMAIL` env var
+- Has all ADMIN permissions plus:
+  - Access to super-admin routes
+  - User role management
+  - System configuration
+
+---
+
+## 10. Audit & Logging
+
+### 10.1 Authentication Events Logged
+- User registration
+- Login success/failure
+- Password reset request
+- Password change
+- Email verification
+- Session creation
+
+### 10.2 Usage Tracking
+```typescript
+await trackUsageEvent("LOGIN", user.id, {
+  loginMethod: "credentials" | "oauth",
+  timestamp: new Date().toISOString()
+})
+```
+
+---
+
+## 11. API Endpoint Summary
+
+| Method | Endpoint | Auth | Rate Limit | Description |
+|--------|----------|------|------------|-------------|
+| POST | `/api/auth/signup` | Public | `auth` | User registration |
+| POST | `/api/auth/[...nextauth]` | Public | `auth` | Login/logout (NextAuth) |
+| GET | `/api/auth/verify` | Public | - | Email verification |
+| POST | `/api/auth/resend-verification` | Public | `auth` | Resend verification |
+| POST | `/api/auth/forgot-password` | Public | `auth` | Request password reset |
+| POST | `/api/auth/reset-password` | Public | `auth` | Complete password reset |
+| PATCH | `/api/user/password` | Required | `api` | Change password |
+| GET | `/api/user/profile` | Required | `api` | Get user profile |
+| PATCH | `/api/user/profile` | Required | `api` | Update user profile |
+

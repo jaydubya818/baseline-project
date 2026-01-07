@@ -1,0 +1,171 @@
+# Task ID: 28
+# Title: Buyer Profile Gating for NDA Access
+# Status: done
+# Dependencies: 4, 10, 13
+# Priority: high
+# Description: Implement a security feature that requires buyers to complete their profile with capital available range and experience information before they can access NDA-protected documents.
+# Details:
+1. Update the BuyerProfile model to include required fields for NDA access:
+   ```typescript
+   interface BuyerProfile {
+     // Existing fields
+     capitalAvailableMin: number;
+     capitalAvailableMax: number;
+     yearsOfExperience: number;
+     industryExperience: string[];
+     profileCompleteness: number;
+     canAccessNDA: boolean; // New field to track NDA access eligibility
+   }
+   ```
+
+2. Create a middleware to check profile completeness before NDA access:
+   ```typescript
+   const ndaProfileGateMiddleware = async (req, res, next) => {
+     const userId = req.user.id;
+     const buyerProfile = await prisma.buyerProfile.findUnique({
+       where: { userId }
+     });
+     
+     if (!buyerProfile) {
+       return res.status(403).json({ 
+         error: 'Profile required', 
+         message: 'You must create a buyer profile before accessing confidential information' 
+       });
+     }
+     
+     // Check required fields
+     const hasRequiredFields = 
+       buyerProfile.capitalAvailableMin !== null &&
+       buyerProfile.capitalAvailableMax !== null &&
+       buyerProfile.yearsOfExperience !== null &&
+       buyerProfile.industryExperience?.length > 0;
+       
+     if (!hasRequiredFields) {
+       return res.status(403).json({ 
+         error: 'Incomplete profile', 
+         message: 'Please complete your buyer profile with capital range and experience information' 
+       });
+     }
+     
+     // Update canAccessNDA flag if needed
+     if (!buyerProfile.canAccessNDA) {
+       await prisma.buyerProfile.update({
+         where: { userId },
+         data: { canAccessNDA: true }
+       });
+     }
+     
+     next();
+   };
+   ```
+
+3. Modify the NDA document access endpoints to use the new middleware:
+   ```typescript
+   router.get('/api/listings/:id/nda', 
+     authMiddleware, 
+     ndaProfileGateMiddleware, 
+     ndaController.getNDA
+   );
+   
+   router.put('/api/listings/:id/nda/accept', 
+     authMiddleware, 
+     ndaProfileGateMiddleware, 
+     ndaController.acceptNDA
+   );
+   ```
+
+4. Update the frontend buyer profile form to indicate required fields for NDA access:
+   - Add visual indicators for required fields
+   - Add helper text explaining these fields are required for confidential information access
+   - Implement validation to ensure capital range and experience fields are completed
+
+5. Create a profile completeness calculator function that factors in NDA requirements:
+   ```typescript
+   function calculateProfileCompleteness(profile: BuyerProfile): number {
+     const requiredFields = [
+       'firstName', 'lastName', 'email', 'phone',
+       'capitalAvailableMin', 'capitalAvailableMax',
+       'yearsOfExperience', 'industryExperience'
+     ];
+     
+     const completedFields = requiredFields.filter(field => 
+       profile[field] !== null && profile[field] !== undefined && 
+       (Array.isArray(profile[field]) ? profile[field].length > 0 : true)
+     );
+     
+     return Math.round((completedFields.length / requiredFields.length) * 100);
+   }
+   ```
+
+6. Implement a notification system to inform buyers when they attempt to access NDA documents without a complete profile:
+   - Create a modal component explaining the requirements
+   - Add a direct link to complete their profile
+   - Track incomplete profile access attempts for analytics
+
+7. Add API endpoint to check NDA access eligibility:
+   ```typescript
+   router.get('/api/buyer/nda-eligibility', authMiddleware, async (req, res) => {
+     const userId = req.user.id;
+     const buyerProfile = await prisma.buyerProfile.findUnique({
+       where: { userId }
+     });
+     
+     if (!buyerProfile) {
+       return res.json({ eligible: false, reason: 'profile_missing' });
+     }
+     
+     const hasRequiredFields = 
+       buyerProfile.capitalAvailableMin !== null &&
+       buyerProfile.capitalAvailableMax !== null &&
+       buyerProfile.yearsOfExperience !== null &&
+       buyerProfile.industryExperience?.length > 0;
+       
+     return res.json({ 
+       eligible: hasRequiredFields,
+       reason: hasRequiredFields ? null : 'incomplete_profile',
+       missingFields: !hasRequiredFields ? getMissingFields(buyerProfile) : []
+     });
+   });
+   ```
+
+8. Update the buyer dashboard to show NDA access status and guide users to complete their profile if needed
+
+# Test Strategy:
+1. Unit test the ndaProfileGateMiddleware:
+   - Test with missing buyer profile
+   - Test with incomplete profile (missing capital range)
+   - Test with incomplete profile (missing experience)
+   - Test with complete profile
+   - Verify canAccessNDA flag is properly set
+
+2. Integration test the NDA access flow:
+   - Attempt to access NDA documents with no profile
+   - Attempt to access with incomplete profile
+   - Complete profile and verify access is granted
+   - Verify the middleware correctly blocks/allows requests
+
+3. Test the profile completeness calculator:
+   - Verify calculation with various profile states
+   - Ensure NDA-required fields are properly weighted
+   - Test edge cases (empty profile, fully complete profile)
+
+4. UI testing:
+   - Verify required field indicators are displayed correctly
+   - Test form validation for capital range and experience fields
+   - Verify helpful error messages guide users to complete their profile
+   - Test the notification modal when attempting to access NDA documents
+
+5. API endpoint testing:
+   - Test the NDA eligibility endpoint with various profile states
+   - Verify correct response format and status codes
+   - Test with authenticated and unauthenticated users
+
+6. End-to-end testing:
+   - Complete user journey from registration to NDA access
+   - Verify all steps in the profile completion process
+   - Test the experience when a user attempts to access NDA documents before completing their profile
+
+7. Security testing:
+   - Verify that NDA documents cannot be accessed through API manipulation
+   - Test that the middleware cannot be bypassed
+   - Ensure profile data is properly validated

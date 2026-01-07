@@ -1,0 +1,100 @@
+# Task ID: 26
+# Title: Term Sheet Builder with Seller Financing
+# Status: done
+# Dependencies: 2, 5
+# Priority: high
+# Description: Implement a term sheet builder that allows sellers to create and buyers to view financing term sheets with interactive amortization previews, including interest rate, duration, down payment, and payment calculations.
+# Details:
+1. Create TermSheet model extending the FinancingTerms model:
+   ```typescript
+   interface TermSheet extends FinancingTerms {
+     id: string;
+     listingId: string;
+     title: string;
+     description?: string;
+     isDefault: boolean;
+     createdAt: Date;
+     updatedAt: Date;
+   }
+   ```
+
+2. Update Prisma schema to include TermSheet model with appropriate relations to Listing model.
+
+3. Implement term sheet controller with CRUD endpoints:
+   - POST /api/listings/:id/term-sheets
+   - GET /api/listings/:id/term-sheets
+   - GET /api/listings/:id/term-sheets/:sheetId
+   - PUT /api/listings/:id/term-sheets/:sheetId
+   - DELETE /api/listings/:id/term-sheets/:sheetId
+
+4. Create amortization calculation service:
+   ```typescript
+   class AmortizationService {
+     calculateAmortizationSchedule(principal: number, interestRate: number, termMonths: number, downPayment: number): AmortizationSchedule;
+     calculateMonthlyPayment(principal: number, interestRate: number, termMonths: number): number;
+     calculateTotalInterest(schedule: AmortizationSchedule): number;
+   }
+   ```
+
+5. Implement term sheet builder component in React:
+   - Form inputs for interest rate, duration, down payment
+   - Real-time validation with appropriate constraints
+   - Preview of monthly payment calculation
+   - Amortization schedule visualization
+   - Save/update functionality
+
+6. Create interactive amortization preview component:
+   - Monthly payment breakdown
+   - Principal vs. interest visualization
+   - Payment schedule table with sorting/filtering
+   - Export to PDF/CSV functionality
+
+7. Implement seller term sheet management UI:
+   - Create multiple term sheet options
+   - Set default term sheet
+   - Compare different financing scenarios
+   - Duplicate and modify existing term sheets
+
+8. Create buyer-facing term sheet viewer:
+   - Read-only view of term sheet details
+   - Interactive amortization calculator for "what-if" scenarios
+   - Highlight key terms and conditions
+   - Interest saved compared to standard rates
+
+9. Implement caching for expensive amortization calculations to improve performance.
+
+# Test Strategy:
+1. Unit test the AmortizationService:
+   - Verify payment calculation accuracy with known examples
+   - Test edge cases (zero down payment, short/long terms)
+   - Validate amortization schedule generation
+
+2. Test term sheet CRUD operations:
+   - Create term sheets with various parameters
+   - Verify retrieval of term sheets for a listing
+   - Test updating term sheet parameters
+   - Verify deletion and proper cleanup
+
+3. Integration test the term sheet builder UI:
+   - Test form validation for all inputs
+   - Verify real-time calculation updates
+   - Test saving and loading term sheets
+   - Validate error handling for invalid inputs
+
+4. Test the amortization preview component:
+   - Verify correct rendering of payment schedule
+   - Test interactive features (sorting, filtering)
+   - Validate visualization accuracy
+   - Test export functionality
+
+5. End-to-end test the complete term sheet workflow:
+   - Create a listing as a seller
+   - Add multiple term sheets with different parameters
+   - View the listing as a buyer
+   - Interact with the term sheet viewer
+   - Verify calculations match between builder and viewer
+
+6. Performance test the amortization calculations:
+   - Benchmark calculation time for various loan parameters
+   - Verify caching improves performance for repeated calculations
+   - Test with extreme values (very large loans, long terms)

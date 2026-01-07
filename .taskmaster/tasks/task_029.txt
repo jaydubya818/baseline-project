@@ -1,0 +1,112 @@
+# Task ID: 29
+# Title: Document Generation Engine with E-Signing Integration
+# Status: done
+# Dependencies: 2, 5, 10
+# Priority: high
+# Description: Implement a document generation engine that creates legal documents (NDA, LOI, Term Sheet) from templates with e-signing integration for digital signatures.
+# Details:
+1. Create a DocumentTemplate model and schema:
+```typescript
+interface DocumentTemplate {
+  id: string;
+  type: 'NDA' | 'LOI' | 'TERM_SHEET';
+  name: string;
+  content: string; // HTML/markdown with variable placeholders
+  variables: string[]; // List of variable names used in template
+  isDefault: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+2. Implement template storage and management:
+   - Create a template repository in the database
+   - Implement CRUD operations for templates
+   - Add version control for templates with history tracking
+
+3. Create document generation service:
+```typescript
+class DocumentGenerationService {
+  async generateDocument(templateId: string, data: Record<string, any>): Promise<string>;
+  async createPDF(htmlContent: string): Promise<Buffer>;
+  async storeGeneratedDocument(documentType: string, listingId: string, content: Buffer): Promise<string>;
+}
+```
+
+4. Implement e-signing integration:
+   - Research and select e-signing provider (DocuSign, HelloSign, etc.)
+   - Create an adapter interface for e-signing service
+   - Implement authentication with the e-signing API
+   - Create document signing request flow
+   - Handle webhooks for signature status updates
+
+5. Create document endpoints:
+   - GET /api/templates (list available templates)
+   - GET /api/templates/:id (get specific template)
+   - POST /api/templates (create new template - admin only)
+   - PUT /api/templates/:id (update template - admin only)
+   - POST /api/documents/generate (generate document from template)
+   - POST /api/documents/:id/sign (initiate signing process)
+   - GET /api/documents/:id/status (check signing status)
+
+6. Implement document versioning:
+   - Track document versions with timestamps
+   - Store all versions of generated documents
+   - Provide access to document history
+
+7. Create frontend components:
+   - Template selection interface
+   - Document preview component
+   - Variable input form
+   - E-signing initiation UI
+   - Signature status tracking
+
+8. Implement security measures:
+   - Ensure documents are only accessible to authorized users
+   - Implement encryption for document storage
+   - Add audit logging for all document operations
+
+9. Create integration with existing NDA system:
+   - Connect to existing NDA gating logic
+   - Ensure compatibility with NDA acceptance tracking
+   - Extend the NDA model to support the new template system
+
+# Test Strategy:
+1. Unit test the DocumentGenerationService:
+   - Test template variable replacement with various data inputs
+   - Verify PDF generation with different content types
+   - Test error handling for missing variables
+   - Validate document storage functionality
+
+2. Test e-signing integration:
+   - Verify authentication with e-signing provider
+   - Test document submission to e-signing service
+   - Validate webhook handling for signature events
+   - Test error scenarios and retry mechanisms
+
+3. Integration testing:
+   - End-to-end test of document generation flow
+   - Verify template selection and variable input
+   - Test document preview functionality
+   - Validate e-signing process from initiation to completion
+
+4. Security testing:
+   - Verify access controls for templates and documents
+   - Test encryption of stored documents
+   - Validate audit logging functionality
+   - Ensure proper error handling doesn't expose sensitive information
+
+5. Performance testing:
+   - Test document generation with large templates
+   - Verify system performance with multiple concurrent users
+   - Test PDF generation speed and optimization
+
+6. Compatibility testing:
+   - Verify integration with existing NDA system
+   - Test compatibility with different document types
+   - Validate template rendering across browsers
+
+7. User acceptance testing:
+   - Test the complete document generation and signing flow
+   - Verify usability of template customization
+   - Validate document versioning and history tracking

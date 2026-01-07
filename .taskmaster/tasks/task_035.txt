@@ -1,0 +1,282 @@
+# Task ID: 35
+# Title: Enhanced UI/UX Design System Refresh
+# Status: pending
+# Dependencies: 1, 7, 8, 9, 19
+# Priority: medium
+# Description: Implement a modern design system update inspired by Acquire.com's clean, professional aesthetic, including design tokens, component library enhancements, motion design, and responsive improvements.
+# Details:
+1. Design Tokens Implementation:
+   - Create a comprehensive design token system in Tailwind configuration:
+   ```typescript
+   // tailwind.config.js
+   module.exports = {
+     theme: {
+       extend: {
+         colors: {
+           primary: {
+             50: '#f0f9ff',
+             100: '#e0f2fe',
+             // ... extended color palette
+           },
+           // ... additional color scales
+         },
+         typography: {
+           // Extended typography scale
+         },
+         spacing: {
+           // Consistent spacing system
+         },
+         boxShadow: {
+           // Enhanced shadow system
+         }
+       }
+     }
+   }
+   ```
+   - Document all tokens in Storybook
+
+2. Component Library Enhancement:
+   - Extend existing shadcn/ui components with custom variants:
+   ```typescript
+   // components/ui/button.tsx
+   const buttonVariants = cva(
+     "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50",
+     {
+       variants: {
+         variant: {
+           default: "bg-primary text-primary-foreground hover:bg-primary/90",
+           // ... existing variants
+           premium: "bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700",
+           featured: "border-2 border-primary-500 bg-white text-primary-700 hover:bg-primary-50",
+           // ... additional custom variants
+         },
+         // ... size and other variant options
+       },
+     }
+   )
+   ```
+
+3. Motion Design Implementation:
+   - Create consistent Framer Motion animations for micro-interactions:
+   ```typescript
+   // lib/motion/variants.ts
+   export const fadeIn = {
+     hidden: { opacity: 0 },
+     visible: { opacity: 1, transition: { duration: 0.3 } }
+   };
+   
+   export const slideUp = {
+     hidden: { y: 20, opacity: 0 },
+     visible: { y: 0, opacity: 1, transition: { duration: 0.4 } }
+   };
+   
+   // Additional animation variants
+   ```
+   - Implement page transitions with Next.js and Framer Motion
+   - Create reusable animation hooks
+
+4. Mobile-First Responsive Implementation:
+   - Audit and enhance all key user flows for mobile devices
+   - Implement responsive navigation patterns
+   - Create touch-friendly interaction patterns
+   - Test and optimize for various screen sizes
+
+5. Accessibility Audit and Improvements:
+   - Conduct WCAG 2.1 AA compliance audit
+   - Implement keyboard navigation improvements
+   - Add proper ARIA attributes to all components
+   - Ensure sufficient color contrast
+   - Implement screen reader support
+
+6. Page Redesigns:
+   - Homepage refresh with clearer value proposition
+   - Listing cards with improved visual hierarchy
+   - Dealroom layout optimization
+   - Onboarding flow enhancement
+   - Create responsive layouts for all redesigned pages
+
+7. Loading States:
+   - Implement skeleton loaders for all major components:
+   ```typescript
+   // components/ui/skeleton.tsx
+   export function ListingSkeleton() {
+     return (
+       <div className="rounded-lg border p-4 space-y-3">
+         <div className="h-32 bg-gray-200 rounded-md animate-pulse" />
+         <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse" />
+         <div className="h-4 w-1/2 bg-gray-200 rounded animate-pulse" />
+         <div className="h-4 w-5/6 bg-gray-200 rounded animate-pulse" />
+       </div>
+     );
+   }
+   ```
+   - Create optimistic UI patterns for form submissions
+
+8. Error States:
+   - Design and implement friendly error pages
+   - Create inline error messaging components
+   - Implement error boundary components
+
+9. Dark Mode Support:
+   - Implement dark theme color palette in Tailwind
+   - Create theme toggle component
+   - Ensure all components support both light and dark modes
+   - Add system preference detection
+
+10. Documentation:
+    - Create comprehensive Storybook documentation
+    - Document all design tokens and components
+    - Create usage guidelines for developers
+
+# Test Strategy:
+1. Component Testing:
+   - Create comprehensive Jest and React Testing Library tests for all enhanced components
+   - Verify all component variants render correctly
+   - Test component accessibility with jest-axe
+   - Test component responsiveness with different viewport sizes
+
+2. Visual Regression Testing:
+   - Implement Storybook visual tests with Chromatic
+   - Create baseline screenshots for all components
+   - Automate visual regression testing in CI pipeline
+   - Test both light and dark mode appearances
+
+3. Animation Testing:
+   - Verify animations perform well on low-end devices
+   - Test animation timing and easing
+   - Ensure animations respect reduced motion preferences
+
+4. Accessibility Testing:
+   - Run automated accessibility tests with axe-core
+   - Perform manual keyboard navigation testing
+   - Test with screen readers (NVDA, VoiceOver)
+   - Verify color contrast meets WCAG 2.1 AA standards
+   - Test focus management and tab order
+
+5. Responsive Testing:
+   - Test on multiple device sizes (mobile, tablet, desktop)
+   - Verify breakpoint behavior
+   - Test touch interactions on mobile devices
+   - Verify that all key flows work on mobile
+
+6. Performance Testing:
+   - Measure and optimize component render performance
+   - Test animation frame rates
+   - Verify bundle size impact of new components
+   - Run Lighthouse performance audits
+
+7. Cross-Browser Testing:
+   - Test on Chrome, Firefox, Safari, and Edge
+   - Verify consistent appearance and behavior
+   - Test on iOS Safari and Android Chrome
+
+8. User Testing:
+   - Conduct usability testing with representative users
+   - Gather feedback on redesigned pages
+   - Test key user flows with the new design system
+
+# Subtasks:
+## 1. Design Token System Implementation in Tailwind [pending]
+### Dependencies: None
+### Description: Create a comprehensive design token system in Tailwind configuration that defines colors, typography, spacing, and shadows to establish a consistent visual language across the application.
+### Details:
+1. Define color palette with primary, secondary, neutral, and semantic colors including all shade variations
+2. Set up typography scale with font families, weights, sizes, and line heights
+3. Create consistent spacing system with appropriate increments
+4. Implement box shadow system with multiple elevation levels
+5. Configure border radius and border width tokens
+6. Set up z-index scale for consistent layering
+7. Document all tokens in a central location
+8. Update tailwind.config.js with all token definitions
+
+## 2. Component Library Enhancement with Custom Variants [pending]
+### Dependencies: 35.1
+### Description: Extend the existing shadcn/ui components with custom variants that align with the new design system, focusing on buttons, inputs, cards, and other frequently used components.
+### Details:
+1. Audit existing component library to identify components needing enhancement
+2. Create new variants for buttons (premium, featured, etc.)
+3. Enhance form components with consistent styling (inputs, selects, checkboxes)
+4. Update card components with new elevation and styling options
+5. Implement consistent hover and focus states across all components
+6. Create component composition patterns for common UI patterns
+7. Ensure all components use design tokens from the new system
+8. Document all component variants in Storybook
+
+## 3. Motion Design System Implementation [pending]
+### Dependencies: 35.2
+### Description: Create a consistent animation system using Framer Motion for micro-interactions, page transitions, and interactive elements to enhance the user experience.
+### Details:
+1. Define a library of reusable animation variants (fadeIn, slideUp, etc.)
+2. Create animation constants for timing, easing curves, and durations
+3. Implement page transition animations compatible with Next.js
+4. Develop reusable animation hooks for common patterns
+5. Create animated feedback for user interactions (button clicks, form submissions)
+6. Implement staggered animations for lists and grids
+7. Ensure animations respect user preferences (reduced motion)
+8. Document animation system with usage examples
+
+## 4. Mobile-First Responsive Implementation [pending]
+### Dependencies: 35.2
+### Description: Audit and enhance all key user flows for mobile devices, implementing responsive navigation patterns and touch-friendly interactions across the application.
+### Details:
+1. Audit current mobile experience and identify pain points
+2. Implement responsive navigation system (drawer, hamburger menu)
+3. Create touch-friendly interaction patterns with appropriate hit areas
+4. Optimize layout components for various breakpoints
+5. Implement responsive typography that scales appropriately
+6. Create responsive image handling with appropriate sizing
+7. Test and optimize performance on mobile devices
+8. Document responsive patterns and breakpoint system
+
+## 5. Accessibility Improvements and WCAG Compliance [pending]
+### Dependencies: 35.2, 35.3
+### Description: Conduct a comprehensive accessibility audit and implement improvements to ensure WCAG 2.1 AA compliance across the application.
+### Details:
+1. Perform WCAG 2.1 AA compliance audit of existing components
+2. Implement keyboard navigation improvements across all interactive elements
+3. Add proper ARIA attributes to all components
+4. Ensure sufficient color contrast throughout the application
+5. Implement proper focus management and focus indicators
+6. Add screen reader support with appropriate announcements
+7. Create skip links and landmark regions for navigation
+8. Document accessibility guidelines for future development
+
+## 6. Loading and Error State Implementation [pending]
+### Dependencies: 35.2, 35.3
+### Description: Design and implement consistent loading states, skeleton loaders, error pages, and inline error messaging components throughout the application.
+### Details:
+1. Create skeleton loader components for all major content types
+2. Implement loading indicators for actions and transitions
+3. Design and build friendly error pages for different error types
+4. Create inline error messaging components for forms
+5. Implement error boundary components to gracefully handle failures
+6. Create optimistic UI patterns for form submissions
+7. Develop retry mechanisms for failed operations
+8. Document loading and error state patterns
+
+## 7. Dark Mode Implementation [pending]
+### Dependencies: 35.1, 35.2
+### Description: Implement a comprehensive dark theme across the application with proper color palette, theme toggle, and system preference detection.
+### Details:
+1. Define dark theme color palette in Tailwind configuration
+2. Create theme toggle component with animation
+3. Implement system preference detection for initial theme
+4. Update all components to support both light and dark modes
+5. Ensure proper contrast ratios in both themes
+6. Add theme persistence with local storage
+7. Handle theme transitions with appropriate animations
+8. Document theming system and implementation approach
+
+## 8. Design System Documentation in Storybook [pending]
+### Dependencies: 35.1, 35.2, 35.3, 35.4, 35.5, 35.6, 35.7
+### Description: Create comprehensive documentation for the design system in Storybook, including design tokens, components, usage guidelines, and examples.
+### Details:
+1. Set up Storybook with appropriate addons (a11y, viewport, controls)
+2. Document all design tokens with visual examples, including mobile-first breakpoints (sm: 640px, md: 768px, lg: 1024px, xl: 1280px) and responsive typography scales
+3. Create stories for all component variants with usage examples
+4. Add documentation for animation patterns with interactive examples
+5. Include accessibility guidelines and best practices
+6. Document responsive behavior with viewport tools, showcasing mobile-first patterns from subtask 35.4 including touch-friendly interaction zones, responsive navigation drawer, and breakpoint-specific component layouts
+7. Create component composition examples for common patterns, including mobile-responsive layouts with stacked vs side-by-side variants and examples of responsive spacing and grid configurations
+8. Add search and navigation to improve documentation usability
+

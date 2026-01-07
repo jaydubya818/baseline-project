@@ -1,0 +1,94 @@
+# Task ID: 27
+# Title: Financial Analysis Dashboard Integration
+# Status: done
+# Dependencies: 5, 26, 2
+# Priority: high
+# Description: Implement an automated financial snapshots feature that calculates and displays EBITDA, DSCR, and valuation multiple indicators for business listings to provide essential financial analysis for buyers.
+# Details:
+1. Create a FinancialAnalysis service to handle calculations:
+   ```typescript
+   class FinancialAnalysisService {
+     calculateEBITDA(revenue: number, expenses: number): number;
+     calculateDSCR(netOperatingIncome: number, debtServicePayment: number): number;
+     calculateValuationMultiples(ebitda: number, askingPrice: number): {
+       ebitdaMultiple: number;
+       revenueMultiple?: number;
+     };
+   }
+   ```
+
+2. Extend the Listing model to include financial data fields:
+   ```typescript
+   interface ListingFinancials {
+     revenue: number;
+     expenses: number;
+     netProfit: number;
+     ebitda?: number;
+     dscr?: number;
+     valuationMultiples?: {
+       ebitdaMultiple: number;
+       revenueMultiple?: number;
+     };
+   }
+   ```
+
+3. Update the Prisma schema to include financial data fields for business listings.
+
+4. Create API endpoints for financial analysis:
+   - GET /api/listings/:id/financials
+   - POST /api/listings/:id/financials (for sellers to update)
+
+5. Implement integration with the Term Sheet Builder (Task #26) to use financial data in payment calculations:
+   - Connect DSCR calculations to financing terms
+   - Use valuation multiples to suggest appropriate asking prices
+
+6. Create a financial snapshot component for the listing detail page:
+   - Display EBITDA, DSCR, and valuation multiples in an easy-to-understand format
+   - Include tooltips explaining each metric
+   - Add visual indicators for good/average/poor financial health
+
+7. Implement permission controls to ensure only sellers can edit financial data and all buyers can view the analysis.
+
+8. Add data validation to ensure financial calculations are based on valid inputs:
+   - Prevent negative values for revenue/expenses
+   - Validate DSCR calculations when debt service is zero
+   - Handle edge cases in multiple calculations
+
+9. Create a financial trends visualization if historical data is available:
+   - Line charts for revenue, expenses, and EBITDA
+   - DSCR trend over projected loan period
+
+10. Implement caching for financial calculations to improve performance on listing detail pages.
+
+# Test Strategy:
+1. Unit test the FinancialAnalysisService:
+   - Verify EBITDA calculation with various revenue and expense scenarios
+   - Test DSCR calculation with different debt service values
+   - Validate valuation multiple calculations with edge cases
+   - Test with zero values and extremely large numbers
+
+2. Integration test the financial data API endpoints:
+   - Test GET endpoint returns correct financial data
+   - Verify POST endpoint properly updates financial information
+   - Test permission controls for different user roles
+   - Validate error handling for invalid financial data
+
+3. Test the integration with Term Sheet Builder:
+   - Verify DSCR calculations affect financing terms appropriately
+   - Test that valuation multiples are correctly used in price suggestions
+
+4. UI testing for the financial snapshot component:
+   - Verify all metrics display correctly with different data sets
+   - Test tooltips and explanatory content
+   - Validate visual indicators for financial health
+   - Test responsive design on different screen sizes
+
+5. Performance testing:
+   - Measure rendering time for financial dashboard
+   - Test caching effectiveness for repeated calculations
+   - Verify performance with multiple concurrent users viewing financial data
+
+6. User acceptance testing:
+   - Have financial experts review calculation accuracy
+   - Get feedback on the clarity and usefulness of the financial snapshot
+   - Verify buyers find the information valuable for decision-making

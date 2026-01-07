@@ -1,0 +1,687 @@
+# Task ID: 16
+# Title: Paid Listing Upgrade Feature
+# Status: done
+# Dependencies: 5, 15
+# Priority: medium
+# Description: Implement the paid listing upgrade feature with Stripe integration for single purchases.
+# Details:
+1. Create listing upgrade model and controller
+2. Implement upgrade purchase endpoints:
+   - POST /api/listings/:id/upgrade
+   - GET /api/listings/:id/upgrade
+3. Create upgrade options configuration
+4. Implement Stripe payment integration for upgrades
+5. Add upgrade status to listing model
+6. Create upgrade benefits implementation:
+   - Enhanced visibility
+   - Additional images
+   - Extended description
+7. Implement upgrade expiration handling
+
+# Test Strategy:
+
+## Core Functionality Tests
+1. Test upgrade purchase flow (happy path)
+2. Test upgrade benefits application
+3. Verify upgrade status tracking
+4. Test with Stripe test mode
+
+## Webhook Handling Tests
+5. Test Stripe webhook delivery success/failure handling
+6. Test webhook signature verification using webhook secret (reject invalid signatures)
+7. Test replay attack protection by tracking processed event IDs in webhook handler
+8. Test idempotent webhook processing (same event ID received multiple times)
+
+## Idempotency Tests
+9. Test duplicate webhook events do not create duplicate upgrades
+10. Test duplicate payment intents do not double-charge
+11. Test Order/Upgrade creation paths respect idempotency-key behavior
+12. Test retry attempts with same idempotency key return cached response
+
+## Payment Failure Recovery Tests
+13. Test declined card handling (insufficient funds, expired, blocked)
+14. Test payment timeout handling and user feedback
+15. Test retry/backoff logic for transient charge failures
+16. Test graceful degradation when payment fails mid-flow
+17. Test partial refund scenarios
+
+## Concurrency Tests
+18. Simulate simultaneous upgrade purchases for same user (race condition)
+19. Verify DB transactions prevent duplicate upgrades
+20. Verify unique constraints on user+listing+upgrade_type
+21. Test optimistic locking or row-level locks for upgrade state changes
+
+## Expiration & State Transition Tests
+22. Verify benefits are correctly revoked at expiration
+23. Test scheduled jobs/cron handle expirations correctly
+24. Test grace period behavior (if applicable)
+25. Test notification triggers before/at expiration
+
+## Stripe Outage Resilience Tests
+26. Test API error handling (500s, network failures)
+27. Test rate limit (429) handling with exponential backoff
+28. Test fallback/queueing behavior during Stripe outages
+29. Test pending state when Stripe is temporarily unavailable
+30. Test recovery process when Stripe comes back online
+
+## Error Handling & Edge Cases
+31. Validate comprehensive error handling and user messaging
+32. Test upgrade for already-upgraded listing
+33. Test upgrade for expired/deleted listing
+34. Test concurrent checkout session creation
+
+# ==============================================================================
+# IMPLEMENTATION NOTES / EDGE CASES
+# ==============================================================================
+
+## 1. Payment Idempotency
+
+### Stripe Idempotency Keys
+- Use Stripe idempotency keys on the `POST /api/listings/:id/upgrade` flow
+- Generate a deterministic idempotency key using format: 
+  `listing_upgrade_${listingId}_${userId}_${timestamp_bucket}`
+  (where timestamp_bucket = floor(Date.now() / 60000) for 1-min windows)
+- Pass to Stripe checkout session creation:
+  ```typescript
+  const session = await stripe.checkout.sessions.create({
+    // ... config
+  }, {
+    idempotencyKey: `listing_upgrade_${listingId}_${userId}_${timestampBucket}`
+  })
+  ```
+
+### Local Persistence Before Stripe Call
+- **Create `ListingUpgrade` model in Prisma schema:**
+  ```prisma
+  model ListingUpgrade {
+    id                      String               @id @default(cuid())
+    listingId               String
+    userId                  String
+    externalChargeId        String?              @unique  // Stripe payment_intent ID
+    stripeCheckoutSessionId String?              @unique
+    idempotencyKey          String               @unique
+    status                  UpgradeStatus        @default(PENDING)
+    upgradeType             String               // "premium", "featured"
+    amount                  Int                  // Amount in cents
+    currency                String               @default("usd")
+    expiresAt               DateTime?
+    refundedAt              DateTime?
+    refundReason            String?
+    failureReason           String?
+    attempts                Int                  @default(1)
+    createdAt               DateTime             @default(now())
+    updatedAt               DateTime             @updatedAt
+    
+    listing                 Listing              @relation(fields: [listingId], references: [id])
+    user                    User                 @relation(fields: [userId], references: [id])
+    
+    @@index([listingId])
+    @@index([userId])
+    @@index([status])
+    @@index([expiresAt])
+  }
+
+  enum UpgradeStatus {
+    PENDING           // Created locally, waiting for Stripe
+    PROCESSING        // Stripe session created, awaiting payment
+    SUCCEEDED         // Payment confirmed via webhook
+    FAILED            // Payment failed
+    REFUNDED          // Full refund issued
+    PARTIALLY_REFUNDED
+    EXPIRED           // Upgrade period ended
+    CANCELLED         // User cancelled before payment
+  }
+  ```
+
+- **Flow for POST /api/listings/:id/upgrade:**
+  1. Generate idempotencyKey
+  2. Check for existing pending/processing upgrade with same idempotencyKey
+  3. Create ListingUpgrade record with status=PENDING before calling Stripe
+  4. Call Stripe to create checkout session
+  5. Update ListingUpgrade with stripeCheckoutSessionId, status=PROCESSING
+  6. Return session URL to client
+
+## 2. Webhook Security & Handler
+
+### Stripe Webhook Handler (`processListingUpgradeWebhook`)
+Add to `lib/webhook-processor.ts`:
+
+```typescript
+// Add to routeEventToHandler switch statement:
+case 'checkout.session.completed':
+  await handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session)
+  break
+
+// In handleCheckoutSessionCompleted, add listing_upgrade handling:
+if (metadata.type === 'listing_upgrade' || metadata.type === 'listing_upgrade_premium') {
+  await handleListingUpgradeCompleted(session)
+}
+
+async function handleListingUpgradeCompleted(session: Stripe.Checkout.Session): Promise<void> {
+  const { metadata, payment_intent, id: sessionId } = session
+  const listingId = metadata?.listingId
+  const userId = metadata?.userId
+  
+  if (!listingId || !userId) {
+    logger.error('Missing metadata in listing upgrade session', { sessionId })
+    return
+  }
+
+  // Idempotency check by externalChargeId (payment_intent)
+  const existingUpgrade = await prisma.listingUpgrade.findFirst({
+    where: {
+      OR: [
+        { externalChargeId: payment_intent as string },
+        { stripeCheckoutSessionId: sessionId }
+      ],
+      status: 'SUCCEEDED'
+    }
+  })
+
+  if (existingUpgrade) {
+    logger.info('Listing upgrade already processed', { 
+      sessionId, 
+      upgradeId: existingUpgrade.id 
+    })
+    return
+  }
+
+  // Atomic transaction to update upgrade and listing
+  await prisma.$transaction(async (tx) => {
+    // Update or create upgrade record
+    await tx.listingUpgrade.upsert({
+      where: { stripeCheckoutSessionId: sessionId },
+      create: {
+        listingId,
+        userId,
+        stripeCheckoutSessionId: sessionId,
+        externalChargeId: payment_intent as string,
+        idempotencyKey: `webhook_${sessionId}`,
+        status: 'SUCCEEDED',
+        upgradeType: metadata.upgradeType || 'premium',
+        amount: session.amount_total || 0,
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+      },
+      update: {
+        externalChargeId: payment_intent as string,
+        status: 'SUCCEEDED',
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      }
+    })
+
+    // Apply benefits to listing
+    await tx.listing.update({
+      where: { id: listingId },
+      data: {
+        isPremium: true,
+        // Add other benefits based on upgradeType
+      }
+    })
+  })
+
+  logger.info('Listing upgrade completed', { listingId, userId, sessionId })
+}
+```
+
+### Webhook Signature Verification
+- Already implemented in `app/api/stripe/webhook/route.ts`
+- Uses `stripe.webhooks.constructEvent(body, signature, webhookSecret)`
+- Returns 400 for invalid signatures
+
+### Retry/Reconciliation Job
+Create `lib/jobs/upgrade-reconciliation.ts`:
+```typescript
+/**
+ * Reconciliation job for stuck ListingUpgrade records
+ * Run via cron every 15 minutes
+ */
+export async function reconcileStuckUpgrades(): Promise<void> {
+  const stuckUpgrades = await prisma.listingUpgrade.findMany({
+    where: {
+      status: { in: ['PENDING', 'PROCESSING'] },
+      createdAt: { lt: new Date(Date.now() - 30 * 60 * 1000) } // 30+ mins old
+    }
+  })
+
+  for (const upgrade of stuckUpgrades) {
+    try {
+      if (upgrade.stripeCheckoutSessionId) {
+        const session = await stripe.checkout.sessions.retrieve(
+          upgrade.stripeCheckoutSessionId
+        )
+        
+        if (session.payment_status === 'paid') {
+          // Webhook was lost, process now
+          await handleListingUpgradeCompleted(session)
+        } else if (session.status === 'expired') {
+          await prisma.listingUpgrade.update({
+            where: { id: upgrade.id },
+            data: { status: 'CANCELLED', failureReason: 'Session expired' }
+          })
+        }
+      }
+    } catch (error) {
+      logger.error('Reconciliation failed for upgrade', { 
+        upgradeId: upgrade.id, 
+        error 
+      })
+    }
+  }
+}
+```
+
+## 3. Refunds & Cancellations
+
+### Refund Policy
+- Full refunds available within 24 hours of purchase if benefits unused
+- Pro-rated refunds (optional) for early cancellation after 24 hours
+- No refunds if listing received premium-tier engagement (inquiries, etc.)
+
+### Refund/Cancel Endpoint
+`POST /api/listings/:id/upgrade/refund`:
+```typescript
+export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+  const user = await getCurrentUser()
+  const { reason } = await req.json()
+
+  const upgrade = await prisma.listingUpgrade.findFirst({
+    where: {
+      listingId: params.id,
+      userId: user.id,
+      status: 'SUCCEEDED'
+    },
+    include: { listing: true }
+  })
+
+  if (!upgrade) {
+    return NextResponse.json({ error: 'No active upgrade found' }, { status: 404 })
+  }
+
+  // Check refund eligibility
+  const hoursSincePurchase = (Date.now() - upgrade.createdAt.getTime()) / (1000*60*60)
+  if (hoursSincePurchase > 24 && upgrade.listing.inquiryCount > 0) {
+    return NextResponse.json({ 
+      error: 'Refunds not available after 24 hours with engagement' 
+    }, { status: 400 })
+  }
+
+  // Process refund via Stripe
+  const refund = await stripe.refunds.create({
+    payment_intent: upgrade.externalChargeId,
+    reason: 'requested_by_customer'
+  })
+
+  // Update records and revoke benefits
+  await prisma.$transaction([
+    prisma.listingUpgrade.update({
+      where: { id: upgrade.id },
+      data: { 
+        status: 'REFUNDED', 
+        refundedAt: new Date(),
+        refundReason: reason 
+      }
+    }),
+    prisma.listing.update({
+      where: { id: params.id },
+      data: { isPremium: false }
+    })
+  ])
+
+  return NextResponse.json({ success: true, refundId: refund.id })
+}
+```
+
+## 4. Expiration Behavior
+
+### Schema Changes for Listing
+Add to Listing model:
+```prisma
+model Listing {
+  // ... existing fields
+  isPremium          Boolean        @default(false)
+  premiumExpiresAt   DateTime?      // When premium benefits expire
+  upgradeStatus      UpgradeStatus? // Current upgrade state
+  
+  upgrades           ListingUpgrade[]
+}
+```
+
+### Expiry Worker/Cron Job
+Create `lib/jobs/upgrade-expiry-worker.ts`:
+```typescript
+/**
+ * Background job to handle upgrade expirations
+ * Run via cron daily at midnight UTC
+ */
+export async function processUpgradeExpirations(): Promise<void> {
+  const now = new Date()
+
+  // Find expired upgrades
+  const expiredUpgrades = await prisma.listingUpgrade.findMany({
+    where: {
+      status: 'SUCCEEDED',
+      expiresAt: { lte: now }
+    },
+    include: { listing: true }
+  })
+
+  for (const upgrade of expiredUpgrades) {
+    await prisma.$transaction([
+      // Mark upgrade as expired
+      prisma.listingUpgrade.update({
+        where: { id: upgrade.id },
+        data: { status: 'EXPIRED' }
+      }),
+      // Revoke benefits from listing
+      prisma.listing.update({
+        where: { id: upgrade.listingId },
+        data: {
+          isPremium: false,
+          premiumExpiresAt: null
+        }
+      })
+    ])
+
+    // Send expiration notification
+    await sendNotification({
+      userId: upgrade.userId,
+      type: 'UPGRADE_EXPIRED',
+      data: { listingId: upgrade.listingId }
+    })
+
+    logger.info('Upgrade expired', { 
+      listingId: upgrade.listingId, 
+      upgradeId: upgrade.id 
+    })
+  }
+}
+
+/**
+ * Send renewal reminders 3 days before expiration
+ */
+export async function sendRenewalReminders(): Promise<void> {
+  const threeDaysFromNow = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+  const fourDaysFromNow = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000)
+
+  const expiringUpgrades = await prisma.listingUpgrade.findMany({
+    where: {
+      status: 'SUCCEEDED',
+      expiresAt: {
+        gte: threeDaysFromNow,
+        lt: fourDaysFromNow
+      }
+    }
+  })
+
+  for (const upgrade of expiringUpgrades) {
+    await sendNotification({
+      userId: upgrade.userId,
+      type: 'UPGRADE_EXPIRING_SOON',
+      data: { 
+        listingId: upgrade.listingId,
+        expiresAt: upgrade.expiresAt 
+      }
+    })
+  }
+}
+```
+
+### Renewal Endpoint
+`POST /api/listings/:id/upgrade/renew`:
+- Allows renewal of expired or about-to-expire upgrades
+- Creates new upgrade record, new Stripe session
+- Extends benefits without gap if renewed before expiration
+
+## 5. Error Handling Strategies
+
+### Network Retries & Exponential Backoff
+```typescript
+// lib/stripe-client.ts
+async function stripeWithRetry<T>(
+  operation: () => Promise<T>,
+  maxRetries = 3
+): Promise<T> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation()
+    } catch (error: any) {
+      const isRetryable = 
+        error.type === 'StripeConnectionError' ||
+        error.type === 'StripeAPIError' ||
+        error.statusCode >= 500
+
+      if (!isRetryable || attempt === maxRetries) throw error
+
+      const delay = Math.min(1000 * Math.pow(2, attempt), 10000)
+      await new Promise(r => setTimeout(r, delay))
+      
+      logger.warn('Retrying Stripe operation', { 
+        attempt, delay, error: error.message 
+      })
+    }
+  }
+  throw new Error('Unexpected retry loop exit')
+}
+```
+
+### Handling Specific Errors
+| Error Type              | Handling Strategy                                          |
+|-------------------------|-----------------------------------------------------------|
+| Card declined           | Return user-friendly message, suggest alternative payment |
+| Rate limit (429)        | Exponential backoff, max 5 retries                        |
+| Network timeout         | Retry with idempotency key                                |
+| Webhook delivery failure| Stripe auto-retries; reconciliation job catches gaps      |
+| DB failure after Stripe | Reconciliation job processes from Stripe state            |
+| Invalid payment_intent  | Log error, mark upgrade as FAILED with reason             |
+| Duplicate webhook       | Idempotency check via externalChargeId returns early      |
+
+### Logging & Alerts
+```typescript
+// Structured logging for all payment operations
+logger.info('Payment operation', {
+  operation: 'listing_upgrade',
+  listingId,
+  userId,
+  amount,
+  stripeSessionId,
+  status: 'initiated'
+})
+
+// Critical error alerts (integrate with Sentry)
+if (error.statusCode >= 500) {
+  Sentry.captureException(error, {
+    tags: { service: 'stripe', operation: 'listing_upgrade' },
+    extra: { listingId, userId }
+  })
+}
+```
+
+## 6. Required Tests
+
+### Test Suite: Duplicate Webhooks
+```typescript
+describe('Webhook Idempotency', () => {
+  it('should process upgrade only once for duplicate webhooks', async () => {
+    const session = createMockCheckoutSession({ type: 'listing_upgrade' })
+    
+    // First webhook
+    await processWebhookEvent(createEvent('checkout.session.completed', session))
+    
+    // Duplicate webhook (Stripe retry)
+    await processWebhookEvent(createEvent('checkout.session.completed', session))
+    
+    const upgrades = await prisma.listingUpgrade.findMany({
+      where: { stripeCheckoutSessionId: session.id }
+    })
+    expect(upgrades).toHaveLength(1)
+    expect(upgrades[0].status).toBe('SUCCEEDED')
+  })
+
+  it('should handle concurrent duplicate webhooks safely', async () => {
+    const session = createMockCheckoutSession({ type: 'listing_upgrade' })
+    const event = createEvent('checkout.session.completed', session)
+    
+    // Simulate concurrent webhook deliveries
+    await Promise.all([
+      processWebhookEvent(event),
+      processWebhookEvent(event),
+      processWebhookEvent(event)
+    ])
+    
+    const listing = await prisma.listing.findUnique({ 
+      where: { id: session.metadata.listingId } 
+    })
+    expect(listing?.isPremium).toBe(true)
+    
+    const payments = await prisma.paymentHistory.count({
+      where: { stripePaymentIntentId: session.payment_intent }
+    })
+    expect(payments).toBeLessThanOrEqual(1)
+  })
+})
+```
+
+### Test Suite: Delayed Webhooks
+```typescript
+describe('Delayed Webhook Handling', () => {
+  it('should reconcile upgrade when webhook arrives late', async () => {
+    // User completes payment but webhook is delayed
+    const upgrade = await prisma.listingUpgrade.create({
+      data: {
+        listingId: testListing.id,
+        userId: testUser.id,
+        status: 'PROCESSING',
+        stripeCheckoutSessionId: 'cs_test_delayed',
+        idempotencyKey: 'test_delayed',
+        upgradeType: 'premium',
+        amount: 4900,
+        createdAt: new Date(Date.now() - 45 * 60 * 1000) // 45 mins ago
+      }
+    })
+
+    // Run reconciliation job
+    await reconcileStuckUpgrades()
+
+    const updated = await prisma.listingUpgrade.findUnique({ 
+      where: { id: upgrade.id } 
+    })
+    // Status should be updated based on Stripe session state
+    expect(['SUCCEEDED', 'CANCELLED']).toContain(updated?.status)
+  })
+
+  it('should not duplicate benefits if webhook arrives after reconciliation', 
+    async () => {
+      // Setup: Reconciliation already processed the upgrade
+      // Then: Delayed webhook arrives
+      // Verify: No duplicate updates occur
+    }
+  )
+})
+```
+
+### Test Suite: DB Failures After Stripe Success
+```typescript
+describe('DB Failure Recovery', () => {
+  it('should recover from DB failure after successful Stripe charge', async () => {
+    const session = createMockCheckoutSession({ type: 'listing_upgrade' })
+    
+    // First attempt fails at DB write
+    jest.spyOn(prisma.listingUpgrade, 'upsert')
+      .mockRejectedValueOnce(new Error('DB connection lost'))
+    
+    await expect(
+      processWebhookEvent(createEvent('checkout.session.completed', session))
+    ).rejects.toThrow()
+    
+    // StripeEvent is marked as FAILED
+    const failedEvent = await prisma.stripeEvent.findFirst({
+      where: { stripeEventId: session.id }
+    })
+    expect(failedEvent?.status).toBe('FAILED')
+    
+    // Retry via reconciliation or manual retry
+    await retryWebhookEvent(failedEvent!.id)
+    
+    // Verify upgrade is now processed
+    const upgrade = await prisma.listingUpgrade.findFirst({
+      where: { stripeCheckoutSessionId: session.id }
+    })
+    expect(upgrade?.status).toBe('SUCCEEDED')
+  })
+
+  it('should handle partial transaction rollback correctly', async () => {
+    // Upgrade record created but listing update fails
+    // Transaction should rollback both
+    // Reconciliation should re-process atomically
+  })
+})
+```
+
+### Test Suite: Payment Errors
+```typescript
+describe('Payment Error Handling', () => {
+  it('should handle declined card gracefully', async () => {
+    const response = await POST('/api/listings/test-id/upgrade', {
+      // Stripe test card that declines
+    })
+    
+    expect(response.status).toBe(400)
+    expect(response.body.error).toContain('declined')
+    expect(response.body.userMessage).toBeDefined()
+  })
+
+  it('should retry on transient Stripe errors', async () => {
+    mockStripe.checkout.sessions.create
+      .mockRejectedValueOnce(new StripeConnectionError())
+      .mockResolvedValueOnce({ id: 'cs_success', url: 'https://...' })
+    
+    const response = await POST('/api/listings/test-id/upgrade')
+    expect(response.status).toBe(200)
+  })
+
+  it('should respect rate limits with backoff', async () => {
+    // Simulate 429 responses and verify backoff behavior
+  })
+})
+```
+
+## 7. Cron Job Configuration
+
+Add to deployment/infrastructure:
+```yaml
+# Vercel cron.json or equivalent
+{
+  "crons": [
+    {
+      "path": "/api/cron/upgrade-expiry",
+      "schedule": "0 0 * * *"  # Daily at midnight UTC
+    },
+    {
+      "path": "/api/cron/upgrade-reconciliation",
+      "schedule": "*/15 * * * *"  # Every 15 minutes
+    },
+    {
+      "path": "/api/cron/renewal-reminders",
+      "schedule": "0 9 * * *"  # Daily at 9 AM UTC
+    }
+  ]
+}
+```
+
+## 8. Monitoring & Observability
+
+### Key Metrics to Track
+- `listing_upgrade.initiated` - Counter
+- `listing_upgrade.succeeded` - Counter
+- `listing_upgrade.failed` - Counter by reason
+- `listing_upgrade.refunded` - Counter
+- `listing_upgrade.expired` - Counter
+- `webhook.listing_upgrade.processed` - Counter
+- `webhook.listing_upgrade.duplicate` - Counter
+- `reconciliation.upgrades.recovered` - Counter
+
+### Alerts
+- High failure rate (>5% in 1 hour)
+- Reconciliation recovering >10 upgrades per run
+- Webhook processing time >5 seconds
+- Stuck upgrades >1 hour old

@@ -1,0 +1,28 @@
+# Task ID: 14
+# Title: Frontend Buyer Profile and Dashboard
+# Status: done
+# Dependencies: 7, 13
+# Priority: medium
+# Description: Implement frontend components for buyer profile creation, qualification badge display, and buyer dashboard.
+# Details:
+1. Create buyer profile form component
+2. Implement qualification badge display
+3. Create buyer dashboard:
+   - Profile overview
+   - Saved listings
+   - Active inquiries
+   - Dealroom access
+4. Implement SBA loan guidance component
+5. Create profile completeness indicator
+6. Add regions of interest selector
+7. Implement form validation
+8. Create responsive design for all components
+
+# Test Strategy:
+1. Test profile form submission
+2. Verify qualification badge display
+3. Test dashboard functionality
+4. Verify saved listings display
+5. Test SBA loan guidance
+6. Validate profile completeness indicator
+7. Test responsive design

@@ -1,0 +1,32 @@
+# Task ID: 8
+# Title: Frontend Listing Creation and Management
+# Status: done
+# Dependencies: 5, 7
+# Priority: high
+# Description: Implement frontend components for creating, editing, and managing listings with asset type-specific forms.
+# Details:
+1. Create listing creation form components:
+   - Multi-step form process
+   - Asset type selection
+   - Business listing form (full fields)
+   - Other asset types (basic fields)
+   - Financing terms section
+2. Implement listing management dashboard:
+   - Listing overview
+   - Edit listing
+   - Delete listing
+   - Change listing status
+3. Create asset type-specific form validation
+4. Implement image upload functionality
+5. Add financing calculator component
+6. Create listing preview before publishing
+7. Implement form state management with React hooks
+
+# Test Strategy:
+1. Test form submission with valid and invalid data
+2. Verify multi-step form navigation
+3. Test asset type-specific validation
+4. Verify image upload functionality
+5. Test financing calculator accuracy
+6. Validate listing preview
+7. Test form state persistence between steps

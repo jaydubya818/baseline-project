@@ -1,0 +1,28 @@
+# Task ID: 12
+# Title: Frontend NDA and Dealroom
+# Status: done
+# Dependencies: 10, 11
+# Priority: high
+# Description: Implement frontend components for NDA viewing, acceptance, and dealroom interaction with messaging.
+# Details:
+1. Create NDA viewer component
+2. Implement NDA acceptance flow
+3. Create dealroom interface:
+   - Message list
+   - Message composer
+   - Document sharing
+   - Activity timeline
+4. Implement real-time message updates
+5. Create document viewer component
+6. Add notification indicators for new messages
+7. Implement responsive design for dealroom
+8. Create loading states and error handling
+
+# Test Strategy:
+1. Test NDA viewing and acceptance
+2. Verify messaging interface
+3. Test document sharing and viewing
+4. Verify real-time updates
+5. Test notification system
+6. Validate responsive design
+7. Test performance with many messages

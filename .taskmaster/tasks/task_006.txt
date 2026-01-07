@@ -1,0 +1,34 @@
+# Task ID: 6
+# Title: Marketplace Search and Filtering
+# Status: done
+# Dependencies: 5
+# Priority: high
+# Description: Implement the marketplace search functionality with filters for asset type, price range, financing terms, location, and keyword search.
+# Details:
+1. Create search controller with filtering capabilities
+2. Implement search endpoints:
+   - GET /api/search
+   - GET /api/listings/featured
+3. Implement filters:
+   - Asset type filter
+   - Price range filter
+   - Minimum seller financing % filter
+   - Down payment range filter
+   - Location (City/State) filter
+   - Keyword search
+4. Add sorting options:
+   - Newest
+   - Most viewed
+   - Highest seller-finance %
+5. Implement pagination for search results
+6. Create search service layer with optimized queries
+7. Add view count tracking for listings
+
+# Test Strategy:
+1. Test each filter individually and in combination
+2. Verify sorting functionality
+3. Test pagination
+4. Verify keyword search accuracy
+5. Test performance with large dataset
+6. Validate view count tracking
+7. Test edge cases with unusual filter combinations

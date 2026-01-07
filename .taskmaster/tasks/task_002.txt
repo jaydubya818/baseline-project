@@ -1,0 +1,40 @@
+# Task ID: 2
+# Title: Database Schema Design and Prisma Setup
+# Status: done
+# Dependencies: 1
+# Priority: high
+# Description: Set up PostgreSQL database, configure Prisma ORM, and implement the data models as defined in the PRD.
+# Details:
+1. Install PostgreSQL locally or set up a cloud instance
+2. Install Prisma in the backend project:
+   ```bash
+   npm install prisma @prisma/client
+   npx prisma init
+   ```
+3. Configure the database connection in .env
+4. Implement the data models in schema.prisma as specified in the PRD:
+   - User model with roles
+   - Listing model with asset types
+   - FinancingTerms model
+   - BuyerProfile model
+   - Dealroom model
+   - Message model
+   - Document model for NDAs and confidential files
+   - Activity log model for dealroom interactions
+5. Create initial migrations:
+   ```bash
+   npx prisma migrate dev --name init
+   ```
+6. Generate Prisma client:
+   ```bash
+   npx prisma generate
+   ```
+7. Create a database service layer for interacting with the models
+
+# Test Strategy:
+1. Verify database connection
+2. Test migrations run successfully
+3. Validate schema against PRD requirements
+4. Create test data and verify CRUD operations
+5. Test relationships between models
+6. Ensure proper indexing for performance

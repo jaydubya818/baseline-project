@@ -1,0 +1,35 @@
+# Task ID: 22
+# Title: pgvector Extension and Vector Database Setup
+# Status: done
+# Dependencies: 2, 21
+# Priority: low
+# Description: Install and configure the pgvector extension for PostgreSQL and set up the vector database for RAG functionality.
+# Details:
+1. Install pgvector extension in PostgreSQL:
+   ```sql
+   CREATE EXTENSION vector;
+   ```
+2. Update Prisma schema to include vector fields:
+   ```prisma
+   model IndustryNorm {
+     id          String   @id @default(cuid())
+     assetType   AssetType
+     description String
+     embedding   Unsupported("vector")
+     createdAt   DateTime @default(now())
+   }
+   ```
+3. Create migration for vector tables
+4. Implement vector embedding generation
+5. Create seed data for industry norms
+6. Implement similarity search functionality
+7. Create vector database service layer
+
+# Test Strategy:
+1. Test pgvector extension installation
+2. Verify vector field creation
+3. Test embedding generation
+4. Verify similarity search accuracy
+5. Test performance with large vector dataset
+6. Validate seed data loading
+7. Test vector database service functions

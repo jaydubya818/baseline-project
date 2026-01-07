@@ -1,0 +1,315 @@
+# Task ID: 36
+# Title: Pro Seller Subscription - Extended Implementation Spec
+# Status: pending
+# Dependencies: 18, 15
+# Priority: high
+# Description: Extend the Pro Seller Subscription implementation with comprehensive security measures, error handling, webhook processing, subscription management flows, and API contracts to ensure a robust and secure billing system.
+# Details:
+## 1. ERROR HANDLING AND VALIDATION
+- Implement Zod schema validation for all subscription-related inputs:
+  ```typescript
+  // Example Zod schema for subscription creation
+  const subscriptionSchema = z.object({
+    planId: z.string().uuid(),
+    paymentMethodId: z.string().min(1),
+    couponCode: z.string().optional()
+  });
+  ```
+- Add Stripe API error handling with exponential backoff:
+  ```typescript
+  const MAX_RETRIES = 3;
+  async function callStripeWithRetry(fn: () => Promise<any>) {
+    let retries = 0;
+    while (retries < MAX_RETRIES) {
+      try {
+        return await fn();
+      } catch (error) {
+        retries++;
+        if (retries >= MAX_RETRIES) throw error;
+        const delay = Math.min(1000 * Math.pow(2, retries), 30000);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+  ```
+- Implement idempotency keys pattern using format: `sub_${userId}_${action}_${timestamp}`
+- Create user-facing error message mapping:
+  ```typescript
+  const errorMessages = {
+    CARD_DECLINED: "Your card was declined. Please try another payment method.",
+    EXPIRED_CARD: "Your card has expired. Please update your payment information.",
+    INSUFFICIENT_FUNDS: "Your card has insufficient funds.",
+    // Additional error mappings...
+  };
+  ```
+- Document expected status codes and their meanings (200, 400, 401, 403, 404, 409, 429, 500, 503)
+
+## 2. STRIPE WEBHOOK REQUIREMENTS
+- Configure webhook endpoint to handle required events:
+  - checkout.session.completed
+  - customer.subscription.created
+  - customer.subscription.updated
+  - customer.subscription.deleted
+  - invoice.payment_succeeded
+  - invoice.payment_failed
+  - invoice.upcoming
+  - charge.refunded
+- Implement webhook signature verification:
+  ```typescript
+  const signature = req.headers['stripe-signature'];
+  try {
+    const event = stripe.webhooks.constructEvent(
+      req.body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+    // Process event
+  } catch (err) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+  ```
+- Create StripeEvent table for idempotent processing:
+  ```prisma
+  model StripeEvent {
+    id        String   @id
+    type      String
+    processed Boolean  @default(false)
+    data      Json
+    createdAt DateTime @default(now())
+  }
+  ```
+- Implement structured JSON audit logging for all webhook events
+
+## 3. REFUND AND CANCELLATION POLICIES
+- Implement immediate vs end-of-period cancellation options:
+  ```typescript
+  async function cancelSubscription(subscriptionId: string, immediate: boolean) {
+    if (immediate) {
+      return stripe.subscriptions.del(subscriptionId);
+    } else {
+      return stripe.subscriptions.update(subscriptionId, {
+        cancel_at_period_end: true
+      });
+    }
+  }
+  ```
+- Define proration rules:
+  - Upgrades: Prorate immediately
+  - Downgrades: Apply at next billing cycle
+- Implement 7-day refund eligibility window with validation
+- Create admin workflows for refund/extend/override operations with proper authorization
+
+## 4. UPGRADE/DOWNGRADE FLOW
+- Implement immediate upgrades with proration:
+  ```typescript
+  async function upgradeSubscription(subscriptionId: string, newPriceId: string) {
+async function upgradeSubscription(subscriptionId: string, newPriceId: string) {
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  if (!subscription.items.data || subscription.items.data.length === 0) {
+    throw new Error('Subscription has no items to upgrade');
+  }
+  const subscriptionItemId = subscription.items.data[0].id;
+  return stripe.subscriptions.update(subscriptionId, {
+    proration_behavior: 'create_prorations',
+    items: [{
+      id: subscriptionItemId,
+      price: newPriceId,
+    }]
+  });
+}
+    return stripe.subscriptions.update(subscriptionId, {
+      proration_behavior: 'create_prorations',
+      items: [{
+        id: subscriptionItemId,
+        price: newPriceId,
+      }]
+    });
+  }
+  ```
+- Implement scheduled downgrades for next billing cycle
+- Add special handling for 14-day trial for first-time Starter subscribers
+- Document proration calculation methodology for transparency
+
+## 5. SECURITY REQUIREMENTS
+- Minimize PCI scope by using Stripe Elements only, never handling raw card data
+- Store only necessary tokens (stripeCustomerId, stripeSubscriptionId)
+- Implement proper authentication and authorization:
+  ```typescript
+  // Middleware to verify subscription ownership
+  function verifySubscriptionOwnership(req, res, next) {
+    if (req.user.id !== req.subscription.userId && !req.user.isAdmin) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+    next();
+  }
+  ```
+- Add rate limiting (10 changes per user per hour):
+  ```typescript
+  const rateLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 10, // 10 requests per hour
+    message: 'Too many subscription changes, please try again later'
+  });
+  ```
+- Ensure data encryption at rest and implement structured logging
+
+## 6. API CONTRACTS
+- POST /api/billing/subscribe
+  - Request: { planId, paymentMethodId, couponCode? }
+  - Response: { subscriptionId, status, currentPeriodEnd, planDetails }
+- GET /api/billing/subscription
+  - Response: { subscriptionId, status, planDetails, currentPeriodEnd, paymentMethod, invoices }
+- POST /api/billing/cancel-subscription
+  - Request: { immediate: boolean }
+  - Response: { status, effectiveDate }
+- POST /api/billing/upgrade
+  - Request: { newPlanId }
+  - Response: { status, prorationAmount, effectiveDate }
+- POST /api/billing/resume-subscription
+  - Request: {}
+  - Response: { status, currentPeriodEnd }
+
+## 7. IMPLEMENTATION APPROACH
+- Leverage existing code in lib/webhook-processor.ts, lib/stripe.ts, and lib/stripe/webhook-handler.ts
+- Extend current subscription models with additional fields for tracking status changes
+- Create new utility functions for handling proration calculations and refund eligibility
+- Implement comprehensive error handling throughout the subscription lifecycle
+
+# Test Strategy:
+## Testing Strategy
+
+### 1. Unit Tests
+- Create unit tests for all Zod schemas:
+  ```typescript
+  test('subscription schema validates correct input', () => {
+    const validInput = { planId: 'valid-uuid', paymentMethodId: 'pm_123456' };
+    expect(() => subscriptionSchema.parse(validInput)).not.toThrow();
+  });
+  
+  test('subscription schema rejects invalid input', () => {
+    const invalidInput = { planId: 'invalid', paymentMethodId: '' };
+    expect(() => subscriptionSchema.parse(invalidInput)).toThrow();
+  });
+  ```
+- Test error mapping functions with various Stripe error codes
+- Create unit tests for proration calculations:
+  ```typescript
+  test('proration calculation for upgrade is correct', () => {
+    const result = calculateProration({
+      currentPlan: 'starter',
+      newPlan: 'professional',
+      daysRemaining: 15,
+      totalDays: 30
+    });
+    expect(result).toEqual(expectedAmount);
+  });
+  ```
+- Test retry logic with mocked timeouts and failures
+
+### 2. Integration Tests
+- Test webhook signature verification:
+  ```typescript
+  test('webhook rejects invalid signatures', async () => {
+    const response = await request(app)
+      .post('/api/webhooks/stripe')
+      .set('stripe-signature', 'invalid-signature')
+      .send(mockWebhookPayload);
+    
+    expect(response.status).toBe(400);
+  });
+  ```
+- Verify idempotent webhook processing by sending duplicate events
+- Test subscription lifecycle flows (create, upgrade, downgrade, cancel, resume)
+- Verify rate limiting functionality works as expected
+- Test authorization checks for subscription management
+
+### 3. E2E Tests with Stripe Test Mode
+- Create end-to-end tests using Stripe test mode:
+  ```typescript
+  test('complete subscription lifecycle', async () => {
+    // Create subscription
+    const subscription = await createSubscription(testUser.id, 'price_starter');
+    expect(subscription.status).toBe('active');
+    
+    // Upgrade subscription
+    const upgraded = await upgradeSubscription(subscription.id, 'price_professional');
+    expect(upgraded.items.data[0].price.id).toBe('price_professional');
+    
+    // Cancel subscription
+    const cancelled = await cancelSubscription(subscription.id);
+    expect(cancelled.cancel_at_period_end).toBe(true);
+  });
+  ```
+- Test webhook handling with Stripe CLI to simulate real webhook events
+- Verify correct database state after each subscription operation
+- Test refund flows with Stripe test cards
+- Validate error scenarios (declined cards, insufficient funds)
+
+### 4. Security Testing
+- Perform penetration testing on subscription endpoints
+- Verify PCI compliance by ensuring no card data is logged or stored
+- Test rate limiting by exceeding allowed requests
+- Verify authorization checks prevent unauthorized subscription access
+- Test data encryption for sensitive subscription information
+
+# Subtasks:
+## 1. Implement Zod Schema Validation for Subscription Inputs [pending]
+### Dependencies: None
+### Description: Create comprehensive Zod schemas for all subscription-related inputs to ensure data validation before processing.
+### Details:
+Create a validation.ts file in the lib/subscription directory with Zod schemas for: subscription creation, cancellation, upgrade/downgrade, payment method updates, and coupon application. Include custom error messages for each validation failure case. Implement a validateRequest middleware that uses these schemas to validate incoming requests before they reach the controllers.
+
+## 2. Develop Stripe API Error Handling Service with Exponential Backoff [pending]
+### Dependencies: None
+### Description: Create a robust error handling service for Stripe API calls that implements exponential backoff for transient errors.
+### Details:
+Create a stripe-service.ts file that implements the callStripeWithRetry function with configurable retry attempts and backoff strategy. Add specific error categorization for Stripe errors (network, authentication, rate limiting, etc.). Implement proper logging for retry attempts and failures. Ensure idempotency keys are used for all Stripe API calls that support them, following the format `sub_${userId}_${action}_${timestamp}`.
+
+## 3. Create User-Facing Error Message System [pending]
+### Dependencies: 36.2
+### Description: Implement a comprehensive error message mapping system that translates technical errors into user-friendly messages.
+### Details:
+Create an errors.ts file with a mapping of error codes to user-friendly messages for all possible Stripe and application errors. Implement a function that takes a technical error and returns an appropriate user message and HTTP status code. Add support for localization of error messages. Create a consistent error response format for all API endpoints.
+
+## 4. Implement Stripe Webhook Processing System [pending]
+### Dependencies: 36.2, 36.3
+### Description: Create a secure and robust system for processing Stripe webhooks with signature verification and idempotent event handling.
+### Details:
+Extend the webhook-handler.ts to verify Stripe signatures for all incoming webhook requests. Create a StripeEvent table in the database for tracking processed events. Implement handlers for all required webhook events (checkout.session.completed, customer.subscription.created, etc.). Add structured logging for webhook processing. Ensure idempotent processing by checking if an event has already been processed before handling it.
+
+## 5. Develop Subscription Cancellation and Refund System [pending]
+### Dependencies: 36.2, 36.3
+### Description: Implement the logic for handling subscription cancellations with immediate or end-of-period options and refund processing.
+### Details:
+Create a cancellation-service.ts file that implements immediate and end-of-period cancellation options. Add refund eligibility checking based on the 7-day window. Implement the database updates needed when a subscription is cancelled. Create an admin interface for manual refund processing with proper authorization checks. Add audit logging for all cancellation and refund actions.
+
+## 6. Implement Subscription Upgrade and Downgrade Logic [pending]
+### Dependencies: 36.2, 36.3, 36.5
+### Description: Create the system for handling subscription plan changes with appropriate proration rules.
+### Details:
+Create a plan-change-service.ts file that implements immediate upgrades with proration and scheduled downgrades for the next billing cycle. Add proration calculation functions that estimate the cost of plan changes. Implement the database updates needed when a subscription plan changes. Add support for special handling of 14-day trials for first-time Starter subscribers. Create clear user notifications about proration and effective dates.
+
+## 7. Implement Trial Period and Subscription Status Management [pending]
+### Dependencies: 36.4, 36.6
+### Description: Develop the system for managing trial periods, subscription status transitions, and related user permissions.
+### Details:
+Create a subscription-status-service.ts file that tracks and updates subscription statuses based on webhook events and user actions. Implement the 14-day trial logic for first-time subscribers. Add functions to check if a user has active subscription permissions. Create a system for handling grace periods after failed payments. Implement subscription resumption logic for recently cancelled subscriptions.
+
+## 8. Develop Admin Subscription Management API [pending]
+### Dependencies: 36.5, 36.6, 36.7
+### Description: Create secure API endpoints for administrative management of user subscriptions with proper authorization.
+### Details:
+Create admin-subscription-controller.ts with endpoints for viewing all subscriptions, manually updating subscription status, processing refunds, extending subscriptions, and overriding normal limitations. Implement strict authorization checks that only allow admin users to access these endpoints. Add comprehensive audit logging for all admin actions. Create database queries optimized for filtering and paginating subscription data.
+
+## 9. Implement Security Hardening for Subscription System [pending]
+### Dependencies: 36.1, 36.3, 36.4
+### Description: Add security measures including rate limiting, ownership verification, and proper authentication for all subscription-related endpoints.
+### Details:
+Create security middleware for rate limiting subscription-related actions (10 per hour per user). Implement the verifySubscriptionOwnership middleware to ensure users can only access their own subscriptions. Add CSRF protection for all state-changing endpoints. Ensure all endpoints require proper authentication. Implement structured logging with PII redaction. Configure proper CORS settings for subscription endpoints.
+
+## 10. Create Comprehensive Test Suite for Subscription System [pending]
+### Dependencies: 36.1, 36.2, 36.3, 36.4, 36.5, 36.6, 36.7, 36.8, 36.9
+### Description: Develop a complete test suite covering unit, integration, and end-to-end tests for the subscription system.
+### Details:
+Create unit tests for all validation schemas, utility functions, and isolated business logic. Develop integration tests that verify the interaction between components and with the database. Implement end-to-end tests that simulate complete user flows from subscription creation to cancellation. Create test fixtures and mocks for Stripe API responses. Add performance tests for webhook processing under load. Implement security-focused tests that attempt to bypass validations and access controls.
+

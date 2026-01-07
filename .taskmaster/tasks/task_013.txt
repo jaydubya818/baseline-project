@@ -1,0 +1,30 @@
+# Task ID: 13
+# Title: Buyer Profile and Qualification System
+# Status: done
+# Dependencies: 4
+# Priority: medium
+# Description: Implement the buyer profile creation and qualification badge system based on liquidity, experience, and other factors.
+# Details:
+1. Create buyer profile controller with CRUD operations
+2. Implement buyer profile endpoints:
+   - POST /api/buyer-profile
+   - GET /api/buyer-profile
+   - PUT /api/buyer-profile
+3. Create qualification badge logic based on:
+   - Liquidity available
+   - Industry experience
+   - Max monthly payment
+   - Regions of interest
+4. Implement profile completeness calculation
+5. Create buyer dashboard endpoints
+6. Add saved listings functionality
+7. Implement SBA loan hints and guidance
+
+# Test Strategy:
+1. Test buyer profile creation and updating
+2. Verify qualification badge logic
+3. Test profile completeness calculation
+4. Verify saved listings functionality
+5. Test SBA loan hints
+6. Validate buyer dashboard data
+7. Test performance with multiple profiles

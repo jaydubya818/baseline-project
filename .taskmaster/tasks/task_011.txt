@@ -1,0 +1,878 @@
+# Task ID: 11
+# Title: Dealroom and Messaging System
+# Status: pending
+# Dependencies: 10
+# Priority: high
+# Description: Implement the dealroom functionality with in-app messaging, document sharing, and activity timeline.
+# Details:
+1. Create dealroom controller with CRUD operations
+2. Implement messaging endpoints:
+   - POST /api/dealrooms/:id/messages
+   - GET /api/dealrooms/:id/messages
+3. Create dealroom creation endpoint:
+   - POST /api/dealrooms
+   - GET /api/dealrooms
+   - GET /api/dealrooms/:id
+4. Implement document sharing within dealrooms
+5. Create activity timeline tracking
+6. Implement real-time messaging with WebSockets
+7. Add permission management for dealroom access
+8. Create notification system for new messages
+
+================================================================================
+TECHNICAL SPECIFICATIONS
+================================================================================
+
+## API Request/Response Schemas
+
+### 1. Dealroom CRUD Endpoints
+
+#### POST /api/dealrooms
+Creates a new dealroom (typically via NDA acceptance flow).
+
+Request Body:
+```json
+{
+  "listingId": "clxyz123...",    // Required: cuid listing ID
+  "acceptNda": true              // Required: must be true to create
+}
+```
+
+Response (201 Created):
+```json
+{
+  "success": true,
+  "dealroomId": "clxyz456...",
+  "fastTracked": false
+}
+```
+
+Error Response (400/401/403):
+```json
+{
+  "success": false,
+  "error": "Only buyers can sign NDAs" | "Complete your buyer profile first" | "Listing not found"
+}
+```
+
+Validation Rules:
+- User must be authenticated (401 if not)
+- User must have role=BUYER
+- User must have canAccessNDA=true in BuyerProfile (OR isEliteBuyer=true for fast-track)
+- Listing must exist and have status=ACTIVE
+- User cannot create dealroom on own listing (sellerId !== user.id)
+- Unique constraint: (listingId, buyerId) - no duplicate dealrooms
+
+#### GET /api/dealrooms
+Response (200 OK):
+```json
+{
+  "dealrooms": [
+    {
+      "id": "clxyz456...",
+      "status": "NDA_SIGNED",
+      "listingId": "clxyz123...",
+      "listing": {
+        "id": "clxyz123...",
+        "title": "Coffee Shop Business",
+        "publicLabel": "Downtown Coffee Shop"
+      },
+      "listingTitle": "Downtown Coffee Shop",
+      "otherPartyName": "John D.",
+      "lastActivityAt": "2026-01-05T10:30:00.000Z"
+    }
+  ]
+}
+```
+
+#### GET /api/dealrooms/:id
+Response (200 OK):
+```json
+{
+  "id": "clxyz456...",
+  "status": "NDA_SIGNED",
+  "listingId": "clxyz123...",
+  "buyerId": "buyer123...",
+  "sellerId": "seller456...",
+  "ndaAccepted": true,
+  "ndaAcceptedAt": "2026-01-05T09:00:00.000Z",
+  "loiSubmitted": false,
+  "lastActivityAt": "2026-01-05T10:30:00.000Z",
+  "createdAt": "2026-01-05T09:00:00.000Z",
+  "listing": {
+    "id": "clxyz123...",
+    "title": "Coffee Shop Business",
+    "publicLabel": "Downtown Coffee Shop",
+    "assetType": "BUSINESS",
+    "financials": {
+      "askingPrice": 350000
+    }
+  },
+  "buyer": {
+    "id": "buyer123...",
+    "firstName": "John",
+    "lastName": "Doe"
+  },
+  "seller": {
+    "id": "seller456...",
+    "firstName": "Jane",
+    "lastName": "Smith"
+  },
+  "messages": [...],
+  "documents": [...],
+  "activities": [...]
+}
+```
+
+--------------------------------------------------------------------------------
+### 2. Messaging Endpoints
+
+#### POST /api/dealrooms/:id/messages
+Request Body:
+```json
+{
+  "content": "Hello, I'm interested in learning more about the business.",
+  "attachments": []  // Optional: array of document IDs
+}
+```
+
+Validation Rules:
+- content: string, required, 1-10000 characters, trimmed
+- attachments: string[], optional. If present, every element MUST pass:
+  1. Format check: each ID must match CUID format (regex: /^c[a-z0-9]{24}$/)
+  2. Existence check: each ID must exist in the Document store (via getDocumentById or prisma.document.findMany)
+  3. Membership check: each document.dealroomId must equal the target dealroom ID (req.params.id)
+  - Any invalid format, non-existent ID, or cross-dealroom reference returns HTTP 400 with a clear error message
+  - Invalid IDs are NOT silently omitted - validation fails the entire request
+  - The validateAttachments() function performs existence and membership checks in a single query
+- User must be buyer, seller, or assigned advisor for this dealroom
+
+Response (201 Created):
+```json
+{
+  "success": true,
+  "message": {
+    "id": "msg_abc123...",
+    "dealroomId": "clxyz456...",
+    "senderId": "buyer123...",
+    "content": "Hello, I'm interested in learning more about the business.",
+    "isRead": false,
+    "readAt": null,
+    "attachments": [],
+    "createdAt": "2026-01-05T10:35:00.000Z",
+    "sender": {
+      "id": "buyer123...",
+      "firstName": "John",
+      "lastName": "Doe"
+    }
+  }
+}
+```
+
+#### GET /api/dealrooms/:id/messages
+Query Parameters:
+- cursor?: string (message ID for pagination)
+- limit?: number (default 50, max 100)
+- before?: ISO8601 date string (filter messages before date)
+- after?: ISO8601 date string (filter messages after date)
+
+Response (200 OK):
+```json
+{
+  "messages": [
+    {
+      "id": "msg_abc123...",
+      "dealroomId": "clxyz456...",
+      "senderId": "buyer123...",
+      "content": "Hello, I'm interested...",
+      "isRead": true,
+      "readAt": "2026-01-05T10:40:00.000Z",
+      "attachments": [],
+      "createdAt": "2026-01-05T10:35:00.000Z",
+      "sender": {
+        "id": "buyer123...",
+        "firstName": "John",
+        "lastName": "Doe"
+      }
+    }
+  ],
+  "nextCursor": "msg_xyz789...",
+  "hasMore": true
+}
+```
+
+#### PATCH /api/dealrooms/:id/messages/read
+Mark messages as read.
+
+Request Body:
+```json
+{
+  "messageIds": ["msg_abc123...", "msg_def456..."]
+}
+```
+
+Response (200 OK):
+```json
+{
+  "success": true,
+  "markedCount": 2
+}
+```
+
+--------------------------------------------------------------------------------
+### 3. Document Sharing Endpoints
+
+#### POST /api/documents/upload
+Request: multipart/form-data
+- file: File (required)
+- dealroomId?: string (cuid, optional)
+- listingId?: string (cuid, optional)
+- docType?: DocumentType enum (default: "OTHER")
+- title?: string (default: filename)
+- description?: string
+- isConfidential?: boolean (default: true)
+- requiresNDA?: boolean (default: true)
+
+Validation Rules:
+- Allowed MIME types: application/pdf, image/jpeg, image/png, image/gif, image/webp,
+  application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document,
+  application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+- Max file size: 25MB (26214400 bytes)
+- User must be buyer/seller in dealroom OR seller for listing
+- Filename sanitized: alphanumeric, hyphens, underscores, dots only
+
+Response (201 Created):
+```json
+{
+  "success": true,
+  "documentId": "doc_abc123...",
+  "document": {
+    "id": "doc_abc123...",
+    "title": "Q3 Financial Report.pdf",
+    "fileName": "q3-financial-report-1736152800.pdf",
+    "fileUrl": "/api/documents/download/doc_abc123...",
+    "fileSize": 1048576,
+    "mimeType": "application/pdf",
+    "docType": "FINANCIALS",
+    "isConfidential": true,
+    "requiresNDA": true,
+    "createdAt": "2026-01-05T11:00:00.000Z"
+  }
+}
+```
+
+#### GET /api/dealrooms/:id/documents
+Response (200 OK):
+```json
+{
+  "documents": [
+    {
+      "id": "doc_abc123...",
+      "title": "NDA - Downtown Coffee Shop",
+      "description": "Non-Disclosure Agreement signed by buyer",
+      "docType": "NDA_SIGNED",
+      "fileName": "nda-clxyz456-1736150400.txt",
+      "fileUrl": "/api/documents/download/doc_abc123...",
+      "fileSize": 2048,
+      "mimeType": "text/plain",
+      "isConfidential": true,
+      "requiresNDA": false,
+      "signatureStatus": "SIGNED",
+      "signedAt": "2026-01-05T09:00:00.000Z",
+      "createdAt": "2026-01-05T09:00:00.000Z",
+      "uploadedById": "buyer123..."
+    }
+  ]
+}
+```
+
+#### GET /api/documents/download/:documentId
+Returns signed URL or streams file with proper Content-Type/Content-Disposition headers.
+
+Access Control:
+- User must be authenticated
+- User must be buyer/seller in associated dealroom OR
+- User must be seller of associated listing OR
+- Document requiresNDA=true AND dealroom.ndaAccepted must be true
+
+--------------------------------------------------------------------------------
+### 4. Activity Timeline Endpoints
+
+#### GET /api/dealrooms/:id/activities
+Query Parameters:
+- limit?: number (default 20, max 100)
+- cursor?: string (activity ID for pagination)
+- types?: comma-separated ActivityType values
+
+Response (200 OK):
+```json
+{
+  "activities": [
+    {
+      "id": "act_abc123...",
+      "userId": "buyer123...",
+      "dealroomId": "clxyz456...",
+      "activityType": "NDA_SIGNED",
+      "description": "NDA signed",
+      "metadata": {
+        "fastTracked": false
+      },
+      "createdAt": "2026-01-05T09:00:00.000Z",
+      "user": {
+        "id": "buyer123...",
+        "firstName": "John",
+        "role": "BUYER"
+      }
+    }
+  ],
+  "nextCursor": "act_xyz789...",
+  "hasMore": true
+}
+```
+
+================================================================================
+## Data Models (Prisma Schema Reference)
+================================================================================
+
+### Dealroom Model
+```prisma
+model Dealroom {
+  id                String             @id @default(cuid())
+  listingId         String             // FK to Listing
+  buyerId           String             // FK to User (buyer)
+  sellerId          String             // FK to User (seller)
+  status            DealroomStatus     @default(DISCOVERY)
+  // Enum: DISCOVERY, NDA_PENDING, NDA_SIGNED, INITIAL_REVIEW, DUE_DILIGENCE,
+  //       NEGOTIATION, LOI_PENDING, LOI_SIGNED, UNDER_CONTRACT, CLOSED_WON, CLOSED_LOST
+  ndaRequested      Boolean            @default(false)
+  ndaRequestedAt    DateTime?
+  ndaAccepted       Boolean            @default(false)
+  ndaAcceptedAt     DateTime?
+  loiSubmitted      Boolean            @default(false)
+  loiSubmittedAt    DateTime?
+  lastActivityAt    DateTime           @default(now())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  deletedAt         DateTime?          // Soft delete
+  adminOwnerId      String?            // Optional admin assignment
+  
+  // Relations
+  listing           Listing
+  buyer             User
+  seller            User
+  messages          Message[]
+  documents         Document[]
+  activities        Activity[]
+  
+  // Unique: one dealroom per buyer-listing pair
+  @@unique([listingId, buyerId])
+  
+  // Indexes for query performance
+  @@index([listingId])
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([status])
+  @@index([lastActivityAt])
+}
+```
+
+### Message Model
+```prisma
+model Message {
+  id          String    @id @default(cuid())
+  dealroomId  String    // FK to Dealroom, required
+  senderId    String    // FK to User, required
+  content     String    // 1-10000 chars
+  isRead      Boolean   @default(false)
+  readAt      DateTime?
+  attachments String[]  // Array of document IDs
+  createdAt   DateTime  @default(now())
+  
+  // Relations
+  dealroom    Dealroom  @relation(onDelete: Cascade)
+  sender      User
+  
+  // Indexes
+  @@index([dealroomId])
+  @@index([senderId])
+  @@index([createdAt])
+}
+```
+
+### Document Model
+```prisma
+model Document {
+  id                 String          @id @default(cuid())
+  dealroomId         String?         // FK to Dealroom, nullable
+  listingId          String?         // FK to Listing, nullable
+  title              String          // 1-255 chars
+  description        String?         // Max 2000 chars
+  docType            DocumentType
+  // Enum: NDA_TEMPLATE, NDA_SIGNED, LOI_TEMPLATE, LOI_SIGNED, FINANCIALS,
+  //       TAX_RETURNS, BUSINESS_PLAN, ASSET_LIST, LEASE_AGREEMENT, OTHER, etc.
+  fileName           String          // Sanitized filename
+  fileUrl            String          // Path or signed URL
+  fileSize           Int?            // Bytes
+  mimeType           String?         // MIME type
+  isConfidential     Boolean         @default(true)
+  requiresNDA        Boolean         @default(true)
+  requiresSignature  Boolean         @default(false)
+  signatureStatus    SignatureStatus @default(NOT_REQUIRED)
+  // Enum: NOT_REQUIRED, PENDING, SENT, VIEWED, SIGNED, DECLINED, EXPIRED
+  signedAt           DateTime?
+  signedByUserId     String?
+  uploadedById       String?
+  version            Int             @default(1)
+  parentDocId        String?         // For versioning
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  
+  // Indexes
+  @@index([dealroomId])
+  @@index([listingId])
+  @@index([docType])
+  @@index([signatureStatus])
+}
+```
+
+### Activity Model
+```prisma
+model Activity {
+  id           String       @id @default(cuid())
+  userId       String?      // FK to User, nullable for system events
+  dealroomId   String?      // FK to Dealroom
+  listingId    String?      // FK to Listing
+  documentId   String?      // FK to Document
+  activityType ActivityType
+  // Enum: LISTING_VIEWED, NDA_REQUESTED, NDA_SIGNED, MESSAGE_SENT,
+  //       DOCUMENT_VIEWED, DOCUMENT_DOWNLOADED, LOI_SUBMITTED,
+  //       TERM_SHEET_CREATED, PROFILE_UPDATED, DEALROOM_CREATED, STAGE_ADVANCED
+  description  String?      // Human-readable description
+  metadata     Json?        // Additional context (e.g., { fastTracked: true })
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime     @default(now())
+  
+  // Indexes
+  @@index([userId])
+  @@index([dealroomId])
+  @@index([activityType])
+  @@index([createdAt])
+}
+```
+
+================================================================================
+## Permission Rules (RBAC/ACL)
+================================================================================
+
+### Dealroom Access Matrix
+| Action                                 | Buyer      | Seller     | Advisor    | Admin |
+|----------------------------------------|------------|------------|------------|-------|
+| View dealroom                          | ✅ (own)   | ✅ (own)   | ✅         | ✅    |
+| Send message                           | ✅         | ✅         | ✅         | ✅    |
+| Read messages                          | ✅         | ✅         | ✅         | ✅    |
+| Upload document                        | ✅         | ✅         | ✅         | ✅    |
+| Download document (requiresNDA=true)   | ✅ (NDA)   | ✅         | ✅         | ✅    |
+| Delete document                        | ✅ (own)   | ✅ (own)   | ❌         | ✅    |
+| Advance stage                          | ❌         | ✅         | ❌         | ✅    |
+| Delete dealroom                        | ❌         | ❌         | ❌         | ✅    |
+
+### Permission Check Implementation
+```typescript
+async function checkDealroomAccess(dealroomId: string, userId: string): Promise<{
+  hasAccess: boolean;
+  role: 'buyer' | 'seller' | 'advisor' | 'admin' | null;
+}> {
+  const dealroom = await prisma.dealroom.findUnique({
+    where: { id: dealroomId },
+    include: {
+      managedDeal: {
+        include: { advisor: { select: { userId: true } } }
+      }
+    }
+  });
+  
+  if (!dealroom) return { hasAccess: false, role: null };
+  if (dealroom.deletedAt) return { hasAccess: false, role: null };
+  
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) return { hasAccess: false, role: null };
+  
+  if (user.role === 'ADMIN') return { hasAccess: true, role: 'admin' };
+  if (dealroom.buyerId === userId) return { hasAccess: true, role: 'buyer' };
+  if (dealroom.sellerId === userId) return { hasAccess: true, role: 'seller' };
+  if (dealroom.managedDeal?.advisor?.userId === userId) {
+    return { hasAccess: true, role: 'advisor' };
+  }
+  
+  return { hasAccess: false, role: null };
+}
+```
+
+================================================================================
+## WebSocket/SSE Real-Time Messaging
+================================================================================
+
+### Connection & Authentication (Socket.IO)
+```typescript
+// Client connection
+const socket = io({
+  auth: {
+    userId: "user123...",    // Required
+    token: "session_token"   // Optional: validated server-side
+  }
+});
+
+// Server authentication middleware
+io.use((socket, next) => {
+  const userId = socket.handshake.auth?.userId;
+  if (!userId) {
+    return next(new Error("Authentication required"));
+  }
+  // Optional: validate session token against database
+  socket.data = { userId, dealroomIds: new Set() };
+  next();
+});
+```
+
+### WebSocket Event Types
+
+#### Client → Server Events
+```typescript
+interface ClientEvents {
+  joinDealroom: (dealroomId: string) => void;
+  leaveDealroom: (dealroomId: string) => void;
+  sendMessage: (data: {
+    dealroomId: string;
+    content: string;
+    attachments?: string[];
+  }) => void;
+  markMessageRead: (data: {
+    messageId: string;
+    dealroomId: string;
+  }) => void;
+  startTyping: (dealroomId: string) => void;
+  stopTyping: (dealroomId: string) => void;
+}
+```
+
+#### Server → Client Events
+```typescript
+interface ServerEvents {
+  connected: { socketId: string };
+  error: { message: string; code?: string };
+  
+  // Message events
+  newMessage: {
+    id: string;
+    dealroomId: string;
+    senderId: string;
+    content: string;
+    createdAt: string;
+    sender: { id: string; firstName: string; lastName: string };
+  };
+  messageRead: {
+    messageId: string;
+    dealroomId: string;
+    readAt: string;
+  };
+  
+  // Typing indicators
+  userTyping: { dealroomId: string; userId: string; userName: string };
+  userStoppedTyping: { dealroomId: string; userId: string };
+  
+  // Activity updates
+  activityCreated: {
+    id: string;
+    dealroomId: string;
+    activityType: string;
+    description: string;
+    createdAt: string;
+  };
+  
+  // Document events
+  documentUploaded: {
+    dealroomId: string;
+    document: { id: string; title: string; docType: string };
+  };
+}
+```
+
+### SSE Fallback (Server-Sent Events)
+For environments without WebSocket support:
+
+Endpoint: GET /api/dealrooms/:id/messages/stream
+
+Event Format:
+```
+data: {"type":"connected","dealroomId":"clxyz456..."}
+
+data: {"type":"message","data":{"id":"msg_abc...","content":"Hello","senderId":"user123","createdAt":"2026-01-05T10:35:00.000Z"}}
+
+data: {"type":"messageRead","data":{"messageId":"msg_abc...","readAt":"2026-01-05T10:40:00.000Z"}}
+```
+
+================================================================================
+## Document Storage Backend
+================================================================================
+
+### Storage Configuration
+- Development: Local filesystem (/tmp/documents or uploads/documents)
+- Production: Vercel Blob, AWS S3, or similar cloud storage
+
+### File Handling Configuration
+```typescript
+interface DocumentUploadConfig {
+  allowedMimeTypes: [
+    'application/pdf',
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  ];
+  maxFileSizeBytes: 26214400; // 25MB
+  filenamePattern: /^[a-zA-Z0-9._-]+$/;
+}
+
+interface StoredDocument {
+  storagePath: string;      // e.g., "dealrooms/clxyz456/documents/uuid.pdf"
+  accessUrl: string;        // Signed URL or API endpoint
+  expiresAt?: Date;         // For signed URLs
+}
+```
+
+### Document Lifecycle & Retention
+- Active dealrooms: Documents retained indefinitely
+- Closed dealrooms (CLOSED_WON): Retained 7 years (legal compliance)
+- Closed dealrooms (CLOSED_LOST): Retained 1 year, then purged
+- Soft-deleted dealrooms: Documents retained 90 days before purge
+
+### Signed URL Generation
+```typescript
+async function getDocumentAccessUrl(documentId: string, userId: string): Promise<string> {
+  const doc = await prisma.document.findUnique({
+    where: { id: documentId },
+    include: { dealroom: true }
+  });
+  
+  // Check access permissions
+  if (!doc.dealroom && !doc.listing) {
+    throw new Error('Document not associated with a dealroom or listing');
+  }
+  
+  const access = await checkDealroomAccess(doc.dealroom.id, userId);
+  if (!access.hasAccess) throw new Error('Unauthorized');
+  
+  if (doc.requiresNDA && !doc.dealroom.ndaAccepted && access.role === 'buyer') {
+    throw new Error('NDA required to access this document');
+  }
+  
+  // Generate signed URL (example with Vercel Blob)
+  return await getSignedUrl(doc.fileUrl, { expiresIn: 3600 }); // 1 hour
+}
+
+================================================================================
+## Sample cURL Requests
+================================================================================
+
+### Create Dealroom (Accept NDA)
+```bash
+curl -X POST https://api.example.com/api/dealrooms \
+  -H "Content-Type: application/json" \
+  -H "Cookie: next-auth.session-token=..." \
+  -d '{
+    "listingId": "clxyz123abc",
+    "acceptNda": true
+  }'
+```
+
+### Send Message
+```bash
+curl -X POST https://api.example.com/api/dealrooms/clxyz456/messages \
+  -H "Content-Type: application/json" \
+  -H "Cookie: next-auth.session-token=..." \
+  -d '{
+    "content": "Hello, I would like to schedule a call to discuss the financials."
+  }'
+
+# Expected Response (201):
+{
+  "success": true,
+  "message": {
+    "id": "msg_abc123",
+    "dealroomId": "clxyz456",
+    "senderId": "user123",
+    "content": "Hello, I would like to schedule a call to discuss the financials.",
+    "isRead": false,
+    "createdAt": "2026-01-05T10:35:00.000Z"
+  }
+}
+```
+
+### Get Messages with Pagination
+```bash
+curl -X GET "https://api.example.com/api/dealrooms/clxyz456/messages?limit=20&cursor=msg_xyz789" \
+  -H "Cookie: next-auth.session-token=..."
+
+# Expected Response (200):
+{
+  "messages": [...],
+  "nextCursor": "msg_abc999",
+  "hasMore": true
+}
+```
+
+### Upload Document
+```bash
+curl -X POST https://api.example.com/api/documents/upload \
+  -H "Cookie: next-auth.session-token=..." \
+  -F "file=@/path/to/financials.pdf" \
+  -F "dealroomId=clxyz456" \
+  -F "docType=FINANCIALS" \
+  -F "title=Q3 2025 Financial Report" \
+  -F "isConfidential=true"
+
+# Expected Response (201):
+{
+  "success": true,
+  "documentId": "doc_abc123",
+  "document": {
+    "id": "doc_abc123",
+    "title": "Q3 2025 Financial Report",
+    "fileUrl": "/api/documents/download/doc_abc123"
+  }
+}
+```
+
+### Mark Messages as Read
+```bash
+curl -X PATCH https://api.example.com/api/dealrooms/clxyz456/messages/read \
+  -H "Content-Type: application/json" \
+  -H "Cookie: next-auth.session-token=..." \
+  -d '{
+    "messageIds": ["msg_abc123", "msg_def456"]
+  }'
+
+# Expected Response (200):
+{
+  "success": true,
+  "markedCount": 2
+}
+```
+
+### Get Activity Timeline
+```bash
+curl -X GET "https://api.example.com/api/dealrooms/clxyz456/activities?limit=20&types=MESSAGE_SENT,DOCUMENT_UPLOADED" \
+  -H "Cookie: next-auth.session-token=..."
+
+# Expected Response (200):
+{
+  "activities": [
+    {
+      "id": "act_abc123",
+      "activityType": "MESSAGE_SENT",
+      "description": "Message sent",
+      "createdAt": "2026-01-05T10:35:00.000Z",
+      "user": { "id": "user123", "firstName": "John" }
+    }
+  ],
+  "nextCursor": "act_xyz789",
+  "hasMore": false
+}
+```
+
+================================================================================
+## Notification System
+================================================================================
+
+### Notification Triggers
+| Event            | Recipient    | NotificationType | Delivery              |
+|------------------|--------------|------------------|-----------------------|
+| New message      | Other party  | MESSAGE          | In-app + Email        |
+| NDA signed       | Seller       | NDA_SIGNED       | In-app + Email        |
+| Document uploaded| Other party  | SYSTEM           | In-app                |
+| Stage advanced   | Buyer        | DEALROOM_CREATED | In-app + Email        |
+| LOI submitted    | Seller       | SYSTEM           | In-app + Email        |
+
+### Notification Model
+```prisma
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String           // Recipient
+  type       NotificationType // Enum
+  title      String
+  message    String
+  link       String?          // Deep link to dealroom/message
+  dealroomId String?
+  read       Boolean          @default(false)
+  dismissed  Boolean          @default(false)
+  createdAt  DateTime         @default(now())
+}
+```
+
+================================================================================
+## Error Codes Reference
+================================================================================
+
+| HTTP Status | Code                    | Description                      |
+|-------------|-------------------------|----------------------------------|
+| 400         | VALIDATION_ERROR        | Request body failed validation   |
+| 401         | UNAUTHORIZED            | Not authenticated                |
+| 403         | FORBIDDEN               | Authenticated but no permission  |
+| 404         | NOT_FOUND               | Resource not found               |
+| 409         | CONFLICT                | Duplicate dealroom for buyer     |
+| 413         | PAYLOAD_TOO_LARGE       | File exceeds 25MB limit          |
+| 415         | UNSUPPORTED_MEDIA_TYPE  | File type not allowed            |
+| 500         | INTERNAL_ERROR          | Server error                     |
+
+================================================================================
+
+# Test Strategy:
+1. Test dealroom creation
+   - Verify buyer role requirement
+   - Verify canAccessNDA/isEliteBuyer logic
+   - Test duplicate dealroom prevention (unique constraint)
+   - Verify listing status=ACTIVE check
+   - Test seller cannot create dealroom on own listing
+   
+2. Verify messaging functionality
+   - Test message creation with content validation (1-10000 chars)
+   - Test pagination with cursor and limit
+   - Verify sender info included in response
+   - Test message attachments with valid document IDs
+   
+3. Test document sharing
+   - Verify file size limit (25MB)
+   - Test MIME type validation
+   - Verify access control based on NDA status
+   - Test signed URL generation
+   
+4. Verify activity timeline accuracy
+   - Test all activity types recorded
+   - Verify metadata captured correctly
+   - Test pagination and filtering
+   
+5. Test real-time message delivery
+   - WebSocket joinDealroom/leaveDealroom
+   - SSE fallback functionality
+   - Typing indicators
+   - Message read status broadcast
+   
+6. Validate permission management
+   - Test buyer/seller/advisor/admin access matrix
+   - Verify soft delete respects permissions
+   - Test document NDA requirement enforcement
+   
+7. Test notifications for new messages
+   - Verify notification created on message send
+   - Test in-app notification delivery
+   - Verify email notifications (if enabled)
+   
+8. Test performance with many messages
+   - Test pagination with 1000+ messages
+   - Verify cursor-based pagination efficiency
+   - Test concurrent message sends

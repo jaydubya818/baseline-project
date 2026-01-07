@@ -1,0 +1,35 @@
+# Task ID: 5
+# Title: Listing Creation and Management
+# Status: in-progress
+# Dependencies: 2, 4
+# Priority: high
+# Description: Implement the listing creation form and management system for all asset types with a focus on business listings.
+# Details:
+1. Create listing controller with CRUD operations
+2. Implement listing creation endpoints:
+   - POST /api/listings
+   - PUT /api/listings/:id
+   - DELETE /api/listings/:id
+   - GET /api/listings/:id
+   - GET /api/listings
+3. Create financing terms endpoints:
+   - POST /api/listings/:id/financing
+   - PUT /api/listings/:id/financing
+4. Implement asset type-specific validation:
+   - Business (full model)
+   - Real Estate (basic fields)
+   - Vehicle, RV, Boat, Equipment (basic fields)
+5. Create listing service layer for database operations
+6. Implement listing status management (ACTIVE, PENDING, SOLD, ARCHIVED)
+7. Add seller dashboard endpoints for listing management
+
+[Status Change 2026-01-05]: Changed from 'done' to 'in-progress'. Core listing CRUD (items 1-6) implemented via /api/listings routes. Seller dashboard endpoints (previously outlined in sections 7.1–7.8) are not yet implemented — /api/seller directory does not exist. Remaining: seller-scoped endpoints for paginated listings, bulk operations, analytics, quick status changes.
+
+# Test Strategy:
+1. Test listing CRUD operations
+2. Verify asset type-specific validation
+3. Test financing terms calculations
+4. Verify listing status transitions
+5. Test seller dashboard functionality
+6. Validate required fields for publishing
+7. Test performance with multiple listings

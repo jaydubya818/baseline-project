@@ -1,0 +1,28 @@
+# Task ID: 23
+# Title: AI Deal Co-Pilot Endpoints
+# Status: done
+# Dependencies: 22
+# Priority: low
+# Description: Implement the AI deal co-pilot endpoints for suggesting terms and estimating payments with RAG functionality.
+# Details:
+1. Create AI controller with co-pilot endpoints:
+   - POST /api/ai/suggest-terms
+   - POST /api/ai/estimate-payment
+2. Implement RAG pipeline:
+   - Query vector DB for relevant norms
+   - Retrieve context
+   - Generate suggestions with context
+3. Create confidence score calculation
+4. Implement input validation and processing
+5. Add response formatting with confidence scores
+6. Create caching for common calculations
+7. Implement performance optimization for < 2 seconds latency
+
+# Test Strategy:
+1. Test terms suggestion accuracy
+2. Verify payment estimation calculations
+3. Test RAG pipeline functionality
+4. Verify confidence score calculation
+5. Test caching mechanism
+6. Validate response format
+7. Test latency requirements

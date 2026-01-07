@@ -1,0 +1,424 @@
+# Task ID: 33
+# Title: Guided Deal Process Workflow System
+# Status: pending
+# Dependencies: 11, 10, 31
+# Priority: high
+# Description: Implement a step-by-step workflow system that guides buyers and sellers through the acquisition process with clear milestones, progress tracking, and smart routing.
+# Details:
+1. Create DealWorkflow model and schema:
+```typescript
+interface DealWorkflow {
+  id: string;
+  dealroomId: string;
+  templateType: 'STANDARD_ACQUISITION' | 'ASSET_SALE' | 'MANAGED_DEAL';
+  currentStage: number;
+  stages: DealStage[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface DealStage {
+  id: string;
+  workflowId: string;
+  stageNumber: number;
+  title: string;
+  description: string;
+  requiredActions: StageAction[];
+  requiredDocuments: StageDocument[];
+  isCompleted: boolean;
+  completedAt?: Date;
+}
+
+interface StageAction {
+  id: string;
+  stageId: string;
+  title: string;
+  description: string;
+  actionType: 'FORM_SUBMISSION' | 'DOCUMENT_UPLOAD' | 'APPROVAL' | 'PAYMENT';
+  isCompleted: boolean;
+  completedAt?: Date;
+  assignedTo: string[];
+}
+
+interface StageDocument {
+  id: string;
+  stageId: string;
+  title: string;
+  description: string;
+  documentType: string;
+  isRequired: boolean;
+  isUploaded: boolean;
+  uploadedAt?: Date;
+  documentUrl?: string;
+}
+```
+
+2. Create workflow template definitions for different deal types:
+```typescript
+const STANDARD_ACQUISITION_TEMPLATE = {
+  stages: [
+    {
+      stageNumber: 1,
+      title: 'Initial Contact',
+      description: 'Establish communication and express interest',
+      requiredActions: [...],
+      requiredDocuments: [...]
+    },
+    {
+      stageNumber: 2,
+      title: 'NDA Execution',
+      description: 'Sign non-disclosure agreement to access confidential information',
+      requiredActions: [...],
+      requiredDocuments: [...]
+    },
+    // Additional stages for standard acquisition
+  ]
+};
+
+// Define ASSET_SALE_TEMPLATE and MANAGED_DEAL_TEMPLATE similarly
+```
+
+3. Implement DealWorkflowService:
+```typescript
+class DealWorkflowService {
+  // Create a new workflow based on template type
+  async createWorkflow(dealroomId: string, templateType: string): Promise<DealWorkflow> {...}
+  
+  // Get current workflow stage
+  async getCurrentStage(workflowId: string): Promise<DealStage> {...}
+  
+  // Check if all requirements for current stage are met
+  async checkStageCompletion(stageId: string): Promise<boolean> {...}
+  
+  // Advance to next stage if current stage is complete
+  async advanceStage(workflowId: string): Promise<DealWorkflow> {...}
+  
+  // Get next actions for specific user
+  async getNextActionsForUser(workflowId: string, userId: string): Promise<StageAction[]> {...}
+  
+  // Mark action as completed
+  async completeAction(actionId: string): Promise<StageAction> {...}
+  
+  // Upload document for a stage
+  async uploadStageDocument(stageId: string, documentData: any): Promise<StageDocument> {...}
+}
+```
+
+4. Create API endpoints for workflow management:
+```typescript
+// POST /api/dealrooms/:id/workflow - Create new workflow
+// GET /api/dealrooms/:id/workflow - Get workflow details
+// GET /api/dealrooms/:id/workflow/current-stage - Get current stage
+// POST /api/dealrooms/:id/workflow/advance - Attempt to advance to next stage
+// GET /api/dealrooms/:id/workflow/next-actions - Get next actions for current user
+// PUT /api/dealrooms/:id/workflow/actions/:actionId/complete - Mark action as complete
+// POST /api/dealrooms/:id/workflow/documents - Upload document for current stage
+```
+
+5. Implement progress tracking component:
+```tsx
+const DealProgressTracker: React.FC<{ workflowId: string }> = ({ workflowId }) => {
+  const [workflow, setWorkflow] = useState<DealWorkflow | null>(null);
+  
+  useEffect(() => {
+    // Fetch workflow data
+  }, [workflowId]);
+  
+  return (
+    <div className="deal-progress-tracker">
+      <div className="progress-bar">
+        {workflow?.stages.map(stage => (
+          <div 
+            key={stage.id} 
+            className={`progress-stage ${stage.isCompleted ? 'completed' : ''} ${workflow.currentStage === stage.stageNumber ? 'current' : ''}`}
+          >
+            <div className="stage-number">{stage.stageNumber}</div>
+            <div className="stage-title">{stage.title}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+```
+
+6. Implement DealGuidancePanel component:
+```tsx
+const DealGuidancePanel: React.FC<{ workflowId: string }> = ({ workflowId }) => {
+  const [currentStage, setCurrentStage] = useState<DealStage | null>(null);
+  const [nextActions, setNextActions] = useState<StageAction[]>([]);
+  
+  useEffect(() => {
+    // Fetch current stage and next actions
+  }, [workflowId]);
+  
+  return (
+    <div className="deal-guidance-panel">
+      <h2>Current Stage: {currentStage?.title}</h2>
+      <p>{currentStage?.description}</p>
+      
+      <h3>Required Actions</h3>
+      <div className="action-list">
+        {nextActions.map(action => (
+          <ActionItem key={action.id} action={action} onComplete={() => handleCompleteAction(action.id)} />
+        ))}
+      </div>
+      
+      <h3>Required Documents</h3>
+      <div className="document-list">
+        {currentStage?.requiredDocuments.map(doc => (
+          <DocumentItem key={doc.id} document={doc} onUpload={handleDocumentUpload} />
+        ))}
+      </div>
+    </div>
+  );
+};
+```
+
+7. Implement milestone notification system:
+```typescript
+class MilestoneNotificationService {
+  // Send notification when stage is completed
+  async notifyStageCompletion(stageId: string): Promise<void> {...}
+  
+  // Send notification when action is required
+  async notifyActionRequired(actionId: string, userId: string): Promise<void> {...}
+  
+  // Send notification when document is required
+  async notifyDocumentRequired(documentId: string, userId: string): Promise<void> {...}
+}
+```
+
+8. Integrate with existing DealroomStatus enum:
+```typescript
+// Update DealroomStatus to include workflow stages
+enum DealroomStatus {
+  INITIAL_CONTACT = 'INITIAL_CONTACT',
+  NDA_PENDING = 'NDA_PENDING',
+  NDA_SIGNED = 'NDA_SIGNED',
+  INFORMATION_SHARING = 'INFORMATION_SHARING',
+  OFFER_PENDING = 'OFFER_PENDING',
+  NEGOTIATION = 'NEGOTIATION',
+  DUE_DILIGENCE = 'DUE_DILIGENCE',
+  CLOSING = 'CLOSING',
+  CLOSED = 'CLOSED',
+  CANCELLED = 'CANCELLED'
+}
+
+// Map workflow stages to DealroomStatus
+const workflowStageToDealroomStatus = {
+  'STANDARD_ACQUISITION': {
+    1: DealroomStatus.INITIAL_CONTACT,
+    2: DealroomStatus.NDA_PENDING,
+    3: DealroomStatus.NDA_SIGNED,
+    // Map other stages
+  },
+  // Map for other template types
+};
+```
+
+9. Implement auto-advancement logic:
+```typescript
+// Add to DealWorkflowService
+async checkAndAdvanceStage(workflowId: string): Promise<boolean> {
+  const currentStage = await this.getCurrentStage(workflowId);
+  const isComplete = await this.checkStageCompletion(currentStage.id);
+  
+  if (isComplete) {
+    await this.advanceStage(workflowId);
+    return true;
+  }
+  
+  return false;
+}
+```
+
+10. Create smart routing system:
+```typescript
+class SmartRoutingService {
+  // Get next appropriate page/action based on workflow state
+  async getNextRoute(workflowId: string, userId: string): Promise<string> {
+    const workflow = await workflowService.getWorkflow(workflowId);
+    const currentStage = workflow.stages.find(s => s.stageNumber === workflow.currentStage);
+    const userActions = await workflowService.getNextActionsForUser(workflowId, userId);
+    
+    if (userActions.length > 0) {
+      const priorityAction = userActions[0];
+      return this.getRouteForAction(priorityAction);
+    }
+    
+    return `/dealrooms/${workflow.dealroomId}`;
+  }
+  
+  private getRouteForAction(action: StageAction): string {
+    // Logic to determine appropriate route based on action type
+    switch(action.actionType) {
+      case 'FORM_SUBMISSION':
+        return `/forms/${action.id}`;
+      case 'DOCUMENT_UPLOAD':
+        return `/documents/upload/${action.id}`;
+      // Other action types
+      default:
+        return `/actions/${action.id}`;
+    }
+  }
+}
+```
+
+# Test Strategy:
+1. Unit test the DealWorkflowService:
+   - Test workflow creation with different templates
+   - Verify stage progression logic
+   - Test stage completion detection
+   - Verify action completion tracking
+   - Test document upload and tracking
+   - Verify auto-advancement logic
+
+2. Integration test the workflow API endpoints:
+   - Test workflow creation endpoint
+   - Verify current stage retrieval
+   - Test stage advancement endpoint
+   - Verify next actions retrieval
+   - Test action completion endpoint
+   - Verify document upload endpoint
+
+3. Test the progress tracking component:
+   - Verify correct display of all stages
+   - Test highlighting of current stage
+   - Verify completion status indicators
+   - Test responsive design at different screen sizes
+
+4. Test the DealGuidancePanel component:
+   - Verify display of current stage information
+   - Test action item interaction
+   - Verify document upload functionality
+   - Test completion status updates
+
+5. Test milestone notification system:
+   - Verify notifications are sent when stages are completed
+   - Test notifications for required actions
+   - Verify notifications for required documents
+   - Test notification delivery to correct users
+
+6. Test integration with DealroomStatus:
+   - Verify correct mapping between workflow stages and DealroomStatus
+   - Test status updates when stages change
+   - Verify consistency between workflow state and dealroom state
+
+7. Test smart routing system:
+   - Verify correct routing based on user role and workflow state
+   - Test routing to appropriate forms and document uploads
+   - Verify routing after action completion
+
+8. End-to-end testing:
+   - Complete a full workflow from start to finish
+   - Test different workflow templates
+   - Verify all notifications are received
+   - Test with multiple simultaneous users in different roles
+
+9. Performance testing:
+   - Test system with multiple active workflows
+   - Verify performance with large numbers of actions and documents
+   - Test notification delivery under load
+
+# Subtasks:
+## 1. Implement DealWorkflow Database Models [done]
+### Dependencies: None
+### Description: Create the database models and schemas for the DealWorkflow system including DealWorkflow, DealStage, StageAction, and StageDocument entities.
+### Details:
+1. Create database schema files for all workflow-related entities
+2. Implement the models using TypeORM or Mongoose based on project database
+3. Add proper indexes for efficient querying (dealroomId, workflowId, stageId)
+4. Implement validation logic for each entity
+5. Create database migration scripts if needed
+6. Add repository methods for basic CRUD operations
+
+## 2. Create Workflow Template Definitions [done]
+### Dependencies: 33.1
+### Description: Define the standard workflow templates for different deal types (STANDARD_ACQUISITION, ASSET_SALE, MANAGED_DEAL) with appropriate stages, actions, and document requirements.
+### Details:
+1. Define comprehensive STANDARD_ACQUISITION_TEMPLATE with all stages from initial contact to closing
+2. Create ASSET_SALE_TEMPLATE with specific stages for asset sales
+3. Implement MANAGED_DEAL_TEMPLATE for broker-managed deals
+4. For each template, define detailed requiredActions and requiredDocuments for each stage
+5. Create a TemplateService to manage and retrieve templates
+6. Implement template versioning to support future changes
+
+## 3. Implement DealWorkflowService [done]
+### Dependencies: 33.1, 33.2
+### Description: Create the core service that manages workflow creation, stage progression, action completion, and document management.
+### Details:
+1. Implement createWorkflow method to initialize workflows from templates
+2. Create getCurrentStage method to retrieve the active stage
+3. Implement checkStageCompletion to verify all requirements are met
+4. Add advanceStage method with proper validation
+5. Create getNextActionsForUser to retrieve personalized action items
+6. Implement completeAction and uploadStageDocument methods
+7. Add checkAndAdvanceStage for automatic progression
+8. Implement proper error handling and transaction management
+
+## 4. Create Workflow API Endpoints [done]
+### Dependencies: 33.3
+### Description: Implement RESTful API endpoints for workflow management, stage progression, action completion, and document uploads.
+### Details:
+1. Create WorkflowController with all required endpoints
+2. Implement POST /api/dealrooms/:id/workflow endpoint for workflow creation
+3. Add GET /api/dealrooms/:id/workflow endpoint to retrieve workflow details
+4. Create GET /api/dealrooms/:id/workflow/current-stage endpoint
+5. Implement POST /api/dealrooms/:id/workflow/advance for stage progression
+6. Add endpoints for action completion and document uploads
+7. Implement proper request validation and error handling
+8. Add authentication and authorization middleware
+
+## 5. Implement Progress Tracking UI Components [pending]
+### Dependencies: 33.4
+### Description: Create React components for visualizing workflow progress, including progress bars, stage indicators, and completion status.
+### Details:
+1. Implement DealProgressTracker component with visual stage progression
+2. Create StageCard component to display stage details
+3. Implement ActionItem component for individual action items
+4. Create DocumentItem component for document requirements
+5. Add proper loading states and error handling
+6. Implement responsive design for all components
+7. Create custom hooks for data fetching (useWorkflow, useCurrentStage)
+8. Add animations for stage transitions
+
+## 6. Develop Deal Guidance Panel [pending]
+### Dependencies: 33.5
+### Description: Create an interactive guidance panel that shows users their current stage, required actions, and document requirements with contextual help.
+### Details:
+1. Implement DealGuidancePanel component with current stage information
+2. Create NextActions section with action items specific to the user
+3. Implement RequiredDocuments section with upload functionality
+4. Add contextual help tooltips and guidance text
+5. Create action completion handlers with API integration
+6. Implement document upload functionality with progress indicators
+7. Add completion celebrations for stage advancement
+8. Create error handling and retry mechanisms
+
+## 7. Implement Milestone Notification System [pending]
+### Dependencies: 33.3, 33.4
+### Description: Create a notification system that alerts users about stage completions, required actions, and document requirements.
+### Details:
+1. Implement MilestoneNotificationService with methods for different notification types
+2. Create database models for storing notification records
+3. Implement in-app notification component
+4. Add email notification templates for different event types
+5. Create notification triggers in the workflow service
+6. Implement notification preferences for users
+7. Add real-time notifications using WebSockets
+8. Create notification dashboard for managing all notifications
+
+## 8. Integrate Smart Routing System [pending]
+### Dependencies: 33.3, 33.6, 33.7
+### Description: Implement intelligent routing that guides users to the next appropriate action based on workflow state and user role.
+### Details:
+1. Implement SmartRoutingService with getNextRoute method
+2. Create routing logic based on action types and user roles
+3. Implement workflowStageToDealroomStatus mapping
+4. Add integration with DealroomStatus enum
+5. Create UI components for suggested next actions
+6. Implement guided navigation buttons in the interface
+7. Add route guards to prevent access to inappropriate stages
+8. Create dashboard widgets showing next actions
+

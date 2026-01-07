@@ -1,0 +1,26 @@
+# Task ID: 20
+# Title: Billing Dashboard and Revenue Tracking
+# Status: done
+# Dependencies: 18
+# Priority: medium
+# Description: Implement a billing dashboard for sellers with payment history, subscription status, and revenue tracking.
+# Details:
+1. Create billing controller with reporting endpoints
+2. Implement billing dashboard endpoints:
+   - GET /api/billing/history
+   - GET /api/billing/subscription
+   - GET /api/billing/revenue
+3. Create payment history tracking
+4. Implement subscription status display
+5. Add revenue reporting for platform administrators
+6. Create invoice generation functionality
+7. Implement export options for billing data
+
+# Test Strategy:
+1. Test billing history retrieval
+2. Verify subscription status display
+3. Test revenue reporting
+4. Verify invoice generation
+5. Test data export functionality
+6. Validate accuracy of financial calculations
+7. Test with various payment scenarios

@@ -1,0 +1,217 @@
+# Task ID: 34
+# Title: Advisor Dashboard for Managed Deals
+# Status: done
+# Dependencies: 4, 11, 33
+# Priority: medium
+# Description: Implement an internal dashboard for human advisors to manage assigned premium deals, including client management, deal tracking, and communication tools.
+# Details:
+1. Create AdvisorDashboard component and routes:
+   ```typescript
+   // pages/advisor/dashboard.tsx
+   // pages/advisor/clients/[clientId].tsx
+   // pages/advisor/deals/[dealId].tsx
+   ```
+
+2. Implement AdvisorProfile model in Prisma schema:
+   ```prisma
+   model AdvisorProfile {
+     id             String   @id @default(uuid())
+     userId         String   @unique
+     user           User     @relation(fields: [userId], references: [id])
+     specialties    String[]
+     experience     Int      // Years of experience
+     bio            String   @db.Text
+     availability   String   // JSON string of availability schedule
+     maxDealLoad    Int      @default(5)
+     currentDeals   Int      @default(0)
+     responseTime   Int      // Target response time in minutes
+     managedDeals   ManagedDeal[]
+     createdAt      DateTime @default(now())
+     updatedAt      DateTime @updatedAt
+   }
+   
+   model ManagedDeal {
+     id             String   @id @default(uuid())
+     dealroomId     String   @unique
+     dealroom       Dealroom @relation(fields: [dealroomId], references: [id])
+     advisorId      String
+     advisor        AdvisorProfile @relation(fields: [advisorId], references: [id])
+     serviceTier    String   // "SELF_SERVICE", "GUIDED", "MANAGED"
+     status         String   // "ACTIVE", "PAUSED", "COMPLETED"
+     startDate      DateTime @default(now())
+     endDate        DateTime?
+     notes          String?  @db.Text
+     nextActions    Json?    // Array of next action items
+     lastActivity   DateTime @default(now())
+     createdAt      DateTime @default(now())
+     updatedAt      DateTime @updatedAt
+   }
+   ```
+
+3. Create advisor dashboard API endpoints:
+   ```typescript
+   // GET /api/advisor/dashboard - Summary statistics
+   // GET /api/advisor/clients - List of clients
+   // GET /api/advisor/deals - List of managed deals
+   // GET /api/advisor/deals/:id - Specific deal details
+   // PUT /api/advisor/deals/:id - Update deal status/notes
+   // POST /api/advisor/deals/:id/message - Send message to client
+   ```
+
+4. Implement AdvisorDashboardService:
+   ```typescript
+   class AdvisorDashboardService {
+     async getDashboardStats(advisorId: string): Promise<DashboardStats> {
+       // Get active deals, pending tasks, upcoming calls, etc.
+     }
+     
+     async getAssignedDeals(advisorId: string): Promise<ManagedDeal[]> {
+       // Get all deals assigned to this advisor
+     }
+     
+     async updateDealStatus(dealId: string, status: string): Promise<ManagedDeal> {
+       // Update deal status
+     }
+     
+     async addDealNote(dealId: string, note: string): Promise<ManagedDeal> {
+       // Add note to deal
+     }
+     
+     async scheduleCall(dealId: string, scheduledTime: Date): Promise<Call> {
+       // Schedule a call with client
+     }
+   }
+   ```
+
+5. Create dashboard UI components:
+   - DealSummaryCard - Shows key deal metrics and status
+   - ClientList - List of managed clients with filtering
+   - DealTimeline - Visual timeline of deal progress
+   - TaskManager - Advisor's tasks for each deal
+   - DocumentReviewPanel - Interface for reviewing client documents
+   - CommunicationHub - Messaging and call scheduling interface
+
+6. Implement advisor performance metrics tracking:
+   - Response time tracking
+   - Client satisfaction ratings
+   - Deal progression metrics
+   - SLA compliance indicators
+
+7. Create notification system for advisors:
+   - New message alerts
+   - Document upload notifications
+   - Task deadline reminders
+   - SLA breach warnings
+
+8. Implement document review workflow:
+   - Document annotation tools
+   - Version tracking
+   - Approval/rejection workflow
+   - Comment threading on documents
+
+9. Add calendar integration for scheduling:
+   - Google Calendar/Outlook integration
+   - Availability management
+   - Client meeting scheduling
+
+10. Implement deal assignment algorithm:
+    - Match deals to advisors based on expertise
+    - Consider current workload
+    - Factor in industry specialization
+    - Account for language requirements
+
+# Test Strategy:
+1. Unit test the AdvisorDashboardService:
+   - Test dashboard statistics calculation
+   - Verify deal assignment logic
+   - Test deal status updates
+   - Verify note addition functionality
+   - Test call scheduling
+
+2. Integration test the advisor API endpoints:
+   - Test authentication and authorization
+   - Verify correct data retrieval
+   - Test update operations
+   - Verify error handling
+
+3. End-to-end test the advisor dashboard:
+   - Test deal management workflow
+   - Verify client communication features
+   - Test document review process
+   - Verify calendar integration
+   - Test notification system
+
+4. Performance testing:
+   - Test dashboard loading with many deals
+   - Verify response times for data-heavy operations
+   - Test concurrent user scenarios
+
+5. User acceptance testing with actual advisors:
+   - Gather feedback on usability
+   - Verify workflow matches actual advisor needs
+   - Test with realistic deal scenarios
+
+6. Test SLA tracking functionality:
+   - Verify response time calculations
+   - Test SLA breach notifications
+   - Verify performance metrics accuracy
+
+7. Security testing:
+   - Verify proper access controls
+   - Test data isolation between advisors
+   - Verify sensitive client data protection
+
+8. Cross-browser and responsive design testing:
+   - Test on Chrome, Firefox, Safari, Edge
+   - Verify mobile responsiveness
+   - Test tablet view functionality
+
+# Subtasks:
+## 1. Create AdvisorProfile and ManagedDeal models in Prisma schema [done]
+### Dependencies: None
+### Description: Implement the database models for advisor profiles and managed deals as specified in the requirements, including all relationships and fields.
+### Details:
+Add the AdvisorProfile and ManagedDeal models to the Prisma schema file. Ensure proper relationships between User, Dealroom, and AdvisorProfile entities. Run prisma migrate to create the database tables. Generate Prisma client to access these new models.
+
+## 2. Implement AdvisorDashboardService [done]
+### Dependencies: 34.1
+### Description: Create the service layer for the advisor dashboard that will handle business logic for retrieving dashboard statistics, managing deals, and advisor-client interactions.
+### Details:
+Implement the AdvisorDashboardService class with methods for getDashboardStats, getAssignedDeals, updateDealStatus, addDealNote, and scheduleCall. Include proper error handling and transaction management for database operations. Implement filtering and sorting capabilities for deal lists.
+
+## 3. Create advisor dashboard API endpoints [done]
+### Dependencies: 34.2
+### Description: Implement the REST API endpoints for the advisor dashboard to expose the functionality to the frontend.
+### Details:
+Create API route handlers for GET /api/advisor/dashboard, GET /api/advisor/clients, GET /api/advisor/deals, GET /api/advisor/deals/:id, PUT /api/advisor/deals/:id, and POST /api/advisor/deals/:id/message. Implement proper authentication middleware to ensure only advisors can access these endpoints. Add input validation using a library like zod or joi.
+
+## 4. Implement dashboard page components and routes [done]
+### Dependencies: 34.3
+### Description: Create the React components and Next.js routes for the advisor dashboard pages.
+### Details:
+Create the pages/advisor/dashboard.tsx, pages/advisor/clients/[clientId].tsx, and pages/advisor/deals/[dealId].tsx files. Implement the main layout for the advisor dashboard with navigation. Add authentication checks to ensure only logged-in advisors can access these pages. Implement data fetching from the API endpoints.
+
+## 5. Develop core dashboard UI components [done]
+### Dependencies: 34.4
+### Description: Create the reusable UI components needed for the advisor dashboard, including deal summary cards, client lists, and task management interfaces.
+### Details:
+Implement DealSummaryCard, ClientList, DealTimeline, and TaskManager components. Create a responsive layout that works on different screen sizes. Implement filtering and sorting capabilities for lists. Add loading states and error handling for data fetching.
+
+## 6. Implement communication and document review features [done]
+### Dependencies: 34.3, 34.5
+### Description: Create the UI components and backend functionality for advisor-client communication and document review workflows.
+### Details:
+Implement the CommunicationHub component for messaging. Create the DocumentReviewPanel with annotation capabilities. Add backend support for storing message history and document annotations. Implement real-time notifications for new messages using WebSockets or server-sent events.
+
+## 7. Create advisor performance metrics tracking [done]
+### Dependencies: 34.2, 34.3
+### Description: Implement the functionality to track and display advisor performance metrics, including response times, client satisfaction, and SLA compliance.
+### Details:
+Extend the AdvisorDashboardService to calculate and store performance metrics. Create API endpoints to retrieve metrics data. Implement UI components to display metrics in charts and dashboards. Add alerting for SLA breaches.
+
+## 8. Implement notification system for advisors [done]
+### Dependencies: 34.6, 34.7
+### Description: Create a comprehensive notification system to alert advisors about new messages, document uploads, task deadlines, and SLA breaches.
+### Details:
+Implement a notification service that generates and stores notifications. Create API endpoints for retrieving and marking notifications as read. Add UI components for displaying notifications in the dashboard. Implement email notifications for critical alerts. Add browser push notifications for real-time alerts.
+

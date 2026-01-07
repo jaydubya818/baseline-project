@@ -1,0 +1,247 @@
+# Task ID: 30
+# Title: Vector Database Implementation with pgvector
+# Status: done
+# Dependencies: 2
+# Priority: high
+# Description: Implement vector database functionality using pgvector for document storage and semantic search across listings, documents, and content.
+# Details:
+1. Ensure pgvector extension is properly installed and configured:
+   ```sql
+   CREATE EXTENSION IF NOT EXISTS vector;
+   ```
+
+2. Update Prisma schema to include vector columns for relevant models:
+   ```prisma
+   model Listing {
+     // existing fields
+     contentEmbedding Unsupported("vector(1536)") // For OpenAI embeddings
+   }
+
+   model Document {
+     // existing fields
+     contentEmbedding Unsupported("vector(1536)")
+   }
+
+   model Content {
+     id String @id @default(cuid())
+     type String // blog, faq, help, etc.
+     title String
+     content String @db.Text
+     contentEmbedding Unsupported("vector(1536)")
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+   }
+   ```
+
+3. Create a migration for the vector columns:
+   ```bash
+   npx prisma migrate dev --name add_vector_columns
+   ```
+
+4. Implement an embedding generation service:
+   ```typescript
+   import { OpenAI } from 'openai';
+   import { PrismaClient } from '@prisma/client';
+
+   const openai = new OpenAI({
+     apiKey: process.env.OPENAI_API_KEY,
+   });
+   const prisma = new PrismaClient();
+
+   export async function generateEmbedding(text: string): Promise<number[]> {
+     const response = await openai.embeddings.create({
+       model: "text-embedding-ada-002",
+       input: text,
+     });
+     return response.data[0].embedding;
+   }
+
+   export async function updateListingEmbedding(listingId: string): Promise<void> {
+     const listing = await prisma.listing.findUnique({
+       where: { id: listingId },
+     });
+     
+     if (!listing) throw new Error('Listing not found');
+     
+     // Combine relevant text fields for embedding
+     const textToEmbed = `${listing.title} ${listing.description} ${listing.assetType}`;
+     const embedding = await generateEmbedding(textToEmbed);
+     
+     await prisma.listing.update({
+       where: { id: listingId },
+       data: {
+         contentEmbedding: embedding,
+       },
+     });
+   }
+   ```
+
+5. Create a semantic search service:
+   ```typescript
+   export async function semanticSearch(query: string, limit: number = 10): Promise<any[]> {
+     const queryEmbedding = await generateEmbedding(query);
+     
+     // Raw SQL query for vector similarity search
+     const results = await prisma.$queryRaw`
+       SELECT id, title, description, 
+         1 - (contentEmbedding <=> ${queryEmbedding}::vector) as similarity
+       FROM "Listing"
+       WHERE contentEmbedding IS NOT NULL
+       ORDER BY similarity DESC
+       LIMIT ${limit};
+     `;
+     
+     return results;
+   }
+   ```
+
+6. Implement API endpoints for semantic search:
+   ```typescript
+   // routes/search.ts
+   import { Router } from 'express';
+   import { semanticSearch } from '../services/vectorService';
+
+   const router = Router();
+
+   router.get('/semantic', async (req, res) => {
+     try {
+       const { query, limit = 10 } = req.query;
+       if (!query || typeof query !== 'string') {
+         return res.status(400).json({ error: 'Query parameter is required' });
+       }
+       
+       const results = await semanticSearch(query, Number(limit));
+       return res.json(results);
+     } catch (error) {
+       console.error('Semantic search error:', error);
+       return res.status(500).json({ error: 'Failed to perform semantic search' });
+     }
+   });
+
+   export default router;
+   ```
+
+7. Create a background job to generate embeddings for existing content:
+   ```typescript
+   async function generateEmbeddingsForAllContent() {
+     // Process listings
+     const listings = await prisma.listing.findMany({
+       where: { contentEmbedding: null },
+     });
+     
+     for (const listing of listings) {
+       try {
+         await updateListingEmbedding(listing.id);
+         console.log(`Generated embedding for listing ${listing.id}`);
+         // Add delay to avoid rate limiting
+         await new Promise(resolve => setTimeout(resolve, 200));
+       } catch (error) {
+         console.error(`Failed to generate embedding for listing ${listing.id}:`, error);
+       }
+     }
+     
+     // Similar process for documents and other content
+   }
+   ```
+
+8. Implement frontend components for semantic search:
+   ```tsx
+   // components/SemanticSearchBar.tsx
+   import { useState } from 'react';
+   import axios from 'axios';
+
+   export default function SemanticSearchBar() {
+     const [query, setQuery] = useState('');
+     const [results, setResults] = useState([]);
+     const [loading, setLoading] = useState(false);
+     
+     const handleSearch = async () => {
+       if (!query.trim()) return;
+       
+       setLoading(true);
+       try {
+         const response = await axios.get('/api/search/semantic', {
+           params: { query }
+         });
+         setResults(response.data);
+       } catch (error) {
+         console.error('Search failed:', error);
+       } finally {
+         setLoading(false);
+       }
+     };
+     
+     return (
+       <div>
+         <div className="search-container">
+           <input
+             type="text"
+             value={query}
+             onChange={(e) => setQuery(e.target.value)}
+             placeholder="Search for similar listings..."
+           />
+           <button onClick={handleSearch} disabled={loading}>
+             {loading ? 'Searching...' : 'Search'}
+           </button>
+         </div>
+         
+         {results.length > 0 && (
+           <div className="results-container">
+             {results.map((item) => (
+               <div key={item.id} className="result-item">
+                 <h3>{item.title}</h3>
+                 <p>{item.description}</p>
+                 <span>Similarity: {(item.similarity * 100).toFixed(2)}%</span>
+               </div>
+             ))}
+           </div>
+         )}
+       </div>
+     );
+   }
+   ```
+
+9. Add vector search capabilities to the existing search functionality:
+   - Integrate semantic search with the existing keyword search
+   - Implement hybrid search combining vector similarity with traditional filters
+   - Add relevance scoring based on vector similarity
+
+# Test Strategy:
+1. Test pgvector extension installation:
+   - Verify the extension is properly installed in the database
+   - Test creating and querying vector columns
+
+2. Test embedding generation:
+   - Verify embeddings are generated correctly for different types of content
+   - Test handling of different text lengths and formats
+   - Validate error handling for API rate limits
+
+3. Test semantic search functionality:
+   - Create test data with known semantic relationships
+   - Verify search results return semantically related items
+   - Test with various queries and validate relevance of results
+   - Benchmark search performance with different dataset sizes
+
+4. Test API endpoints:
+   - Verify semantic search endpoint returns correct results
+   - Test error handling for invalid inputs
+   - Validate response format and structure
+
+5. Test integration with existing search:
+   - Verify that semantic search works alongside traditional filters
+   - Test hybrid search scenarios combining vector similarity with exact matches
+   - Validate that search results are properly ranked by relevance
+
+6. Performance testing:
+   - Measure query performance with large datasets (1000+ vectors)
+   - Test concurrent search requests
+   - Optimize indexes for vector columns if needed
+
+7. Frontend component testing:
+   - Verify the semantic search UI works as expected
+   - Test loading states and error handling
+   - Validate display of search results and similarity scores
+
+8. End-to-end testing:
+   - Test the complete flow from content creation to embedding generation to search
+   - Verify that newly added content becomes searchable

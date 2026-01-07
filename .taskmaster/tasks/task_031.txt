@@ -1,0 +1,125 @@
+# Task ID: 31
+# Title: Buyer Intent Score Calculation System
+# Status: done
+# Dependencies: 4, 10, 11, 13
+# Priority: high
+# Description: Implement a real-time buyer intent scoring system that tracks and calculates buyer intent based on NDA signed status, profile completeness, message activity, and document access patterns.
+# Details:
+1. Create a BuyerIntentScore model and schema:
+```typescript
+interface BuyerIntentScore {
+  id: string;
+  userId: string;
+  listingId: string;
+  ndaSignedScore: number;
+  profileCompletenessScore: number;
+  messageActivityScore: number;
+  documentAccessScore: number;
+  totalScore: number;
+  lastCalculated: Date;
+}
+```
+
+2. Implement the BuyerIntentScoreService:
+```typescript
+class BuyerIntentScoreService {
+  // Calculate score based on NDA status
+  calculateNdaSignedScore(userId: string, listingId: string): Promise<number>;
+  
+  // Calculate score based on profile completeness
+  calculateProfileCompletenessScore(userId: string): Promise<number>;
+  
+  // Calculate score based on message activity
+  calculateMessageActivityScore(userId: string, listingId: string): Promise<number>;
+  
+  // Calculate score based on document access patterns
+  calculateDocumentAccessScore(userId: string, listingId: string): Promise<number>;
+  
+  // Calculate total buyer intent score
+  calculateTotalScore(userId: string, listingId: string): Promise<number>;
+}
+```
+
+3. Create API endpoints for buyer intent score:
+   - GET /api/listings/:id/buyer-intent
+   - GET /api/users/:id/buyer-intent
+
+4. Implement real-time score calculation triggers:
+   - When NDA is signed
+   - When profile is updated
+   - When messages are sent/read
+   - When documents are accessed
+
+5. Create database indexes for efficient score retrieval:
+```sql
+CREATE INDEX idx_buyer_intent_user_listing ON buyer_intent_scores(userId, listingId);
+CREATE INDEX idx_buyer_intent_listing ON buyer_intent_scores(listingId);
+```
+
+6. Implement scoring algorithm with configurable weights:
+```typescript
+const SCORE_WEIGHTS = {
+  ndaSigned: 0.25,
+  profileCompleteness: 0.20,
+  messageActivity: 0.30,
+  documentAccess: 0.25
+};
+```
+
+7. Add buyer intent score display to seller dashboard:
+   - Create a component to show buyer intent scores
+   - Implement sorting by intent score
+   - Add visual indicators for high-intent buyers
+
+8. Implement caching mechanism for score calculations to improve performance:
+```typescript
+// Cache scores for 15 minutes
+const CACHE_TTL = 15 * 60 * 1000;
+```
+
+9. Create background job to periodically recalculate scores for active listings:
+```typescript
+// Run every hour
+cron.schedule('0 * * * *', async () => {
+  await buyerIntentScoreService.recalculateAllActiveScores();
+});
+```
+
+10. Implement analytics for tracking score effectiveness:
+    - Track correlation between high scores and successful deals
+    - Store historical score data for trend analysis
+
+# Test Strategy:
+1. Unit test the BuyerIntentScoreService:
+   - Test each individual score component calculation
+   - Verify total score calculation with different input scenarios
+   - Test edge cases (no messages, incomplete profile, etc.)
+
+2. Integration test the score calculation triggers:
+   - Verify score updates when NDA is signed
+   - Test score changes when profile is updated
+   - Confirm score adjustments when messages are exchanged
+   - Validate score changes when documents are accessed
+
+3. Test the API endpoints:
+   - Verify correct scores are returned for specific user/listing pairs
+   - Test authorization rules (sellers can only see scores for their listings)
+   - Validate error handling for invalid requests
+
+4. Performance testing:
+   - Measure calculation time for scores with different data volumes
+   - Test caching effectiveness
+   - Verify system performance with concurrent score calculations
+
+5. End-to-end testing:
+   - Test score display in seller dashboard
+   - Verify sorting and filtering by intent score
+   - Validate visual indicators for high-intent buyers
+
+6. Regression testing:
+   - Ensure score calculations don't affect other system functionality
+   - Verify database performance isn't degraded by score calculations
+
+7. User acceptance testing:
+   - Validate that scores accurately reflect buyer intent
+   - Confirm sellers find the score useful for prioritization

@@ -1,0 +1,132 @@
+# Task ID: 32
+# Title: Amortization Schedule Data Infrastructure
+# Status: done
+# Dependencies: 2, 5
+# Priority: high
+# Description: Create data models and API endpoints to store, retrieve, and calculate amortization schedules for seller financing deals, including payment schedules, principal/interest breakdowns, and payment history tracking.
+# Details:
+1. Create AmortizationSchedule model in Prisma schema:
+   ```prisma
+   model AmortizationSchedule {
+     id          String   @id @default(uuid())
+     listingId   String
+     listing     Listing  @relation(fields: [listingId], references: [id])
+     createdAt   DateTime @default(now())
+     updatedAt   DateTime @updatedAt
+     
+     // Loan parameters
+     loanAmount        Decimal
+     interestRate      Decimal
+     termMonths        Int
+     paymentFrequency  String  // monthly, quarterly, etc.
+     startDate         DateTime
+     balloonPayment    Decimal?
+     balloonMonths     Int?
+     
+     // Generated schedule
+     payments          Payment[]
+   }
+   
+   model Payment {
+     id                  String   @id @default(uuid())
+     amortizationId      String
+     amortizationSchedule AmortizationSchedule @relation(fields: [amortizationId], references: [id])
+     paymentNumber       Int
+     paymentDate         DateTime
+     paymentAmount       Decimal
+     principalAmount     Decimal
+     interestAmount      Decimal
+     remainingBalance    Decimal
+     isPaid              Boolean  @default(false)
+     actualPaymentDate   DateTime?
+     actualPaymentAmount Decimal?
+   }
+   ```
+
+2. Create amortization schedule controller with the following endpoints:
+   - POST /api/listings/:id/amortization - Create new amortization schedule
+   - GET /api/listings/:id/amortization - Get all amortization schedules for a listing
+   - GET /api/listings/:id/amortization/:scheduleId - Get specific amortization schedule
+   - PUT /api/listings/:id/amortization/:scheduleId - Update amortization schedule
+   - DELETE /api/listings/:id/amortization/:scheduleId - Delete amortization schedule
+   - GET /api/listings/:id/amortization/:scheduleId/payments - Get all payments for a schedule
+   - PUT /api/listings/:id/amortization/:scheduleId/payments/:paymentId - Update payment status
+
+3. Implement amortization calculation service:
+   ```typescript
+   class AmortizationService {
+     // Calculate full amortization schedule
+     calculateSchedule(params: AmortizationParams): Payment[] {
+       // Implementation of amortization formula
+       // Handle regular payments and balloon payments
+       // Calculate principal/interest breakdown for each payment
+     }
+     
+     // Calculate single payment details
+     calculatePayment(params: AmortizationParams): PaymentDetails {
+       // Calculate monthly payment amount using formula:
+       // P = L[c(1 + c)^n]/[(1 + c)^n - 1]
+       // where P = payment, L = loan amount, c = interest rate, n = term
+     }
+     
+     // Recalculate schedule after payment or parameter changes
+     recalculateRemainingSchedule(scheduleId: string, afterPaymentNumber: number): Payment[] {
+       // Recalculate remaining payments after a certain point
+     }
+   }
+   ```
+
+4. Create data validation middleware:
+   - Validate loan parameters (amount, rate, term)
+   - Ensure valid date formats
+   - Validate payment frequency options
+
+5. Implement payment tracking functionality:
+   - Track actual vs. scheduled payments
+   - Calculate late fees and penalties
+   - Update remaining balance after payments
+
+6. Create integration with financing terms:
+   - Link amortization schedules to listing financing terms
+   - Auto-generate schedules from financing terms
+   - Update schedules when financing terms change
+
+7. Implement export functionality:
+   - Export amortization schedule to CSV
+   - Export amortization schedule to PDF
+   - Generate payment summary reports
+
+# Test Strategy:
+1. Unit test amortization calculation service:
+   - Test various loan parameters (different amounts, rates, terms)
+   - Verify correct principal/interest breakdown
+   - Test edge cases (zero interest, very short/long terms)
+   - Validate balloon payment calculations
+   - Test different payment frequencies
+
+2. Integration test API endpoints:
+   - Test schedule creation with valid parameters
+   - Verify error handling with invalid parameters
+   - Test retrieval of schedules and payments
+   - Verify update functionality for schedules
+   - Test payment status updates
+
+3. Database validation tests:
+   - Verify correct storage of decimal values
+   - Test relationship between listings, schedules, and payments
+   - Validate date handling and timezone consistency
+
+4. Performance testing:
+   - Test calculation speed for long-term loans (30+ years)
+   - Verify database query performance with multiple schedules
+   - Test concurrent access to payment records
+
+5. Integration testing with other components:
+   - Test integration with financing terms
+   - Verify term sheet builder uses correct amortization data
+   - Test export functionality for CSV and PDF formats
+
+6. Validation testing:
+   - Verify mathematical accuracy of calculations
+   - Compare results with industry-standard amortization calculators
+   - Validate rounding behavior for currency values

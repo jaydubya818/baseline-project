@@ -1,0 +1,30 @@
+# Task ID: 18
+# Title: Pro Seller Subscription
+# Status: done
+# Dependencies: 15
+# Priority: medium
+# Description: Implement the Pro Seller Subscription with recurring payments through Stripe and enhanced seller features.
+# Details:
+1. Create subscription model and controller
+2. Implement subscription endpoints:
+   - POST /api/subscriptions
+   - GET /api/subscriptions
+   - PUT /api/subscriptions/cancel
+3. Create subscription plans configuration
+4. Implement Stripe subscription integration
+5. Add subscription status to user model
+6. Create pro seller benefits implementation:
+   - Multiple active listings
+   - Analytics dashboard
+   - Priority support
+   - Automatic upgrades
+7. Implement subscription management and cancellation
+
+# Test Strategy:
+1. Test subscription purchase flow
+2. Verify Stripe subscription integration
+3. Test pro seller benefits application
+4. Verify subscription status tracking
+5. Test subscription cancellation
+6. Validate renewal process
+7. Test with Stripe test mode

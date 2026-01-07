@@ -55,14 +55,14 @@
         "id": 5,
         "title": "Listing Creation and Management",
         "description": "Implement the listing creation form and management system for all asset types with a focus on business listings.",
-        "details": "1. Create listing controller with CRUD operations\n2. Implement listing creation endpoints:\n   - POST /api/listings\n   - PUT /api/listings/:id\n   - DELETE /api/listings/:id\n   - GET /api/listings/:id\n   - GET /api/listings\n3. Create financing terms endpoints:\n   - POST /api/listings/:id/financing\n   - PUT /api/listings/:id/financing\n4. Implement asset type-specific validation:\n   - Business (full model)\n   - Real Estate (basic fields)\n   - Vehicle, RV, Boat, Equipment (basic fields)\n5. Create listing service layer for database operations\n6. Implement listing status management (ACTIVE, PENDING, SOLD, ARCHIVED)\n7. Add seller dashboard endpoints for listing management",
+        "details": "1. Create listing controller with CRUD operations\n2. Implement listing creation endpoints:\n   - POST /api/listings\n   - PUT /api/listings/:id\n   - DELETE /api/listings/:id\n   - GET /api/listings/:id\n   - GET /api/listings\n3. Create financing terms endpoints:\n   - POST /api/listings/:id/financing\n   - PUT /api/listings/:id/financing\n4. Implement asset type-specific validation:\n   - Business (full model)\n   - Real Estate (basic fields)\n   - Vehicle, RV, Boat, Equipment (basic fields)\n5. Create listing service layer for database operations\n6. Implement listing status management (ACTIVE, PENDING, SOLD, ARCHIVED)\n7. Add seller dashboard endpoints for listing management\n\n[Status Change 2026-01-05]: Changed from 'done' to 'in-progress'. Core listing CRUD (items 1-6) implemented via /api/listings routes. Seller dashboard endpoints (section 7: 7.1-7.8 in task file) NOT implemented — /api/seller directory does not exist. Remaining: seller-scoped endpoints for paginated listings, bulk operations, analytics, quick status changes.",
         "testStrategy": "1. Test listing CRUD operations\n2. Verify asset type-specific validation\n3. Test financing terms calculations\n4. Verify listing status transitions\n5. Test seller dashboard functionality\n6. Validate required fields for publishing\n7. Test performance with multiple listings",
         "priority": "high",
         "dependencies": [
           2,
           4
         ],
-        "status": "done",
+        "status": "in-progress",
         "subtasks": []
       },
       {
@@ -350,7 +350,80 @@
           "32"
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure Vercel Deployment",
+            "description": "Set up Vercel project, configure build settings, and environment variables for staging",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 25
+          },
+          {
+            "id": 2,
+            "title": "Set up PostgreSQL with pgvector",
+            "description": "Configure managed PostgreSQL database with pgvector extension for vector similarity search",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 25
+          },
+          {
+            "id": 3,
+            "title": "Configure CI/CD pipeline",
+            "description": "Set up GitHub Actions for automated testing and deployment to staging",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 25
+          },
+          {
+            "id": 4,
+            "title": "Environment configuration",
+            "description": "Create staging environment variables and secrets management",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 25
+          },
+          {
+            "id": 5,
+            "title": "Deploy to staging",
+            "description": "Deploy the full application stack to staging environment",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 25
+          },
+          {
+            "id": 6,
+            "title": "Functional testing",
+            "description": "Run comprehensive E2E tests on staging environment",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 25
+          },
+          {
+            "id": 7,
+            "title": "Performance and security testing",
+            "description": "Run Lighthouse audits, load tests, and security scans",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 25
+          },
+          {
+            "id": 8,
+            "title": "Monitoring and logging",
+            "description": "Verify Sentry integration, set up alerts and dashboards",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 25
+          }
+        ]
       },
       {
         "id": 26,
@@ -453,11 +526,473 @@
         ],
         "priority": "high",
         "subtasks": []
+      },
+      {
+        "id": 33,
+        "title": "Guided Deal Process Workflow System",
+        "description": "Implement a step-by-step workflow system that guides buyers and sellers through the acquisition process with clear milestones, progress tracking, and smart routing.",
+        "details": "1. Create DealWorkflow model and schema:\n```typescript\ninterface DealWorkflow {\n  id: string;\n  dealroomId: string;\n  templateType: 'STANDARD_ACQUISITION' | 'ASSET_SALE' | 'MANAGED_DEAL';\n  currentStage: number;\n  stages: DealStage[];\n  createdAt: Date;\n  updatedAt: Date;\n}\n\ninterface DealStage {\n  id: string;\n  workflowId: string;\n  stageNumber: number;\n  title: string;\n  description: string;\n  requiredActions: StageAction[];\n  requiredDocuments: StageDocument[];\n  isCompleted: boolean;\n  completedAt?: Date;\n}\n\ninterface StageAction {\n  id: string;\n  stageId: string;\n  title: string;\n  description: string;\n  actionType: 'FORM_SUBMISSION' | 'DOCUMENT_UPLOAD' | 'APPROVAL' | 'PAYMENT';\n  isCompleted: boolean;\n  completedAt?: Date;\n  assignedTo: string[];\n}\n\ninterface StageDocument {\n  id: string;\n  stageId: string;\n  title: string;\n  description: string;\n  documentType: string;\n  isRequired: boolean;\n  isUploaded: boolean;\n  uploadedAt?: Date;\n  documentUrl?: string;\n}\n```\n\n2. Create workflow template definitions for different deal types:\n```typescript\nconst STANDARD_ACQUISITION_TEMPLATE = {\n  stages: [\n    {\n      stageNumber: 1,\n      title: 'Initial Contact',\n      description: 'Establish communication and express interest',\n      requiredActions: [...],\n      requiredDocuments: [...]\n    },\n    {\n      stageNumber: 2,\n      title: 'NDA Execution',\n      description: 'Sign non-disclosure agreement to access confidential information',\n      requiredActions: [...],\n      requiredDocuments: [...]\n    },\n    // Additional stages for standard acquisition\n  ]\n};\n\n// Define ASSET_SALE_TEMPLATE and MANAGED_DEAL_TEMPLATE similarly\n```\n\n3. Implement DealWorkflowService:\n```typescript\nclass DealWorkflowService {\n  // Create a new workflow based on template type\n  async createWorkflow(dealroomId: string, templateType: string): Promise<DealWorkflow> {...}\n  \n  // Get current workflow stage\n  async getCurrentStage(workflowId: string): Promise<DealStage> {...}\n  \n  // Check if all requirements for current stage are met\n  async checkStageCompletion(stageId: string): Promise<boolean> {...}\n  \n  // Advance to next stage if current stage is complete\n  async advanceStage(workflowId: string): Promise<DealWorkflow> {...}\n  \n  // Get next actions for specific user\n  async getNextActionsForUser(workflowId: string, userId: string): Promise<StageAction[]> {...}\n  \n  // Mark action as completed\n  async completeAction(actionId: string): Promise<StageAction> {...}\n  \n  // Upload document for a stage\n  async uploadStageDocument(stageId: string, documentData: any): Promise<StageDocument> {...}\n}\n```\n\n4. Create API endpoints for workflow management:\n```typescript\n// POST /api/dealrooms/:id/workflow - Create new workflow\n// GET /api/dealrooms/:id/workflow - Get workflow details\n// GET /api/dealrooms/:id/workflow/current-stage - Get current stage\n// POST /api/dealrooms/:id/workflow/advance - Attempt to advance to next stage\n// GET /api/dealrooms/:id/workflow/next-actions - Get next actions for current user\n// PUT /api/dealrooms/:id/workflow/actions/:actionId/complete - Mark action as complete\n// POST /api/dealrooms/:id/workflow/documents - Upload document for current stage\n```\n\n5. Implement progress tracking component:\n```tsx\nconst DealProgressTracker: React.FC<{ workflowId: string }> = ({ workflowId }) => {\n  const [workflow, setWorkflow] = useState<DealWorkflow | null>(null);\n  \n  useEffect(() => {\n    // Fetch workflow data\n  }, [workflowId]);\n  \n  return (\n    <div className=\"deal-progress-tracker\">\n      <div className=\"progress-bar\">\n        {workflow?.stages.map(stage => (\n          <div \n            key={stage.id} \n            className={`progress-stage ${stage.isCompleted ? 'completed' : ''} ${workflow.currentStage === stage.stageNumber ? 'current' : ''}`}\n          >\n            <div className=\"stage-number\">{stage.stageNumber}</div>\n            <div className=\"stage-title\">{stage.title}</div>\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n};\n```\n\n6. Implement DealGuidancePanel component:\n```tsx\nconst DealGuidancePanel: React.FC<{ workflowId: string }> = ({ workflowId }) => {\n  const [currentStage, setCurrentStage] = useState<DealStage | null>(null);\n  const [nextActions, setNextActions] = useState<StageAction[]>([]);\n  \n  useEffect(() => {\n    // Fetch current stage and next actions\n  }, [workflowId]);\n  \n  return (\n    <div className=\"deal-guidance-panel\">\n      <h2>Current Stage: {currentStage?.title}</h2>\n      <p>{currentStage?.description}</p>\n      \n      <h3>Required Actions</h3>\n      <div className=\"action-list\">\n        {nextActions.map(action => (\n          <ActionItem key={action.id} action={action} onComplete={() => handleCompleteAction(action.id)} />\n        ))}\n      </div>\n      \n      <h3>Required Documents</h3>\n      <div className=\"document-list\">\n        {currentStage?.requiredDocuments.map(doc => (\n          <DocumentItem key={doc.id} document={doc} onUpload={handleDocumentUpload} />\n        ))}\n      </div>\n    </div>\n  );\n};\n```\n\n7. Implement milestone notification system:\n```typescript\nclass MilestoneNotificationService {\n  // Send notification when stage is completed\n  async notifyStageCompletion(stageId: string): Promise<void> {...}\n  \n  // Send notification when action is required\n  async notifyActionRequired(actionId: string, userId: string): Promise<void> {...}\n  \n  // Send notification when document is required\n  async notifyDocumentRequired(documentId: string, userId: string): Promise<void> {...}\n}\n```\n\n8. Integrate with existing DealroomStatus enum:\n```typescript\n// Update DealroomStatus to include workflow stages\nenum DealroomStatus {\n  INITIAL_CONTACT = 'INITIAL_CONTACT',\n  NDA_PENDING = 'NDA_PENDING',\n  NDA_SIGNED = 'NDA_SIGNED',\n  INFORMATION_SHARING = 'INFORMATION_SHARING',\n  OFFER_PENDING = 'OFFER_PENDING',\n  NEGOTIATION = 'NEGOTIATION',\n  DUE_DILIGENCE = 'DUE_DILIGENCE',\n  CLOSING = 'CLOSING',\n  CLOSED = 'CLOSED',\n  CANCELLED = 'CANCELLED'\n}\n\n// Map workflow stages to DealroomStatus\nconst workflowStageToDealroomStatus = {\n  'STANDARD_ACQUISITION': {\n    1: DealroomStatus.INITIAL_CONTACT,\n    2: DealroomStatus.NDA_PENDING,\n    3: DealroomStatus.NDA_SIGNED,\n    // Map other stages\n  },\n  // Map for other template types\n};\n```\n\n9. Implement auto-advancement logic:\n```typescript\n// Add to DealWorkflowService\nasync checkAndAdvanceStage(workflowId: string): Promise<boolean> {\n  const currentStage = await this.getCurrentStage(workflowId);\n  const isComplete = await this.checkStageCompletion(currentStage.id);\n  \n  if (isComplete) {\n    await this.advanceStage(workflowId);\n    return true;\n  }\n  \n  return false;\n}\n```\n\n10. Create smart routing system:\n```typescript\nclass SmartRoutingService {\n  // Get next appropriate page/action based on workflow state\n  async getNextRoute(workflowId: string, userId: string): Promise<string> {\n    const workflow = await workflowService.getWorkflow(workflowId);\n    const currentStage = workflow.stages.find(s => s.stageNumber === workflow.currentStage);\n    const userActions = await workflowService.getNextActionsForUser(workflowId, userId);\n    \n    if (userActions.length > 0) {\n      const priorityAction = userActions[0];\n      return this.getRouteForAction(priorityAction);\n    }\n    \n    return `/dealrooms/${workflow.dealroomId}`;\n  }\n  \n  private getRouteForAction(action: StageAction): string {\n    // Logic to determine appropriate route based on action type\n    switch(action.actionType) {\n      case 'FORM_SUBMISSION':\n        return `/forms/${action.id}`;\n      case 'DOCUMENT_UPLOAD':\n        return `/documents/upload/${action.id}`;\n      // Other action types\n      default:\n        return `/actions/${action.id}`;\n    }\n  }\n}\n```",
+        "testStrategy": "1. Unit test the DealWorkflowService:\n   - Test workflow creation with different templates\n   - Verify stage progression logic\n   - Test stage completion detection\n   - Verify action completion tracking\n   - Test document upload and tracking\n   - Verify auto-advancement logic\n\n2. Integration test the workflow API endpoints:\n   - Test workflow creation endpoint\n   - Verify current stage retrieval\n   - Test stage advancement endpoint\n   - Verify next actions retrieval\n   - Test action completion endpoint\n   - Verify document upload endpoint\n\n3. Test the progress tracking component:\n   - Verify correct display of all stages\n   - Test highlighting of current stage\n   - Verify completion status indicators\n   - Test responsive design at different screen sizes\n\n4. Test the DealGuidancePanel component:\n   - Verify display of current stage information\n   - Test action item interaction\n   - Verify document upload functionality\n   - Test completion status updates\n\n5. Test milestone notification system:\n   - Verify notifications are sent when stages are completed\n   - Test notifications for required actions\n   - Verify notifications for required documents\n   - Test notification delivery to correct users\n\n6. Test integration with DealroomStatus:\n   - Verify correct mapping between workflow stages and DealroomStatus\n   - Test status updates when stages change\n   - Verify consistency between workflow state and dealroom state\n\n7. Test smart routing system:\n   - Verify correct routing based on user role and workflow state\n   - Test routing to appropriate forms and document uploads\n   - Verify routing after action completion\n\n8. End-to-end testing:\n   - Complete a full workflow from start to finish\n   - Test different workflow templates\n   - Verify all notifications are received\n   - Test with multiple simultaneous users in different roles\n\n9. Performance testing:\n   - Test system with multiple active workflows\n   - Verify performance with large numbers of actions and documents\n   - Test notification delivery under load",
+        "status": "pending",
+        "dependencies": [
+          11,
+          10,
+          31
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement DealWorkflow Database Models",
+            "description": "Create the database models and schemas for the DealWorkflow system including DealWorkflow, DealStage, StageAction, and StageDocument entities.",
+            "dependencies": [],
+            "details": "1. Create database schema files for all workflow-related entities\n2. Implement the models using TypeORM or Mongoose based on project database\n3. Add proper indexes for efficient querying (dealroomId, workflowId, stageId)\n4. Implement validation logic for each entity\n5. Create database migration scripts if needed\n6. Add repository methods for basic CRUD operations",
+            "status": "done",
+            "testStrategy": "Unit test the models with various input scenarios, verify validation logic works correctly, and test repository methods with mock database connections."
+          },
+          {
+            "id": 2,
+            "title": "Create Workflow Template Definitions",
+            "description": "Define the standard workflow templates for different deal types (STANDARD_ACQUISITION, ASSET_SALE, MANAGED_DEAL) with appropriate stages, actions, and document requirements.",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Define comprehensive STANDARD_ACQUISITION_TEMPLATE with all stages from initial contact to closing\n2. Create ASSET_SALE_TEMPLATE with specific stages for asset sales\n3. Implement MANAGED_DEAL_TEMPLATE for broker-managed deals\n4. For each template, define detailed requiredActions and requiredDocuments for each stage\n5. Create a TemplateService to manage and retrieve templates\n6. Implement template versioning to support future changes",
+            "status": "done",
+            "testStrategy": "Verify templates contain all required stages in correct order, validate that all required fields are present, and test template retrieval functionality."
+          },
+          {
+            "id": 3,
+            "title": "Implement DealWorkflowService",
+            "description": "Create the core service that manages workflow creation, stage progression, action completion, and document management.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "1. Implement createWorkflow method to initialize workflows from templates\n2. Create getCurrentStage method to retrieve the active stage\n3. Implement checkStageCompletion to verify all requirements are met\n4. Add advanceStage method with proper validation\n5. Create getNextActionsForUser to retrieve personalized action items\n6. Implement completeAction and uploadStageDocument methods\n7. Add checkAndAdvanceStage for automatic progression\n8. Implement proper error handling and transaction management",
+            "status": "done",
+            "testStrategy": "Unit test each method with various scenarios including edge cases, test stage progression logic thoroughly, verify completion detection works correctly, and test with mock repositories."
+          },
+          {
+            "id": 4,
+            "title": "Create Workflow API Endpoints",
+            "description": "Implement RESTful API endpoints for workflow management, stage progression, action completion, and document uploads.",
+            "dependencies": [
+              3
+            ],
+            "details": "1. Create WorkflowController with all required endpoints\n2. Implement POST /api/dealrooms/:id/workflow endpoint for workflow creation\n3. Add GET /api/dealrooms/:id/workflow endpoint to retrieve workflow details\n4. Create GET /api/dealrooms/:id/workflow/current-stage endpoint\n5. Implement POST /api/dealrooms/:id/workflow/advance for stage progression\n6. Add endpoints for action completion and document uploads\n7. Implement proper request validation and error handling\n8. Add authentication and authorization middleware",
+            "status": "done",
+            "testStrategy": "Test all endpoints with valid and invalid requests, verify proper error responses, test authorization rules, and validate response formats."
+          },
+          {
+            "id": 5,
+            "title": "Implement Progress Tracking UI Components",
+            "description": "Create React components for visualizing workflow progress, including progress bars, stage indicators, and completion status.",
+            "dependencies": [
+              4
+            ],
+            "details": "1. Implement DealProgressTracker component with visual stage progression\n2. Create StageCard component to display stage details\n3. Implement ActionItem component for individual action items\n4. Create DocumentItem component for document requirements\n5. Add proper loading states and error handling\n6. Implement responsive design for all components\n7. Create custom hooks for data fetching (useWorkflow, useCurrentStage)\n8. Add animations for stage transitions",
+            "status": "pending",
+            "testStrategy": "Test components with various workflow states, verify responsive behavior, test loading and error states, and validate accessibility compliance."
+          },
+          {
+            "id": 6,
+            "title": "Develop Deal Guidance Panel",
+            "description": "Create an interactive guidance panel that shows users their current stage, required actions, and document requirements with contextual help.",
+            "dependencies": [
+              5
+            ],
+            "details": "1. Implement DealGuidancePanel component with current stage information\n2. Create NextActions section with action items specific to the user\n3. Implement RequiredDocuments section with upload functionality\n4. Add contextual help tooltips and guidance text\n5. Create action completion handlers with API integration\n6. Implement document upload functionality with progress indicators\n7. Add completion celebrations for stage advancement\n8. Create error handling and retry mechanisms",
+            "status": "pending",
+            "testStrategy": "Test the guidance panel with different user roles and stages, verify action completion works correctly, test document uploads with various file types and sizes, and validate error handling."
+          },
+          {
+            "id": 7,
+            "title": "Implement Milestone Notification System",
+            "description": "Create a notification system that alerts users about stage completions, required actions, and document requirements.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "1. Implement MilestoneNotificationService with methods for different notification types\n2. Create database models for storing notification records\n3. Implement in-app notification component\n4. Add email notification templates for different event types\n5. Create notification triggers in the workflow service\n6. Implement notification preferences for users\n7. Add real-time notifications using WebSockets\n8. Create notification dashboard for managing all notifications",
+            "status": "pending",
+            "testStrategy": "Test notification generation for various events, verify email delivery, test real-time notification delivery, and validate notification preferences are respected."
+          },
+          {
+            "id": 8,
+            "title": "Integrate Smart Routing System",
+            "description": "Implement intelligent routing that guides users to the next appropriate action based on workflow state and user role.",
+            "dependencies": [
+              3,
+              6,
+              7
+            ],
+            "details": "1. Implement SmartRoutingService with getNextRoute method\n2. Create routing logic based on action types and user roles\n3. Implement workflowStageToDealroomStatus mapping\n4. Add integration with DealroomStatus enum\n5. Create UI components for suggested next actions\n6. Implement guided navigation buttons in the interface\n7. Add route guards to prevent access to inappropriate stages\n8. Create dashboard widgets showing next actions",
+            "status": "pending",
+            "testStrategy": "Test routing logic with various workflow states and user roles, verify correct routes are generated, test integration with existing navigation, and validate route guards prevent unauthorized access."
+          }
+        ]
+      },
+      {
+        "id": 34,
+        "title": "Advisor Dashboard for Managed Deals",
+        "description": "Implement an internal dashboard for human advisors to manage assigned premium deals, including client management, deal tracking, and communication tools.",
+        "details": "1. Create AdvisorDashboard component and routes:\n   ```typescript\n   // pages/advisor/dashboard.tsx\n   // pages/advisor/clients/[clientId].tsx\n   // pages/advisor/deals/[dealId].tsx\n   ```\n\n2. Implement AdvisorProfile model in Prisma schema:\n   ```prisma\n   model AdvisorProfile {\n     id             String   @id @default(uuid())\n     userId         String   @unique\n     user           User     @relation(fields: [userId], references: [id])\n     specialties    String[]\n     experience     Int      // Years of experience\n     bio            String   @db.Text\n     availability   String   // JSON string of availability schedule\n     maxDealLoad    Int      @default(5)\n     currentDeals   Int      @default(0)\n     responseTime   Int      // Target response time in minutes\n     managedDeals   ManagedDeal[]\n     createdAt      DateTime @default(now())\n     updatedAt      DateTime @updatedAt\n   }\n   \n   model ManagedDeal {\n     id             String   @id @default(uuid())\n     dealroomId     String   @unique\n     dealroom       Dealroom @relation(fields: [dealroomId], references: [id])\n     advisorId      String\n     advisor        AdvisorProfile @relation(fields: [advisorId], references: [id])\n     serviceTier    String   // \"SELF_SERVICE\", \"GUIDED\", \"MANAGED\"\n     status         String   // \"ACTIVE\", \"PAUSED\", \"COMPLETED\"\n     startDate      DateTime @default(now())\n     endDate        DateTime?\n     notes          String?  @db.Text\n     nextActions    Json?    // Array of next action items\n     lastActivity   DateTime @default(now())\n     createdAt      DateTime @default(now())\n     updatedAt      DateTime @updatedAt\n   }\n   ```\n\n3. Create advisor dashboard API endpoints:\n   ```typescript\n   // GET /api/advisor/dashboard - Summary statistics\n   // GET /api/advisor/clients - List of clients\n   // GET /api/advisor/deals - List of managed deals\n   // GET /api/advisor/deals/:id - Specific deal details\n   // PUT /api/advisor/deals/:id - Update deal status/notes\n   // POST /api/advisor/deals/:id/message - Send message to client\n   ```\n\n4. Implement AdvisorDashboardService:\n   ```typescript\n   class AdvisorDashboardService {\n     async getDashboardStats(advisorId: string): Promise<DashboardStats> {\n       // Get active deals, pending tasks, upcoming calls, etc.\n     }\n     \n     async getAssignedDeals(advisorId: string): Promise<ManagedDeal[]> {\n       // Get all deals assigned to this advisor\n     }\n     \n     async updateDealStatus(dealId: string, status: string): Promise<ManagedDeal> {\n       // Update deal status\n     }\n     \n     async addDealNote(dealId: string, note: string): Promise<ManagedDeal> {\n       // Add note to deal\n     }\n     \n     async scheduleCall(dealId: string, scheduledTime: Date): Promise<Call> {\n       // Schedule a call with client\n     }\n   }\n   ```\n\n5. Create dashboard UI components:\n   - DealSummaryCard - Shows key deal metrics and status\n   - ClientList - List of managed clients with filtering\n   - DealTimeline - Visual timeline of deal progress\n   - TaskManager - Advisor's tasks for each deal\n   - DocumentReviewPanel - Interface for reviewing client documents\n   - CommunicationHub - Messaging and call scheduling interface\n\n6. Implement advisor performance metrics tracking:\n   - Response time tracking\n   - Client satisfaction ratings\n   - Deal progression metrics\n   - SLA compliance indicators\n\n7. Create notification system for advisors:\n   - New message alerts\n   - Document upload notifications\n   - Task deadline reminders\n   - SLA breach warnings\n\n8. Implement document review workflow:\n   - Document annotation tools\n   - Version tracking\n   - Approval/rejection workflow\n   - Comment threading on documents\n\n9. Add calendar integration for scheduling:\n   - Google Calendar/Outlook integration\n   - Availability management\n   - Client meeting scheduling\n\n10. Implement deal assignment algorithm:\n    - Match deals to advisors based on expertise\n    - Consider current workload\n    - Factor in industry specialization\n    - Account for language requirements",
+        "testStrategy": "1. Unit test the AdvisorDashboardService:\n   - Test dashboard statistics calculation\n   - Verify deal assignment logic\n   - Test deal status updates\n   - Verify note addition functionality\n   - Test call scheduling\n\n2. Integration test the advisor API endpoints:\n   - Test authentication and authorization\n   - Verify correct data retrieval\n   - Test update operations\n   - Verify error handling\n\n3. End-to-end test the advisor dashboard:\n   - Test deal management workflow\n   - Verify client communication features\n   - Test document review process\n   - Verify calendar integration\n   - Test notification system\n\n4. Performance testing:\n   - Test dashboard loading with many deals\n   - Verify response times for data-heavy operations\n   - Test concurrent user scenarios\n\n5. User acceptance testing with actual advisors:\n   - Gather feedback on usability\n   - Verify workflow matches actual advisor needs\n   - Test with realistic deal scenarios\n\n6. Test SLA tracking functionality:\n   - Verify response time calculations\n   - Test SLA breach notifications\n   - Verify performance metrics accuracy\n\n7. Security testing:\n   - Verify proper access controls\n   - Test data isolation between advisors\n   - Verify sensitive client data protection\n\n8. Cross-browser and responsive design testing:\n   - Test on Chrome, Firefox, Safari, Edge\n   - Verify mobile responsiveness\n   - Test tablet view functionality",
+        "status": "done",
+        "dependencies": [
+          4,
+          11,
+          33
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create AdvisorProfile and ManagedDeal models in Prisma schema",
+            "description": "Implement the database models for advisor profiles and managed deals as specified in the requirements, including all relationships and fields.",
+            "dependencies": [],
+            "details": "Add the AdvisorProfile and ManagedDeal models to the Prisma schema file. Ensure proper relationships between User, Dealroom, and AdvisorProfile entities. Run prisma migrate to create the database tables. Generate Prisma client to access these new models.",
+            "status": "done",
+            "testStrategy": "Verify schema with prisma format and validate. Test model creation with sample data. Ensure relationships work correctly by creating test records and querying across relationships."
+          },
+          {
+            "id": 2,
+            "title": "Implement AdvisorDashboardService",
+            "description": "Create the service layer for the advisor dashboard that will handle business logic for retrieving dashboard statistics, managing deals, and advisor-client interactions.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement the AdvisorDashboardService class with methods for getDashboardStats, getAssignedDeals, updateDealStatus, addDealNote, and scheduleCall. Include proper error handling and transaction management for database operations. Implement filtering and sorting capabilities for deal lists.",
+            "status": "done",
+            "testStrategy": "Unit test each method in the service with mock Prisma client. Test edge cases like empty results, error conditions, and various input parameters. Verify transaction handling works correctly."
+          },
+          {
+            "id": 3,
+            "title": "Create advisor dashboard API endpoints",
+            "description": "Implement the REST API endpoints for the advisor dashboard to expose the functionality to the frontend.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create API route handlers for GET /api/advisor/dashboard, GET /api/advisor/clients, GET /api/advisor/deals, GET /api/advisor/deals/:id, PUT /api/advisor/deals/:id, and POST /api/advisor/deals/:id/message. Implement proper authentication middleware to ensure only advisors can access these endpoints. Add input validation using a library like zod or joi.",
+            "status": "done",
+            "testStrategy": "Test API endpoints with supertest. Verify authentication and authorization. Test with valid and invalid inputs. Verify correct HTTP status codes and response formats."
+          },
+          {
+            "id": 4,
+            "title": "Implement dashboard page components and routes",
+            "description": "Create the React components and Next.js routes for the advisor dashboard pages.",
+            "dependencies": [
+              3
+            ],
+            "details": "Create the pages/advisor/dashboard.tsx, pages/advisor/clients/[clientId].tsx, and pages/advisor/deals/[dealId].tsx files. Implement the main layout for the advisor dashboard with navigation. Add authentication checks to ensure only logged-in advisors can access these pages. Implement data fetching from the API endpoints.",
+            "status": "done",
+            "testStrategy": "Test component rendering with React Testing Library. Verify routing works correctly. Test authentication redirects. Verify data fetching and state management."
+          },
+          {
+            "id": 5,
+            "title": "Develop core dashboard UI components",
+            "description": "Create the reusable UI components needed for the advisor dashboard, including deal summary cards, client lists, and task management interfaces.",
+            "dependencies": [
+              4
+            ],
+            "details": "Implement DealSummaryCard, ClientList, DealTimeline, and TaskManager components. Create a responsive layout that works on different screen sizes. Implement filtering and sorting capabilities for lists. Add loading states and error handling for data fetching.",
+            "status": "done",
+            "testStrategy": "Test component rendering and interactions. Verify responsive design works on different screen sizes. Test filtering and sorting functionality. Verify accessibility compliance."
+          },
+          {
+            "id": 6,
+            "title": "Implement communication and document review features",
+            "description": "Create the UI components and backend functionality for advisor-client communication and document review workflows.",
+            "dependencies": [
+              3,
+              5
+            ],
+            "details": "Implement the CommunicationHub component for messaging. Create the DocumentReviewPanel with annotation capabilities. Add backend support for storing message history and document annotations. Implement real-time notifications for new messages using WebSockets or server-sent events.",
+            "status": "done",
+            "testStrategy": "Test message sending and receiving. Verify document annotation functionality. Test real-time notification delivery. Verify storage and retrieval of communication history."
+          },
+          {
+            "id": 7,
+            "title": "Create advisor performance metrics tracking",
+            "description": "Implement the functionality to track and display advisor performance metrics, including response times, client satisfaction, and SLA compliance.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Extend the AdvisorDashboardService to calculate and store performance metrics. Create API endpoints to retrieve metrics data. Implement UI components to display metrics in charts and dashboards. Add alerting for SLA breaches.",
+            "status": "done",
+            "testStrategy": "Test metric calculation accuracy. Verify data aggregation for different time periods. Test alerting functionality. Verify chart rendering with different data sets."
+          },
+          {
+            "id": 8,
+            "title": "Implement notification system for advisors",
+            "description": "Create a comprehensive notification system to alert advisors about new messages, document uploads, task deadlines, and SLA breaches.",
+            "dependencies": [
+              6,
+              7
+            ],
+            "details": "Implement a notification service that generates and stores notifications. Create API endpoints for retrieving and marking notifications as read. Add UI components for displaying notifications in the dashboard. Implement email notifications for critical alerts. Add browser push notifications for real-time alerts.",
+            "status": "done",
+            "testStrategy": "Test notification generation for different events. Verify delivery through different channels (in-app, email, push). Test marking notifications as read. Verify notification preferences are respected."
+          }
+        ]
+      },
+      {
+        "id": 35,
+        "title": "Enhanced UI/UX Design System Refresh",
+        "description": "Implement a modern design system update inspired by Acquire.com's clean, professional aesthetic, including design tokens, component library enhancements, motion design, and responsive improvements.",
+        "details": "1. Design Tokens Implementation:\n   - Create a comprehensive design token system in Tailwind configuration:\n   ```typescript\n   // tailwind.config.js\n   module.exports = {\n     theme: {\n       extend: {\n         colors: {\n           primary: {\n             50: '#f0f9ff',\n             100: '#e0f2fe',\n             // ... extended color palette\n           },\n           // ... additional color scales\n         },\n         typography: {\n           // Extended typography scale\n         },\n         spacing: {\n           // Consistent spacing system\n         },\n         boxShadow: {\n           // Enhanced shadow system\n         }\n       }\n     }\n   }\n   ```\n   - Document all tokens in Storybook\n\n2. Component Library Enhancement:\n   - Extend existing shadcn/ui components with custom variants:\n   ```typescript\n   // components/ui/button.tsx\n   const buttonVariants = cva(\n     \"inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50\",\n     {\n       variants: {\n         variant: {\n           default: \"bg-primary text-primary-foreground hover:bg-primary/90\",\n           // ... existing variants\n           premium: \"bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700\",\n           featured: \"border-2 border-primary-500 bg-white text-primary-700 hover:bg-primary-50\",\n           // ... additional custom variants\n         },\n         // ... size and other variant options\n       },\n     }\n   )\n   ```\n\n3. Motion Design Implementation:\n   - Create consistent Framer Motion animations for micro-interactions:\n   ```typescript\n   // lib/motion/variants.ts\n   export const fadeIn = {\n     hidden: { opacity: 0 },\n     visible: { opacity: 1, transition: { duration: 0.3 } }\n   };\n   \n   export const slideUp = {\n     hidden: { y: 20, opacity: 0 },\n     visible: { y: 0, opacity: 1, transition: { duration: 0.4 } }\n   };\n   \n   // Additional animation variants\n   ```\n   - Implement page transitions with Next.js and Framer Motion\n   - Create reusable animation hooks\n\n4. Mobile-First Responsive Implementation:\n   - Audit and enhance all key user flows for mobile devices\n   - Implement responsive navigation patterns\n   - Create touch-friendly interaction patterns\n   - Test and optimize for various screen sizes\n\n5. Accessibility Audit and Improvements:\n   - Conduct WCAG 2.1 AA compliance audit\n   - Implement keyboard navigation improvements\n   - Add proper ARIA attributes to all components\n   - Ensure sufficient color contrast\n   - Implement screen reader support\n\n6. Page Redesigns:\n   - Homepage refresh with clearer value proposition\n   - Listing cards with improved visual hierarchy\n   - Dealroom layout optimization\n   - Onboarding flow enhancement\n   - Create responsive layouts for all redesigned pages\n\n7. Loading States:\n   - Implement skeleton loaders for all major components:\n   ```typescript\n   // components/ui/skeleton.tsx\n   export function ListingSkeleton() {\n     return (\n       <div className=\"rounded-lg border p-4 space-y-3\">\n         <div className=\"h-32 bg-gray-200 rounded-md animate-pulse\" />\n         <div className=\"h-4 w-3/4 bg-gray-200 rounded animate-pulse\" />\n         <div className=\"h-4 w-1/2 bg-gray-200 rounded animate-pulse\" />\n         <div className=\"h-4 w-5/6 bg-gray-200 rounded animate-pulse\" />\n       </div>\n     );\n   }\n   ```\n   - Create optimistic UI patterns for form submissions\n\n8. Error States:\n   - Design and implement friendly error pages\n   - Create inline error messaging components\n   - Implement error boundary components\n\n9. Dark Mode Support:\n   - Implement dark theme color palette in Tailwind\n   - Create theme toggle component\n   - Ensure all components support both light and dark modes\n   - Add system preference detection\n\n10. Documentation:\n    - Create comprehensive Storybook documentation\n    - Document all design tokens and components\n    - Create usage guidelines for developers",
+        "testStrategy": "1. Component Testing:\n   - Create comprehensive Jest and React Testing Library tests for all enhanced components\n   - Verify all component variants render correctly\n   - Test component accessibility with jest-axe\n   - Test component responsiveness with different viewport sizes\n\n2. Visual Regression Testing:\n   - Implement Storybook visual tests with Chromatic\n   - Create baseline screenshots for all components\n   - Automate visual regression testing in CI pipeline\n   - Test both light and dark mode appearances\n\n3. Animation Testing:\n   - Verify animations perform well on low-end devices\n   - Test animation timing and easing\n   - Ensure animations respect reduced motion preferences\n\n4. Accessibility Testing:\n   - Run automated accessibility tests with axe-core\n   - Perform manual keyboard navigation testing\n   - Test with screen readers (NVDA, VoiceOver)\n   - Verify color contrast meets WCAG 2.1 AA standards\n   - Test focus management and tab order\n\n5. Responsive Testing:\n   - Test on multiple device sizes (mobile, tablet, desktop)\n   - Verify breakpoint behavior\n   - Test touch interactions on mobile devices\n   - Verify that all key flows work on mobile\n\n6. Performance Testing:\n   - Measure and optimize component render performance\n   - Test animation frame rates\n   - Verify bundle size impact of new components\n   - Run Lighthouse performance audits\n\n7. Cross-Browser Testing:\n   - Test on Chrome, Firefox, Safari, and Edge\n   - Verify consistent appearance and behavior\n   - Test on iOS Safari and Android Chrome\n\n8. User Testing:\n   - Conduct usability testing with representative users\n   - Gather feedback on redesigned pages\n   - Test key user flows with the new design system",
+        "status": "pending",
+        "dependencies": [
+          1,
+          7,
+          8,
+          9,
+          19
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Token System Implementation in Tailwind",
+            "description": "Create a comprehensive design token system in Tailwind configuration that defines colors, typography, spacing, and shadows to establish a consistent visual language across the application.",
+            "dependencies": [],
+            "details": "1. Define color palette with primary, secondary, neutral, and semantic colors including all shade variations\n2. Set up typography scale with font families, weights, sizes, and line heights\n3. Create consistent spacing system with appropriate increments\n4. Implement box shadow system with multiple elevation levels\n5. Configure border radius and border width tokens\n6. Set up z-index scale for consistent layering\n7. Document all tokens in a central location\n8. Update tailwind.config.js with all token definitions",
+            "status": "pending",
+            "testStrategy": "Verify token application across sample components to ensure consistency. Create visual regression tests to confirm token implementation matches design specifications."
+          },
+          {
+            "id": 2,
+            "title": "Component Library Enhancement with Custom Variants",
+            "description": "Extend the existing shadcn/ui components with custom variants that align with the new design system, focusing on buttons, inputs, cards, and other frequently used components.",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Audit existing component library to identify components needing enhancement\n2. Create new variants for buttons (premium, featured, etc.)\n3. Enhance form components with consistent styling (inputs, selects, checkboxes)\n4. Update card components with new elevation and styling options\n5. Implement consistent hover and focus states across all components\n6. Create component composition patterns for common UI patterns\n7. Ensure all components use design tokens from the new system\n8. Document all component variants in Storybook",
+            "status": "pending",
+            "testStrategy": "Create unit tests for all component variants to verify proper rendering and behavior. Test accessibility compliance for each component. Verify responsive behavior across different viewport sizes."
+          },
+          {
+            "id": 3,
+            "title": "Motion Design System Implementation",
+            "description": "Create a consistent animation system using Framer Motion for micro-interactions, page transitions, and interactive elements to enhance the user experience.",
+            "dependencies": [
+              2
+            ],
+            "details": "1. Define a library of reusable animation variants (fadeIn, slideUp, etc.)\n2. Create animation constants for timing, easing curves, and durations\n3. Implement page transition animations compatible with Next.js\n4. Develop reusable animation hooks for common patterns\n5. Create animated feedback for user interactions (button clicks, form submissions)\n6. Implement staggered animations for lists and grids\n7. Ensure animations respect user preferences (reduced motion)\n8. Document animation system with usage examples",
+            "status": "pending",
+            "testStrategy": "Test animation performance across devices. Verify reduced motion preferences are respected. Create visual tests to ensure animations match specifications."
+          },
+          {
+            "id": 4,
+            "title": "Mobile-First Responsive Implementation",
+            "description": "Audit and enhance all key user flows for mobile devices, implementing responsive navigation patterns and touch-friendly interactions across the application.",
+            "dependencies": [
+              2
+            ],
+            "details": "1. Audit current mobile experience and identify pain points\n2. Implement responsive navigation system (drawer, hamburger menu)\n3. Create touch-friendly interaction patterns with appropriate hit areas\n4. Optimize layout components for various breakpoints\n5. Implement responsive typography that scales appropriately\n6. Create responsive image handling with appropriate sizing\n7. Test and optimize performance on mobile devices\n8. Document responsive patterns and breakpoint system",
+            "status": "pending",
+            "testStrategy": "Test on various physical devices and screen sizes. Measure and optimize performance metrics on mobile. Conduct usability testing for key mobile flows."
+          },
+          {
+            "id": 5,
+            "title": "Accessibility Improvements and WCAG Compliance",
+            "description": "Conduct a comprehensive accessibility audit and implement improvements to ensure WCAG 2.1 AA compliance across the application.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "1. Perform WCAG 2.1 AA compliance audit of existing components\n2. Implement keyboard navigation improvements across all interactive elements\n3. Add proper ARIA attributes to all components\n4. Ensure sufficient color contrast throughout the application\n5. Implement proper focus management and focus indicators\n6. Add screen reader support with appropriate announcements\n7. Create skip links and landmark regions for navigation\n8. Document accessibility guidelines for future development",
+            "status": "pending",
+            "testStrategy": "Use automated tools (axe, Lighthouse) to verify compliance. Conduct manual testing with screen readers and keyboard-only navigation. Perform user testing with individuals who have disabilities."
+          },
+          {
+            "id": 6,
+            "title": "Loading and Error State Implementation",
+            "description": "Design and implement consistent loading states, skeleton loaders, error pages, and inline error messaging components throughout the application.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "1. Create skeleton loader components for all major content types\n2. Implement loading indicators for actions and transitions\n3. Design and build friendly error pages for different error types\n4. Create inline error messaging components for forms\n5. Implement error boundary components to gracefully handle failures\n6. Create optimistic UI patterns for form submissions\n7. Develop retry mechanisms for failed operations\n8. Document loading and error state patterns",
+            "status": "pending",
+            "testStrategy": "Test error handling under various network conditions. Verify skeleton loaders accurately represent content. Test error boundaries with simulated component failures."
+          },
+          {
+            "id": 7,
+            "title": "Dark Mode Implementation",
+            "description": "Implement a comprehensive dark theme across the application with proper color palette, theme toggle, and system preference detection.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "1. Define dark theme color palette in Tailwind configuration\n2. Create theme toggle component with animation\n3. Implement system preference detection for initial theme\n4. Update all components to support both light and dark modes\n5. Ensure proper contrast ratios in both themes\n6. Add theme persistence with local storage\n7. Handle theme transitions with appropriate animations\n8. Document theming system and implementation approach",
+            "status": "pending",
+            "testStrategy": "Test theme switching functionality across all major components. Verify system preference detection works correctly. Ensure sufficient contrast in both themes. Test theme persistence across sessions."
+          },
+          {
+            "id": 8,
+            "title": "Design System Documentation in Storybook",
+            "description": "Create comprehensive documentation for the design system in Storybook, including design tokens, components, usage guidelines, and examples.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "details": "1. Set up Storybook with appropriate addons (a11y, viewport, controls)\n2. Document all design tokens with visual examples, including mobile-first breakpoints (sm: 640px, md: 768px, lg: 1024px, xl: 1280px) and responsive typography scales\n3. Create stories for all component variants with usage examples\n4. Add documentation for animation patterns with interactive examples\n5. Include accessibility guidelines and best practices\n6. Document responsive behavior with viewport tools, showcasing mobile-first patterns from subtask 35.4 including touch-friendly interaction zones, responsive navigation drawer, and breakpoint-specific component layouts\n7. Create component composition examples for common patterns, including mobile-responsive layouts with stacked vs side-by-side variants and examples of responsive spacing and grid configurations\n8. Add search and navigation to improve documentation usability",
+            "status": "pending",
+            "testStrategy": "Verify documentation accuracy against implemented components. Test Storybook performance with all components. Conduct user testing with developers to ensure documentation clarity and usefulness."
+          }
+        ]
+      },
+      {
+        "id": 36,
+        "title": "Pro Seller Subscription - Extended Implementation Spec",
+        "description": "Extend the Pro Seller Subscription implementation with comprehensive security measures, error handling, webhook processing, subscription management flows, and API contracts to ensure a robust and secure billing system.",
+        "details": "## 1. ERROR HANDLING AND VALIDATION\n- Implement Zod schema validation for all subscription-related inputs:\n  ```typescript\n  // Example Zod schema for subscription creation\n  const subscriptionSchema = z.object({\n    planId: z.string().uuid(),\n    paymentMethodId: z.string().min(1),\n    couponCode: z.string().optional()\n  });\n  ```\n- Add Stripe API error handling with exponential backoff:\n  ```typescript\n  const MAX_RETRIES = 3;\n  async function callStripeWithRetry(fn: () => Promise<any>) {\n    let retries = 0;\n    while (retries < MAX_RETRIES) {\n      try {\n        return await fn();\n      } catch (error) {\n        retries++;\n        if (retries >= MAX_RETRIES) throw error;\n        const delay = Math.min(1000 * Math.pow(2, retries), 30000);\n        await new Promise(resolve => setTimeout(resolve, delay));\n      }\n    }\n  }\n  ```\n- Implement idempotency keys pattern using format: `sub_${userId}_${action}_${timestamp}`\n- Create user-facing error message mapping:\n  ```typescript\n  const errorMessages = {\n    CARD_DECLINED: \"Your card was declined. Please try another payment method.\",\n    EXPIRED_CARD: \"Your card has expired. Please update your payment information.\",\n    INSUFFICIENT_FUNDS: \"Your card has insufficient funds.\",\n    // Additional error mappings...\n  };\n  ```\n- Document expected status codes and their meanings (200, 400, 401, 403, 404, 409, 429, 500, 503)\n\n## 2. STRIPE WEBHOOK REQUIREMENTS\n- Configure webhook endpoint to handle required events:\n  - checkout.session.completed\n  - customer.subscription.created\n  - customer.subscription.updated\n  - customer.subscription.deleted\n  - invoice.payment_succeeded\n  - invoice.payment_failed\n  - invoice.upcoming\n  - charge.refunded\n- Implement webhook signature verification:\n  ```typescript\n  const signature = req.headers['stripe-signature'];\n  try {\n    const event = stripe.webhooks.constructEvent(\n      req.body,\n      signature,\n      process.env.STRIPE_WEBHOOK_SECRET\n    );\n    // Process event\n  } catch (err) {\n    return res.status(400).send(`Webhook Error: ${err.message}`);\n  }\n  ```\n- Create StripeEvent table for idempotent processing:\n  ```prisma\n  model StripeEvent {\n    id        String   @id\n    type      String\n    processed Boolean  @default(false)\n    data      Json\n    createdAt DateTime @default(now())\n  }\n  ```\n- Implement structured JSON audit logging for all webhook events\n\n## 3. REFUND AND CANCELLATION POLICIES\n- Implement immediate vs end-of-period cancellation options:\n  ```typescript\n  async function cancelSubscription(subscriptionId: string, immediate: boolean) {\n    return stripe.subscriptions.update(subscriptionId, {\n      cancel_at_period_end: !immediate,\n      ...(immediate ? { proration_behavior: 'none' } : {})\n    });\n  }\n  ```\n- Define proration rules:\n  - Upgrades: Prorate immediately\n  - Downgrades: Apply at next billing cycle\n- Implement 7-day refund eligibility window with validation\n- Create admin workflows for refund/extend/override operations with proper authorization\n\n## 4. UPGRADE/DOWNGRADE FLOW\n- Implement immediate upgrades with proration:\n  ```typescript\n  async function upgradeSubscription(subscriptionId: string, newPriceId: string) {\n    return stripe.subscriptions.update(subscriptionId, {\n      proration_behavior: 'create_prorations',\n      items: [{\n        id: subscriptionItemId,\n        price: newPriceId,\n      }]\n    });\n  }\n  ```\n- Implement scheduled downgrades for next billing cycle\n- Add special handling for 14-day trial for first-time Starter subscribers\n- Document proration calculation methodology for transparency\n\n## 5. SECURITY REQUIREMENTS\n- Minimize PCI scope by using Stripe Elements only, never handling raw card data\n- Store only necessary tokens (stripeCustomerId, stripeSubscriptionId)\n- Implement proper authentication and authorization:\n  ```typescript\n  // Middleware to verify subscription ownership\n  function verifySubscriptionOwnership(req, res, next) {\n    if (req.user.id !== req.subscription.userId && !req.user.isAdmin) {\n      return res.status(403).json({ error: 'Unauthorized' });\n    }\n    next();\n  }\n  ```\n- Add rate limiting (10 changes per user per hour):\n  ```typescript\n  const rateLimiter = rateLimit({\n    windowMs: 60 * 60 * 1000, // 1 hour\n    max: 10, // 10 requests per hour\n    message: 'Too many subscription changes, please try again later'\n  });\n  ```\n- Ensure data encryption at rest and implement structured logging\n\n## 6. API CONTRACTS\n- POST /api/billing/subscribe\n  - Request: { planId, paymentMethodId, couponCode? }\n  - Response: { subscriptionId, status, currentPeriodEnd, planDetails }\n- GET /api/billing/subscription\n  - Response: { subscriptionId, status, planDetails, currentPeriodEnd, paymentMethod, invoices }\n- POST /api/billing/cancel-subscription\n  - Request: { immediate: boolean }\n  - Response: { status, effectiveDate }\n- POST /api/billing/upgrade\n  - Request: { newPlanId }\n  - Response: { status, prorationAmount, effectiveDate }\n- POST /api/billing/resume-subscription\n  - Request: {}\n  - Response: { status, currentPeriodEnd }\n\n## 7. IMPLEMENTATION APPROACH\n- Leverage existing code in lib/webhook-processor.ts, lib/stripe.ts, and lib/stripe/webhook-handler.ts\n- Extend current subscription models with additional fields for tracking status changes\n- Create new utility functions for handling proration calculations and refund eligibility\n- Implement comprehensive error handling throughout the subscription lifecycle",
+        "testStrategy": "## Testing Strategy\n\n### 1. Unit Tests\n- Create unit tests for all Zod schemas:\n  ```typescript\n  test('subscription schema validates correct input', () => {\n    const validInput = { planId: 'valid-uuid', paymentMethodId: 'pm_123456' };\n    expect(() => subscriptionSchema.parse(validInput)).not.toThrow();\n  });\n  \n  test('subscription schema rejects invalid input', () => {\n    const invalidInput = { planId: 'invalid', paymentMethodId: '' };\n    expect(() => subscriptionSchema.parse(invalidInput)).toThrow();\n  });\n  ```\n- Test error mapping functions with various Stripe error codes\n- Create unit tests for proration calculations:\n  ```typescript\n  test('proration calculation for upgrade is correct', () => {\n    const result = calculateProration({\n      currentPlan: 'starter',\n      newPlan: 'professional',\n      daysRemaining: 15,\n      totalDays: 30\n    });\n    expect(result).toEqual(expectedAmount);\n  });\n  ```\n- Test retry logic with mocked timeouts and failures\n\n### 2. Integration Tests\n- Test webhook signature verification:\n  ```typescript\n  test('webhook rejects invalid signatures', async () => {\n    const response = await request(app)\n      .post('/api/webhooks/stripe')\n      .set('stripe-signature', 'invalid-signature')\n      .send(mockWebhookPayload);\n    \n    expect(response.status).toBe(400);\n  });\n  ```\n- Verify idempotent webhook processing by sending duplicate events\n- Test subscription lifecycle flows (create, upgrade, downgrade, cancel, resume)\n- Verify rate limiting functionality works as expected\n- Test authorization checks for subscription management\n\n### 3. E2E Tests with Stripe Test Mode\n- Create end-to-end tests using Stripe test mode:\n  ```typescript\n  test('complete subscription lifecycle', async () => {\n    // Create subscription\n    const subscription = await createSubscription(testUser.id, 'price_starter');\n    expect(subscription.status).toBe('active');\n    \n    // Upgrade subscription\n    const upgraded = await upgradeSubscription(subscription.id, 'price_professional');\n    expect(upgraded.items.data[0].price.id).toBe('price_professional');\n    \n    // Cancel subscription\n    const cancelled = await cancelSubscription(subscription.id);\n    expect(cancelled.cancel_at_period_end).toBe(true);\n  });\n  ```\n- Test webhook handling with Stripe CLI to simulate real webhook events\n- Verify correct database state after each subscription operation\n- Test refund flows with Stripe test cards\n- Validate error scenarios (declined cards, insufficient funds)\n\n### 4. Security Testing\n- Perform penetration testing on subscription endpoints\n- Verify PCI compliance by ensuring no card data is logged or stored\n- Test rate limiting by exceeding allowed requests\n- Verify authorization checks prevent unauthorized subscription access\n- Test data encryption for sensitive subscription information",
+        "status": "pending",
+        "dependencies": [
+          18,
+          15
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Zod Schema Validation for Subscription Inputs",
+            "description": "Create comprehensive Zod schemas for all subscription-related inputs to ensure data validation before processing.",
+            "dependencies": [],
+            "details": "Create a validation.ts file in the lib/subscription directory with Zod schemas for: subscription creation, cancellation, upgrade/downgrade, payment method updates, and coupon application. Include custom error messages for each validation failure case. Implement a validateRequest middleware that uses these schemas to validate incoming requests before they reach the controllers.",
+            "status": "pending",
+            "testStrategy": "Write unit tests for each schema to verify validation works correctly with valid and invalid inputs. Test edge cases like empty strings, invalid UUIDs, and missing required fields."
+          },
+          {
+            "id": 2,
+            "title": "Develop Stripe API Error Handling Service with Exponential Backoff",
+            "description": "Create a robust error handling service for Stripe API calls that implements exponential backoff for transient errors.",
+            "dependencies": [],
+            "details": "Create a stripe-service.ts file that implements the callStripeWithRetry function with configurable retry attempts and backoff strategy. Add specific error categorization for Stripe errors (network, authentication, rate limiting, etc.). Implement proper logging for retry attempts and failures. Ensure idempotency keys are used for all Stripe API calls that support them, following the format `sub_${userId}_${action}_${timestamp}`.",
+            "status": "pending",
+            "testStrategy": "Create unit tests with mocked Stripe responses to simulate different error scenarios. Test the backoff algorithm to ensure it correctly implements exponential delays. Verify idempotency key generation is consistent."
+          },
+          {
+            "id": 3,
+            "title": "Create User-Facing Error Message System",
+            "description": "Implement a comprehensive error message mapping system that translates technical errors into user-friendly messages.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create an errors.ts file with a mapping of error codes to user-friendly messages for all possible Stripe and application errors. Implement a function that takes a technical error and returns an appropriate user message and HTTP status code. Add support for localization of error messages. Create a consistent error response format for all API endpoints.",
+            "status": "pending",
+            "testStrategy": "Test error translation for all defined error types. Verify HTTP status codes are appropriate for each error scenario. Test with different locales if localization is implemented."
+          },
+          {
+            "id": 4,
+            "title": "Implement Stripe Webhook Processing System",
+            "description": "Create a secure and robust system for processing Stripe webhooks with signature verification and idempotent event handling.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Extend the webhook-handler.ts to verify Stripe signatures for all incoming webhook requests. Create a StripeEvent table in the database for tracking processed events. Implement handlers for all required webhook events (checkout.session.completed, customer.subscription.created, etc.). Add structured logging for webhook processing. Ensure idempotent processing by checking if an event has already been processed before handling it.",
+            "status": "pending",
+            "testStrategy": "Create tests with mock webhook payloads for each event type. Test signature verification with valid and invalid signatures. Verify idempotent processing by sending duplicate events."
+          },
+          {
+            "id": 5,
+            "title": "Develop Subscription Cancellation and Refund System",
+            "description": "Implement the logic for handling subscription cancellations with immediate or end-of-period options and refund processing.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Create a cancellation-service.ts file that implements immediate and end-of-period cancellation options. Add refund eligibility checking based on the 7-day window. Implement the database updates needed when a subscription is cancelled. Create an admin interface for manual refund processing with proper authorization checks. Add audit logging for all cancellation and refund actions.",
+            "status": "pending",
+            "testStrategy": "Test both cancellation types (immediate and end-of-period) with the Stripe API in test mode. Verify refund eligibility logic works correctly for subscriptions of different ages. Test admin refund processing with different user roles."
+          },
+          {
+            "id": 6,
+            "title": "Implement Subscription Upgrade and Downgrade Logic",
+            "description": "Create the system for handling subscription plan changes with appropriate proration rules.",
+            "dependencies": [
+              2,
+              3,
+              5
+            ],
+            "details": "Create a plan-change-service.ts file that implements immediate upgrades with proration and scheduled downgrades for the next billing cycle. Add proration calculation functions that estimate the cost of plan changes. Implement the database updates needed when a subscription plan changes. Add support for special handling of 14-day trials for first-time Starter subscribers. Create clear user notifications about proration and effective dates.",
+            "status": "pending",
+            "testStrategy": "Test upgrade and downgrade flows with the Stripe API in test mode. Verify proration calculations match Stripe's calculations. Test the special trial handling for new subscribers. Verify database state after plan changes."
+          },
+          {
+            "id": 7,
+            "title": "Implement Trial Period and Subscription Status Management",
+            "description": "Develop the system for managing trial periods, subscription status transitions, and related user permissions.",
+            "dependencies": [
+              4,
+              6
+            ],
+            "details": "Create a subscription-status-service.ts file that tracks and updates subscription statuses based on webhook events and user actions. Implement the 14-day trial logic for first-time subscribers. Add functions to check if a user has active subscription permissions. Create a system for handling grace periods after failed payments. Implement subscription resumption logic for recently cancelled subscriptions.",
+            "status": "pending",
+            "testStrategy": "Test trial period start and end with the Stripe API. Verify permission checks work correctly for different subscription statuses. Test grace period behavior after simulated payment failures. Verify subscription resumption works within the allowed timeframe."
+          },
+          {
+            "id": 8,
+            "title": "Develop Admin Subscription Management API",
+            "description": "Create secure API endpoints for administrative management of user subscriptions with proper authorization.",
+            "dependencies": [
+              5,
+              6,
+              7
+            ],
+            "details": "Create admin-subscription-controller.ts with endpoints for viewing all subscriptions, manually updating subscription status, processing refunds, extending subscriptions, and overriding normal limitations. Implement strict authorization checks that only allow admin users to access these endpoints. Add comprehensive audit logging for all admin actions. Create database queries optimized for filtering and paginating subscription data.",
+            "status": "pending",
+            "testStrategy": "Test all admin endpoints with different user roles to verify authorization. Test each administrative action to ensure it correctly updates the subscription in both the database and Stripe. Verify audit logs are created for all actions."
+          },
+          {
+            "id": 9,
+            "title": "Implement Security Hardening for Subscription System",
+            "description": "Add security measures including rate limiting, ownership verification, and proper authentication for all subscription-related endpoints.",
+            "dependencies": [
+              1,
+              3,
+              4
+            ],
+            "details": "Create security middleware for rate limiting subscription-related actions (10 per hour per user). Implement the verifySubscriptionOwnership middleware to ensure users can only access their own subscriptions. Add CSRF protection for all state-changing endpoints. Ensure all endpoints require proper authentication. Implement structured logging with PII redaction. Configure proper CORS settings for subscription endpoints.",
+            "status": "pending",
+            "testStrategy": "Test rate limiting by making rapid requests and verifying the rate limit is enforced. Test subscription ownership verification with attempts to access other users' data. Verify authentication requirements for all endpoints. Test CSRF protection with simulated attacks."
+          },
+          {
+            "id": 10,
+            "title": "Create Comprehensive Test Suite for Subscription System",
+            "description": "Develop a complete test suite covering unit, integration, and end-to-end tests for the subscription system.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "details": "Create unit tests for all validation schemas, utility functions, and isolated business logic. Develop integration tests that verify the interaction between components and with the database. Implement end-to-end tests that simulate complete user flows from subscription creation to cancellation. Create test fixtures and mocks for Stripe API responses. Add performance tests for webhook processing under load. Implement security-focused tests that attempt to bypass validations and access controls.",
+            "status": "pending",
+            "testStrategy": "Run the test suite in CI/CD pipeline before deployment. Use Stripe test mode for integration and E2E tests. Create a test database with realistic data volumes. Measure code coverage and aim for at least 80% coverage of all subscription-related code."
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-12-07T18:06:28.444Z",
-      "updated": "2025-12-09T06:42:01.012Z",
+      "updated": "2026-01-05T20:25:24.347Z",
       "description": "Tasks for master context"
     }
   }
