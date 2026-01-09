@@ -1,200 +1,333 @@
-# SellerFi - Seller Financing Marketplace Platform
+# 🏦 SellerFi — The Private Marketplace for Business Acquisitions
 
-A modern marketplace platform that connects business sellers with qualified buyers and facilitates seller financing deals. Built with Next.js, TypeScript, Prisma, and Tailwind CSS.
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js" alt="Next.js" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma" alt="Prisma" />
+  <img src="https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=for-the-badge&logo=tailwindcss" alt="Tailwind" />
+</p>
 
-## Features
+<p align="center">
+  <strong>A production-grade fintech marketplace connecting business sellers with qualified buyers through seller financing.</strong>
+</p>
 
-- **Authentication System**: Secure user registration, login, and verification
-- **Business Listings**: Create and manage business sale listings with detailed information
-- **Buyer Dashboard**: Browse available listings with advanced filtering and search
-- **Deal Rooms**: Private communication spaces for buyer-seller negotiations
-- **Document Management**: Secure handling of business documents and due diligence
-- **Seller Financing**: Integrated tools for managing seller-financed deals
-- **Real-time Communication**: Live chat and messaging system
-- **PDF Generation**: Automated document generation for deals
+<p align="center">
+  <a href="https://seller-fi.vercel.app">🌐 Live Demo</a> •
+  <a href="#features">✨ Features</a> •
+  <a href="#ai-development-environment">🤖 AI Dev Environment</a> •
+  <a href="#quick-start">🚀 Quick Start</a>
+</p>
 
-## Technology Stack
+---
 
-- **Frontend**: Next.js 16, React 19, TypeScript
-- **Styling**: Tailwind CSS, shadcn/ui components, Framer Motion
-- **Backend**: Next.js API Routes, NextAuth.js authentication
-- **Database**: Prisma ORM (PostgreSQL)
-- **Payments**: Stripe integration
-- **UI Components**: Radix UI primitives, Lucide icons
-- **Forms**: React Hook Form with Zod validation
-- **Real-time**: Socket.io for live features
+## 🎯 What is SellerFi?
 
-## 🤖 Claude Skills Integration
+SellerFi is a private marketplace that eliminates the friction in business acquisitions by:
 
-This project includes a comprehensive collection of **200+ Claude skills and agents** for enhanced development capabilities:
+- **No Broker Commissions** — Direct buyer-seller connections
+- **Built-in Seller Financing** — Structured deal terms with amortization calculators
+- **NDA-Protected Listings** — Confidential business information with access controls
+- **Secure Dealrooms** — Private spaces for negotiations, documents, and messaging
+- **AI-Powered Search** — Find exactly what you're looking for in plain English
 
-### 🎯 **Core Skills Available**
+---
 
-#### **Fintech Development**
-- **`fintech-developer`** - Payment processing, financial calculations, compliance (PCI DSS, KYC/AML)
-- **`automation-engineer`** - CI/CD pipelines, GitHub Actions, testing automation
-- **`cloud-infrastructure-architect`** - AWS services, Terraform, containerization, security
+## ✨ Features
 
-#### **Full-Stack Development**
-- **`nextjs-fullstack-architect`** - Advanced Next.js App Router, Server Components, API design
-- **`ui-ux-designer`** - User research, wireframing, accessibility, design systems
-- **`design-system-architect`** - Component libraries, design tokens, Storybook integration
+### For Buyers
+- 🔍 **AI-Powered Search** — Natural language queries like "SaaS under $500K in Texas"
+- 📊 **Smart Match Scores** — Compatibility ratings based on your profile
+- 🗂️ **Dealboxes** — Save searches with custom filters and get email alerts
+- 💼 **Elite Buyer Tier** — Priority access, advanced filters, and dedicated support
+- 📝 **NDA Signing** — Instant access to confidential financials
 
-#### **Plus 100+ Additional Skills**
-- Development, testing, deployment, documentation, business analysis, and more!
+### For Sellers
+- 📈 **Premium Listings** — Featured placement and enhanced visibility
+- 🔐 **NDA Controls** — Approve/deny access to sensitive documents
+- 💬 **Secure Dealrooms** — Real-time messaging with potential buyers
+- 📄 **Document Vault** — Organize due diligence materials
+- 📊 **Analytics Dashboard** — Track views, inquiries, and engagement
 
-### 📚 **Skills Documentation**
-- **Main Index**: [`.claude/skills/README.md`](.claude/skills/README.md)
-- **Agent Collection**: [`.claude/agents/`](.claude/agents/) (108 specialized agents)
-- **Usage Examples**: See skills documentation for specific workflows
+### Platform Features
+- 🏠 **Beautiful UI/UX** — Stripe-inspired design with Framer Motion animations
+- 📱 **Fully Responsive** — Desktop-first with mobile optimization
+- 🌙 **Dark Mode** — System-aware theme switching
+- ⚡ **Real-time Updates** — SSE-powered notifications and messaging
+- 🔒 **Enterprise Security** — NextAuth v5, role-based access, audit logging
 
-### 🧮 **Example: Amortization Calculator**
+---
 
-Test the fintech-developer skill:
-```bash
-npx tsx lib/financial/test-amortization.ts
+## 🛠️ Technology Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Next.js 16 (App Router, Server Components, Server Actions) |
+| **Language** | TypeScript 5.0 with strict mode |
+| **Styling** | Tailwind CSS, shadcn/ui, Radix UI, Framer Motion |
+| **Database** | PostgreSQL with Prisma ORM |
+| **Auth** | NextAuth.js v5 (Credentials, OAuth providers) |
+| **Payments** | Stripe (Subscriptions, Checkout, Webhooks) |
+| **AI** | OpenAI GPT-4, Perplexity for research |
+| **Real-time** | Server-Sent Events (SSE) |
+| **Deployment** | Vercel (Edge Functions, ISR) |
+| **Monitoring** | Sentry, Vercel Analytics |
+
+---
+
+## 🤖 AI Development Environment
+
+> **"Claude on performance-enhancing drugs"** — This project was built with a revolutionary AI-assisted development environment that 10x's productivity.
+
+### 🧠 Core AI Architecture
+
+| Capability | Description |
+|------------|-------------|
+| **LSP Integration** | Language Server Protocol hooks for real-time code intelligence |
+| **Hierarchical Agent Orchestration** | Subagents for specialized tasks (UI, API, testing, docs) |
+| **Adversarial Validation** | Self-checking loops that catch hallucinations and errors |
+| **Ralph Wiggum Loops** | Recursive validation patterns that ensure correctness |
+| **2-Way Voice (STT/TTS)** | Speech-to-text and text-to-speech for hands-free coding |
+
+### 💾 Memory & Context Management
+
+| Feature | Description |
+|---------|-------------|
+| **Short-Term Memory** | Session-aware context for ongoing work |
+| **Long-Term Memory** | Persistent knowledge base with semantic retrieval |
+| **Dynamic Context Windowing** | Intelligent token management to maximize context |
+| **Compaction Avoidance** | Strategies to prevent premature context compression |
+| **Auto-Restore from Clear** | Seamless recovery when context resets |
+| **Context Monitoring** | Real-time visibility into token usage |
+
+### ⚡ Advanced Execution
+
+| Feature | Description |
+|---------|-------------|
+| **Streaming Response Caching** | Cached partial responses for faster iterations |
+| **Parallel Execution Pools** | Concurrent tool calls for speed |
+| **Semantic Chunking** | Embeddings-based code retrieval |
+| **Custom Tool Registration** | Extensible tool system |
+| **Conditional Breakpoints** | Pause agent reasoning for inspection |
+| **Diff-Based Rollback Protection** | Safe reversion of changes |
+
+### 🔄 Self-Healing & Validation
+
+| Feature | Description |
+|---------|-------------|
+| **Hallucination Detection** | Automatic detection of incorrect outputs |
+| **Auto-Correction** | Self-healing when Claude goes off-track |
+| **Prompt Chain Versioning** | Version control for prompt engineering |
+| **Validators** | Keep Claude honest across context clears |
+| **Auto-Generated Test Suites** | Tests run on every iteration |
+| **Intelligent Recurring Loops** | Continuous work with frictionless management |
+
+### 📚 Skills & Agents Library
+
+This project includes **200+ Claude skills and 108 specialized agents**:
+
+```
+.claude/
+├── skills/              # Reusable skill modules
+│   ├── fintech-developer
+│   ├── nextjs-fullstack-architect
+│   ├── ui-ux-designer
+│   ├── cloud-infrastructure-architect
+│   └── ... (100+ more)
+├── agents/              # Specialized agent configurations
+│   ├── code-reviewer
+│   ├── test-generator
+│   ├── documentation-writer
+│   └── ... (108 agents)
+└── workflows/           # Multi-step automation chains
 ```
 
-**Sample Output:**
-```
-Business Purchase: $1,000,000
-Down Payment: $200,000
-Financed Amount: $800,000
-Monthly Payment: $9,083.84
-Total Interest: $290,060.58
-```
+---
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL database
+
+- Node.js 20+ (LTS recommended)
+- PostgreSQL 14+
 - Stripe account (for payments)
+- OpenAI API key (for AI features)
 
 ### Installation
 
-1. Clone the repository:
 ```bash
-git clone <repository-url>
+# Clone the repository
+git clone https://github.com/jaydubya818/SellerFi.git
 cd seller-financing-platform
-```
 
-2. Install dependencies:
-```bash
+# Install dependencies
 npm install
-```
 
-3. Set up environment variables:
-```bash
+# Set up environment variables
 cp .env.example .env.local
 # Edit .env.local with your configuration
-```
 
-4. Set up the database:
-```bash
+# Set up the database
 npm run db:migrate
 npm run db:generate
-```
 
-5. Seed sample data (optional):
-```bash
+# Seed sample data (optional)
 npm run db:seed
-```
 
-6. Start the development server:
-```bash
+# Start the development server
 npm run dev
 ```
 
-The application will be available at [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-## Project Structure
+---
+
+## 📁 Project Structure
 
 ```
 seller-financing-platform/
-├── app/                    # Next.js app directory
-│   ├── (auth)/            # Authentication pages
-│   ├── (main)/            # Main application pages
-│   │   ├── buyer/         # Buyer dashboard and features
-│   │   └── listings/      # Business listings
-│   ├── api/               # API routes
-│   │   ├── auth/          # Authentication endpoints
-│   │   ├── listings/      # Listings management
-│   │   ├── dealrooms/     # Deal room functionality
-│   │   └── broker/        # Broker services
-│   └── globals.css        # Global styles
-├── components/            # Reusable UI components
-├── lib/                   # Utility functions and configurations
-├── prisma/               # Database schema and migrations
-├── public/               # Static assets
-└── types/                # TypeScript type definitions
+├── app/                       # Next.js App Router
+│   ├── (auth)/               # Authentication pages
+│   ├── (main)/               # Main application
+│   │   ├── buyer/            # Buyer dashboard, profile, saved
+│   │   ├── seller/           # Seller dashboard, listings
+│   │   ├── dealrooms/        # Deal room pages
+│   │   ├── listings/         # Browse & detail pages
+│   │   └── dealbox/          # Smart search boxes
+│   └── api/                  # API routes
+│       ├── auth/             # NextAuth endpoints
+│       ├── listings/         # CRUD operations
+│       ├── dealrooms/        # Messaging, documents
+│       └── stripe/           # Payment webhooks
+├── components/               # React components
+│   ├── ui/                   # shadcn/ui primitives
+│   ├── dashboard/            # Dashboard components
+│   ├── dealrooms/            # Dealroom components
+│   ├── listings/             # Listing components
+│   └── pricing/              # Pricing widgets
+├── lib/                      # Utilities & services
+│   ├── actions/              # Server Actions
+│   ├── services/             # Business logic
+│   └── utils/                # Helper functions
+├── prisma/                   # Database
+│   ├── schema.prisma         # Data model
+│   └── migrations/           # Migration history
+└── .taskmaster/              # AI task management
+    ├── tasks/                # Task definitions
+    └── docs/                 # PRDs & specs
 ```
 
-## Available Scripts
+---
+
+## 🧪 Development Commands
 
 ```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run db:migrate   # Run database migrations
-npm run db:push      # Push schema changes
-npm run db:studio    # Open Prisma Studio
-npm run db:seed      # Seed sample data
+# Development
+npm run dev              # Start dev server (port 3000)
+npm run build            # Production build
+npm run start            # Start production server
+
+# Database
+npm run db:migrate       # Run migrations
+npm run db:push          # Push schema changes
+npm run db:studio        # Open Prisma Studio
+npm run db:seed          # Seed sample data
+
+# Quality
+npm run lint             # ESLint
+npm run type-check       # TypeScript check
+npm run test             # Run tests
+npm run test:e2e         # Playwright E2E tests
+
+# Deployment
+npm run deploy:preview   # Deploy to preview
+npm run deploy:staging   # Deploy to staging
 ```
 
-## Key Features
+---
 
-### For Sellers
-- List businesses for sale with detailed financials
-- Manage inquiries and communications with potential buyers
-- Configure seller financing terms and options
-- Track deal progress and documentation
-
-### For Buyers
-- Browse and search business listings
-- Apply advanced filters (industry, price range, location)
-- Access deal rooms for secure communications
-- Submit and track financing applications
-
-### Deal Management
-- Private deal rooms for buyer-seller communication
-- Document upload and sharing
-- Real-time messaging and notifications
-- Automated due diligence workflows
-
-## Environment Variables
-
-Key environment variables needed:
+## 🔐 Environment Variables
 
 ```bash
-DATABASE_URL=         # PostgreSQL connection string
-NEXTAUTH_URL=         # Your app URL (used for OAuth redirects)
-AUTH_SECRET=          # NextAuth v5 secret (generate with: openssl rand -base64 32)
-STRIPE_SECRET_KEY=    # Stripe secret key
-STRIPE_PUBLISHABLE_KEY= # Stripe publishable key
+# Database
+DATABASE_URL=postgresql://...
+
+# Authentication
+NEXTAUTH_URL=http://localhost:3000
+AUTH_SECRET=your-secret-key
+
+# Stripe
+STRIPE_SECRET_KEY=sk_...
+STRIPE_PUBLISHABLE_KEY=pk_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# AI
+OPENAI_API_KEY=sk-...
+PERPLEXITY_API_KEY=pplx-...
+
+# Optional
+SENTRY_DSN=https://...
+VERCEL_URL=https://...
 ```
 
-## Deployment
+---
 
-### Staging
-```bash
-npm run deploy:preview
-```
+## 📊 Sample Data
 
-### Production
-```bash
-npm run deploy:staging
-```
+After seeding, you'll have access to:
 
-## Contributing
+| Account Type | Email | Password |
+|-------------|-------|----------|
+| Buyer | buyer@test.com | password123 |
+| Seller | seller@test.com | password123 |
+| Admin | admin@test.com | password123 |
 
-1. Create a feature branch from `master`
-2. Make your changes following the existing code style
-3. Run tests and linting
-4. Submit a pull request
+Sample listings include SaaS businesses, restaurants, manufacturing companies, and more with realistic financials.
 
-## License
+---
 
-MIT License
+## 🎨 Design Philosophy
 
+SellerFi follows a **Stripe-inspired design system**:
+
+- **Typography**: Clean, professional fonts with clear hierarchy
+- **Colors**: Emerald/teal primary with slate neutrals
+- **Motion**: Subtle Framer Motion animations for delight
+- **Components**: Accessible Radix UI primitives
+- **Dark Mode**: Full dark mode support
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+MIT License — see [LICENSE](LICENSE) for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- [shadcn/ui](https://ui.shadcn.com) — Beautiful component library
+- [Vercel](https://vercel.com) — Deployment platform
+- [Prisma](https://prisma.io) — Database toolkit
+- [Stripe](https://stripe.com) — Payment infrastructure
+
+---
+
+<p align="center">
+  <strong>Built with ❤️ and 🤖 AI assistance</strong>
+</p>
+
+<p align="center">
+  <a href="https://seller-fi.vercel.app">Visit SellerFi</a> •
+  <a href="https://github.com/jaydubya818/SellerFi">GitHub</a>
+</p>
