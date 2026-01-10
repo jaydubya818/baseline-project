@@ -54,7 +54,7 @@ async function ingestAllDocuments() {
       const result = await ingestDocument({
         title,
         category,
-        sourceType: 'external',
+        sourceType: 'EXTERNAL',
         rawText: content,
       });
 
