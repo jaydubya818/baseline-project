@@ -135,3 +135,39 @@ At the end of work, output:
 - What you fixed (bullets + files changed)
 - Remaining known issues (if any)
 - Evidence: test pass results and confirmation of zero console errors
+
+---
+
+## 11) Beta-Freeze Toggle
+- During beta, the following changes require **explicit user approval** before implementation:
+  - Schema changes (`prisma/schema.prisma`)
+  - Pricing changes (Stripe products, prices, entitlements)
+  - Auth changes (`lib/auth.ts`, NextAuth config)
+  - Permission/role changes
+- If a task requires any of the above, STOP and ask for explicit approval first.
+- This rule is active until the user explicitly disables beta-freeze mode.
+
+---
+
+## 12) AI-Agent Safety
+- AI agents may:
+  - Evaluate deals and generate scores
+  - Recommend actions
+  - Draft messages, summaries, and documents
+- AI agents may **NEVER**:
+  - Auto-send messages without user confirmation
+  - Auto-negotiate terms without user confirmation
+  - Auto-sign or auto-accept anything on behalf of the user
+  - Execute financial transactions automatically
+- Every AI-generated action that affects another party requires explicit user confirmation via UI.
+
+---
+
+## 13) Payments Are Sacred
+- Once a Stripe product, price, or entitlement is live in production:
+  - It cannot be renamed
+  - It cannot be deleted
+  - It cannot have its ID changed
+- New versions must be created alongside existing ones.
+- Sunset old products only after confirming zero active subscriptions.
+- `lib/entitlements.ts` and Stripe Dashboard must always be in sync.
