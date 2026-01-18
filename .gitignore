@@ -45,6 +45,7 @@ yarn-error.log*
 
 # MCP configuration (contains API tokens)
 .mcp.json
+.cursor/mcp.json
 
 # vercel
 .vercel

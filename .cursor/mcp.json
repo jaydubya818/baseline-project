@@ -2,7 +2,11 @@
 	"mcpServers": {
 		"task-master-ai": {
 			"command": "npx",
-			"args": ["-y", "--package=task-master-ai", "task-master-ai"],
+			"args": [
+				"-y",
+				"--package=task-master-ai",
+				"task-master-ai"
+			],
 			"env": {
 				"ANTHROPIC_API_KEY": "YOUR_ANTHROPIC_API_KEY_HERE",
 				"PERPLEXITY_API_KEY": "YOUR_PERPLEXITY_API_KEY_HERE",
@@ -14,6 +18,88 @@
 				"AZURE_OPENAI_API_KEY": "YOUR_AZURE_KEY_HERE",
 				"OLLAMA_API_KEY": "YOUR_OLLAMA_API_KEY_HERE"
 			}
+		},
+		"shadcn-ui": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@jpisnice/shadcn-ui-mcp-server"
+			],
+			"description": "Shadcn UI component management - add, customize, and manage shadcn/ui components"
+		},
+		"brave-search": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@anthropic-ai/mcp-server-brave-search"
+			],
+			"env": {
+				"BRAVE_API_KEY": "YOUR_BRAVE_SEARCH_API_KEY_HERE"
+			},
+			"description": "Web search using Brave Search API - official Anthropic server"
+		},
+		"github": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@anthropic-ai/mcp-server-github"
+			],
+			"env": {
+				"GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_PAT_HERE"
+			},
+			"description": "GitHub integration - manage repos, issues, PRs, and code"
+		},
+		"sequential-thinking": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-sequential-thinking"
+			],
+			"description": "Enhanced reasoning through sequential thought chains for complex problem solving"
+		},
+		"memory": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-memory"
+			],
+			"description": "Knowledge graph-based persistent memory system"
+		},
+		"filesystem": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-filesystem",
+				"/Users/jaywest"
+			],
+			"description": "Secure file operations with configurable access controls"
+		},
+		"fetch": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-fetch"
+			],
+			"description": "Web content fetching and conversion for efficient LLM usage"
+		},
+		"git": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-git"
+			],
+			"description": "Tools to read, search, and manipulate Git repositories"
+		},
+		"vercel": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@robinson_ai_systems/vercel-mcp"
+			],
+			"env": {
+				"VERCEL_TOKEN": "YOUR_VERCEL_API_TOKEN_HERE"
+			},
+			"description": "Vercel deployment management - deploy, manage domains, env vars, and more"
 		}
 	}
 }

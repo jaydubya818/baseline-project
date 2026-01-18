@@ -1,28 +1,68 @@
 {
   "mcpServers": {
-    "shadcn": {
+    "task-master-ai": {
       "command": "npx",
-      "args": [
-        "shadcn@latest",
-        "mcp"
-      ]
+      "args": ["-y", "--package=task-master-ai", "task-master-ai"],
+      "env": {
+        "ANTHROPIC_API_KEY": "YOUR_ANTHROPIC_API_KEY_HERE",
+        "OPENAI_API_KEY": "YOUR_OPENAI_KEY_HERE",
+        "GOOGLE_API_KEY": "YOUR_GOOGLE_KEY_HERE",
+        "PERPLEXITY_API_KEY": "YOUR_PERPLEXITY_API_KEY_HERE"
+      }
     },
     "shadcn-ui": {
       "command": "npx",
-      "args": [
-        "@jpisnice/shadcn-ui-mcp-server"
-      ]
+      "args": ["-y", "@jpisnice/shadcn-ui-mcp-server"],
+      "description": "Shadcn UI component management"
+    },
+    "brave-search": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/mcp-server-brave-search"],
+      "env": {
+        "BRAVE_API_KEY": "YOUR_BRAVE_SEARCH_API_KEY_HERE"
+      },
+      "description": "Web search using Brave Search API (official Anthropic server)"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/mcp-server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_PAT_HERE"
+      },
+      "description": "GitHub integration (official Anthropic server)"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "description": "Enhanced reasoning for complex problem solving"
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "description": "Knowledge graph-based persistent memory"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/allowed/directory"],
+      "description": "Secure file operations"
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-fetch"],
+      "description": "Web content fetching"
+    },
+    "git": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-git"],
+      "description": "Git repository operations"
     },
     "vercel": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@robinson_ai_systems/vercel-mcp"
-      ],
+      "args": ["-y", "@robinson_ai_systems/vercel-mcp"],
       "env": {
-        "VERCEL_TOKEN": "your-vercel-api-token-here"
-      }
+        "VERCEL_TOKEN": "YOUR_VERCEL_API_TOKEN_HERE"
+      },
+      "description": "Vercel deployment management"
     }
   }
 }
-
