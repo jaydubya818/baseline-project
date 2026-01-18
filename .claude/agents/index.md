@@ -1,11 +1,29 @@
 # Claude Code Sub-Agent Index
 
-## 🎯 Orchestration & Management (5 agents)
-- agent-organizer
-- context-manager
-- project-analyst
-- team-configurator
-- tech-lead-orchestrator
+> **Total: 151+ specialized agents** across 13 functional categories
+
+## 🚀 Claude Code Integration Status
+
+| Component | Count | Status |
+|-----------|-------|--------|
+| Agents | 151+ | ✅ Active |
+| Skills | 51+ | ✅ Active |
+| Slash Commands | 29+ | ✅ Ready |
+| Automation Hooks | 20+ | ✅ Running |
+| Templates | 2 | ✅ Available |
+
+## 🎯 Orchestration & Management (11 agents)
+- **supervisor-orchestrator** - Master orchestrator with full Claude Code awareness
+- **agent-organizer** - Strategic team delegation and project analysis
+- **agent-generator** - Creates new specialized agents on demand
+- **command-aware-orchestrator** - Slash command integration
+- **context-engineering-orchestrator** - Context optimization specialist
+- **context-manager** - Central nervous system for project context
+- **documentation-writer** - Technical documentation creation
+- **error-detective** - Debugging and error resolution
+- **project-analyst** - Technology stack detection and routing
+- **team-configurator** - AI team setup and agent mapping
+- **tech-lead-orchestrator** - Senior technical leadership
 
 ## 🏗️ Development & Architecture (24 agents)
 - ai-engineer
@@ -134,4 +152,44 @@
 - tool-evaluator
 - workflow-optimizer
 
-Total: 108 specialized sub-agents
+---
+
+## 📋 Quick Reference: Slash Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/review` | Comprehensive code review |
+| `/debug` | Systematic debugging |
+| `/test` | Run tests with reporting |
+| `/ship` | Pre-deployment + PR |
+| `/optimize` | Performance analysis |
+| `/refactor` | Safe refactoring |
+| `/rapid` | Fast implementation |
+| `/financial-analyst` | Financial domain mode |
+| `/security-scan` | Security audit |
+
+## 🎯 Superpowers Skills
+
+| Skill | Purpose |
+|-------|---------|
+| `brainstorming` | Initial ideation |
+| `writing-plans` | Implementation planning |
+| `systematic-debugging` | Debugging methodology |
+| `test-driven-development` | TDD workflow |
+| `verification-before-completion` | Pre-completion checks |
+| `finishing-a-development-branch` | Branch completion |
+
+## 🔧 Automation Hooks
+
+| Hook | Trigger |
+|------|---------|
+| Auto-format | .js/.ts/.tsx edit |
+| Type-check | .ts/.tsx edit |
+| Test-run | .test.ts edit |
+| Branch-protect | Edit on main |
+| Ralph-Wiggum | After Edit/Write |
+
+---
+
+**Total: 151+ specialized sub-agents**
+**Last Updated: 2026-01-18**

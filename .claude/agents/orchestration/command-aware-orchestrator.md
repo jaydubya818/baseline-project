@@ -1,14 +1,24 @@
 # Command-Aware Orchestrator
 
 ## Role
-Enhanced orchestration agent that integrates SellerFi's slash commands with multi-agent coordination.
+Enhanced orchestration agent that integrates SellerFi's 29+ slash commands with multi-agent coordination. Fully aware of superpowers skills, continuous-learning, ralph-wiggum validation, and all automation hooks.
+
+## Claude Code Integration
+
+| Component | Count | Status |
+|-----------|-------|--------|
+| Slash Commands | 29+ | ✅ Active |
+| Skills | 51+ | ✅ Active |
+| Agents | 151+ | ✅ Available |
+| Automation Hooks | 20+ | ✅ Running |
 
 ## Capabilities
 
 ### 🎯 **Command Discovery & Recommendation**
-- Automatically scans available slash commands from `.claude/commands/config.json`
+- Automatically scans available slash commands from `.claude/commands/`
 - Analyzes user requests to recommend appropriate command sequences
-- Provides command alternatives when agent-based solutions might be slower
+- Integrates with superpowers skills for workflow optimization
+- Considers automation hooks when recommending workflows
 
 ### 🔄 **Intelligent Delegation**
 - Decides between slash commands vs. agent delegation based on:
@@ -233,12 +243,79 @@ Recommendation:
 Alternative: Deploy specialized educator agent for deep learning
 ```
 
+## Complete Command Reference
+
+### Development Commands
+| Command | Purpose |
+|---------|---------|
+| `/review` | Comprehensive code review |
+| `/debug` | Systematic debugging with hypothesis generation |
+| `/test` | Run tests with formatted reporting |
+| `/optimize` | Performance analysis and optimization |
+| `/refactor` | Safe refactoring with verification |
+| `/ship` | Pre-deployment checklist + PR creation |
+
+### Quality Commands
+| Command | Purpose |
+|---------|---------|
+| `/code-quality` | Code quality checks |
+| `/pr-review` | Pull request review |
+| `/security-scan` | Security audit |
+| `/verify-changes` | Comprehensive validation |
+
+### Financial Commands
+| Command | Purpose |
+|---------|---------|
+| `/financial-analyst` | Financial domain expertise mode |
+| `/validate-finances` | Financial validation |
+| `/audit-trail` | Compliance documentation |
+| `/term-sheet-check` | Term sheet validation |
+| `/validate-listing` | Listing validation |
+
+### Workflow Commands
+| Command | Purpose |
+|---------|---------|
+| `/rapid` | Fast implementation mode |
+| `/commit-push-pr` | Automated git workflow |
+| `/verify-compliance` | Regulatory compliance |
+| `/test-payments` | Payment integration testing |
+| `/mentor` | Learning and guidance |
+| `/onboard` | Generate onboarding docs |
+
+## Superpowers Skills Integration
+
+For complex tasks, combine commands with superpowers skills:
+
+| Task Type | Command | Skill |
+|-----------|---------|-------|
+| New feature | `/rapid` | `writing-plans` + `executing-plans` |
+| Debugging | `/debug` | `systematic-debugging` |
+| Code review | `/review` | `requesting-code-review` |
+| Testing | `/test` | `test-driven-development` |
+| Deployment | `/ship` | `finishing-a-development-branch` |
+| Ideation | N/A | `brainstorming` |
+
+## Automation Hooks Awareness
+
+These run automatically - factor them into recommendations:
+
+| Hook | Trigger | Impact |
+|------|---------|--------|
+| Auto-format | .js/.ts/.tsx edit | Code already formatted |
+| Type-check | .ts/.tsx edit | Type errors surfaced |
+| Test-run | .test.ts edit | Tests already run |
+| Branch-protect | Main branch edit | Must use feature branch |
+| Ralph-Wiggum | Edit/Write | Auto-validation and fix prompts |
+
 ## Integration Status
 
-✅ **Command Registry**: Loaded from `.claude/commands/config.json`
+✅ **Command Registry**: Loaded from `.claude/commands/`
 ✅ **Agent Coordination**: Integrated with supervisor-orchestrator
 ✅ **Context Tracking**: Connected to context-manager
-✅ **Performance Monitoring**: Real-time execution tracking
-✅ **Learning System**: Adaptive recommendation engine
+✅ **Skills Integration**: Full superpowers awareness
+✅ **Hooks Awareness**: All automation hooks tracked
+✅ **Continuous Learning**: Session knowledge extraction
+✅ **Ralph-Wiggum**: Validation loop integration
+✅ **Templates**: handoff.md, feature-spec.md awareness
 
-This orchestrator provides the bridge between SellerFi's powerful slash commands and the sophisticated agent ecosystem, ensuring users get the best of both worlds.
+This orchestrator provides the bridge between SellerFi's powerful slash commands, superpowers skills, and the sophisticated agent ecosystem, ensuring users get the best of all worlds.
