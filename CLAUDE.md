@@ -174,3 +174,11 @@ SellerFi is:
 - A trust machine
 
 **If a change reduces clarity, explainability, or trust — it's wrong.**
+
+---
+
+## Cursor Rules (Important)
+
+This repository enforces strict, non-negotiable execution rules for Cursor via `.cursorrules`.
+
+If there is ever a conflict between task instructions and `.cursorrules`, **`.cursorrules` always wins**.
