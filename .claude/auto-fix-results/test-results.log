@@ -1,0 +1,1042 @@
+
+> seller-financing-platform@1.0.0 test
+> vitest
+
+
+[1m[46m RUN [49m[22m [36mv4.0.15 [39m[90m/Users/jaywest/SellerFin/seller-financing-platform[39m
+
+ [32m✓[39m __tests__/phase1/deal-flow.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m __tests__/lib/dealroom/health.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[90mstdout[2m | __tests__/api/admin-audit-logging.test.ts[2m > [22m[2mAdmin Audit Logging[2m > [22m[2mAudit Log Field Format Validation[2m > [22m[2mshould produce log entries with correct JSON structure
+[22m[39m
+=== SAMPLE ADMIN AUDIT LOG OUTPUT ===
+{
+  "id": "test_audit_1767322286788",
+  "adminUserId": "admin_user_test_123",
+  "action": "FEATURE",
+  "entityType": "LISTING",
+  "entityId": "listing_featured",
+  "oldValues": {
+    "isFeatured": false
+  },
+  "newValues": {
+    "isFeatured": true
+  },
+  "description": "Featured listing: Premium Business",
+  "ipAddress": "203.0.113.42",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  "createdAt": "2026-01-02T02:51:26.788Z"
+}
+=== END SAMPLE OUTPUT ===
+
+
+ [32m✓[39m __tests__/api/admin-audit-logging.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 94[2mms[22m[39m
+ [31m❯[39m __tests__/lib/dealroom/intelligence.test.ts [2m([22m[2m33 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 11[2mms[22m[39m
+       [32m✓[39m returns AT_RISK when recommended items are missing[32m 1[2mms[22m[39m
+       [32m✓[39m returns READY when all recommended items are present[32m 0[2mms[22m[39m
+       [32m✓[39m recommends uploading financials and tax returns[32m 0[2mms[22m[39m
+       [32m✓[39m shows no recommendations when docs are present[32m 0[2mms[22m[39m
+       [32m✓[39m provides next actions for discovery stage[32m 0[2mms[22m[39m
+       [32m✓[39m shows BLOCKED when NDA not accepted[32m 0[2mms[22m[39m
+       [32m✓[39m shows READY when NDA is accepted[32m 0[2mms[22m[39m
+       [32m✓[39m shows BLOCKED without NDA accepted[32m 0[2mms[22m[39m
+[31m       [31m×[31m shows AT_RISK when recommended docs missing[39m[32m 3[2mms[22m[39m
+       [32m✓[39m shows READY when all requirements met[32m 0[2mms[22m[39m
+[31m       [31m×[31m provides due diligence checklist action[39m[32m 1[2mms[22m[39m
+       [32m✓[39m requires F04 due diligence form[32m 0[2mms[22m[39m
+       [32m✓[39m provides LOI drafting action[32m 0[2mms[22m[39m
+       [32m✓[39m requires F02 LOI checklist form[32m 0[2mms[22m[39m
+       [32m✓[39m shows BLOCKED when LOI not submitted[32m 0[2mms[22m[39m
+       [32m✓[39m shows READY when LOI is submitted[32m 0[2mms[22m[39m
+       [32m✓[39m shows BLOCKED when LOI not accepted[32m 0[2mms[22m[39m
+       [32m✓[39m recommends PSA and closing checklists[32m 0[2mms[22m[39m
+       [32m✓[39m provides closing checklist actions[32m 0[2mms[22m[39m
+       [32m✓[39m shows AT_RISK for deals with no activity in 14+ days[32m 0[2mms[22m[39m
+       [32m✓[39m does not flag closed deals as stale[32m 0[2mms[22m[39m
+       [32m✓[39m returns forms for all deal stages[32m 0[2mms[22m[39m
+       [32m✓[39m NDA_PENDING requires NDA-related form F17[32m 0[2mms[22m[39m
+[31m       [31m×[31m NDA_SIGNED recommends due diligence forms F04 and F18[39m[32m 0[2mms[22m[39m
+       [32m✓[39m LOI_PENDING requires LOI checklist form F02[32m 0[2mms[22m[39m
+       [32m✓[39m LOI_SIGNED recommends PSA and closing forms F03 and F05[32m 0[2mms[22m[39m
+       [32m✓[39m UNDER_CONTRACT recommends closing checklists F05 and F06[32m 0[2mms[22m[39m
+       [32m✓[39m forms differ between consecutive stages[32m 0[2mms[22m[39m
+       [32m✓[39m collects many unique forms across all stages[32m 0[2mms[22m[39m
+       [32m✓[39m DUE_DILIGENCE requires F04 and recommends valuation forms[32m 0[2mms[22m[39m
+       [32m✓[39m NEGOTIATION requires LOI form F02 and recommends PSA/closing forms[32m 0[2mms[22m[39m
+[31m       [31m×[31m INITIAL_REVIEW recommends diligence and screening forms[39m[32m 0[2mms[22m[39m
+       [32m✓[39m DISCOVERY recommends early-stage screening forms[32m 0[2mms[22m[39m
+ [32m✓[39m __tests__/api/admin-reports.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m __tests__/deal-structuring.test.ts [2m([22m[2m47 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+[90mstderr[2m | __tests__/api/subscription-billing.test.ts[2m > [22m[2mSubscription Billing API[2m > [22m[2mPOST /api/billing/subscribe[2m > [22m[2mshould reject invalid plan
+[22m[39mError creating checkout session: ZodError: [
+  {
+    "code": "invalid_value",
+    "values": [
+      "basic",
+      "featured",
+      "elite"
+    ],
+    "path": [
+      "plan"
+    ],
+    "message": "Invalid option: expected one of \"basic\"|\"featured\"|\"elite\""
+  }
+]
+    at POST [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mapp/api/billing/subscribe/route.ts:35:44[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/subscription-billing.test.ts:194:24
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+ [32m✓[39m __tests__/api/subscription-billing.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 151[2mms[22m[39m
+[90mstdout[2m | __tests__/rag/ingestion.test.ts[2m > [22m[2mRAG Ingestion Integration[2m > [22m[2mDocument with Forbidden Terms[2m > [22m[2mshould ingest document and redact forbidden terms
+[22m[39mRedacted 3 forbidden term(s) from: [TEST] Business Listing Sources
+
+[90mstdout[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search
+[22m[39m📚 Test database has 0 published articles
+
+[90mstderr[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search
+[22m[39m⚠️ No articles found. Some tests may fail. Run: npx ts-node scripts/seed-comprehensive.ts
+
+[90mstderr[2m | __tests__/api/psa-route.test.ts[2m > [22m[2mPSA Route - Purchase Price Validation[2m > [22m[2mConfirm Closing Action[2m > [22m[2mreturns 422 when currentOffer is missing
+[22m[39m[PSA] Error creating fee for dealroom dealroom-123: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at createDealroomFee [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/dealroom-fee-service.ts:61:48[90m)[39m
+    at POST [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mapp/api/dealrooms/[id]/psa/route.ts:315:38[90m)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/psa-route.test.ts:272:24
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstderr[2m | __tests__/api/psa-route.test.ts[2m > [22m[2mPSA Route - Purchase Price Validation[2m > [22m[2mConfirm Closing Action[2m > [22m[2mreturns 422 when purchasePrice is missing
+[22m[39m[PSA] Error creating fee for dealroom dealroom-123: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at createDealroomFee [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/dealroom-fee-service.ts:61:48[90m)[39m
+    at POST [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mapp/api/dealrooms/[id]/psa/route.ts:315:38[90m)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/psa-route.test.ts:301:24
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstderr[2m | __tests__/api/psa-route.test.ts[2m > [22m[2mPSA Route - Purchase Price Validation[2m > [22m[2mConfirm Closing Action[2m > [22m[2mreturns 422 when purchasePrice is zero
+[22m[39m[PSA] Error creating fee for dealroom dealroom-123: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at createDealroomFee [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/dealroom-fee-service.ts:61:48[90m)[39m
+    at POST [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mapp/api/dealrooms/[id]/psa/route.ts:315:38[90m)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/psa-route.test.ts:329:24
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+ [32m✓[39m __tests__/api/dealrooms.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 148[2mms[22m[39m
+[90mstderr[2m | __tests__/api/psa-route.test.ts[2m > [22m[2mPSA Route - Purchase Price Validation[2m > [22m[2mConfirm Closing Action[2m > [22m[2mproceeds with valid purchasePrice and calculates managedSaleFee
+[22m[39m[PSA] Error creating fee for dealroom dealroom-123: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at createDealroomFee [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/dealroom-fee-service.ts:61:48[90m)[39m
+    at POST [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mapp/api/dealrooms/[id]/psa/route.ts:315:38[90m)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/psa-route.test.ts:358:24
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstderr[2m | __tests__/api/psa-route.test.ts[2m > [22m[2mPSA Route - Purchase Price Validation[2m > [22m[2mConfirm Closing Action[2m > [22m[2mdoes NOT fall back to listing askingPrice for closing
+[22m[39m[PSA] Error creating fee for dealroom dealroom-123: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at createDealroomFee [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/dealroom-fee-service.ts:61:48[90m)[39m
+    at POST [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mapp/api/dealrooms/[id]/psa/route.ts:315:38[90m)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/psa-route.test.ts:419:24
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstderr[2m | __tests__/api/psa-route.test.ts[2m > [22m[2mPSA Route - Purchase Price Validation[2m > [22m[2mStatus Validation[2m > [22m[2mrequires LOI_SIGNED status for sign action
+[22m[39mPSA/Closing API error: Error: INVALID_STATUS:Deal must be in LOI_SIGNED status to sign PSA
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/psa-route.test.ts:442:9
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1240:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1206:10[90m)[39m
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1650:37
+    at Traces.$ [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.U4xDYhzZ.js:115:27[90m)[39m
+    at trace [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4mvitest[24m/dist/chunks/test.BT8LKgU9.js:239:21[90m)[39m
+    at runTest [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1650:12[90m)[39m
+
+[90mstderr[2m | __tests__/api/psa-route.test.ts[2m > [22m[2mPSA Route - Purchase Price Validation[2m > [22m[2mStatus Validation[2m > [22m[2mrequires UNDER_CONTRACT status for confirm_closing action
+[22m[39mPSA/Closing API error: Error: INVALID_STATUS:Deal must be UNDER_CONTRACT to close
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/psa-route.test.ts:474:9
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1240:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1206:10[90m)[39m
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1650:37
+    at Traces.$ [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.U4xDYhzZ.js:115:27[90m)[39m
+    at trace [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4mvitest[24m/dist/chunks/test.BT8LKgU9.js:239:21[90m)[39m
+    at runTest [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1650:12[90m)[39m
+
+ [31m❯[39m __tests__/api/psa-route.test.ts [2m([22m[2m14 tests[22m[2m | [22m[31m5 failed[39m[2m)[22m[32m 145[2mms[22m[39m
+       [32m✓[39m returns 422 when currentOffer is missing[32m 131[2mms[22m[39m
+       [32m✓[39m returns 422 when purchasePrice is null[32m 1[2mms[22m[39m
+       [32m✓[39m returns 422 when purchasePrice is zero[32m 0[2mms[22m[39m
+       [32m✓[39m returns 422 when purchasePrice is negative[32m 0[2mms[22m[39m
+       [32m✓[39m proceeds with valid purchasePrice[32m 1[2mms[22m[39m
+       [32m✓[39m does NOT fall back to listing askingPrice when currentOffer has no purchasePrice[32m 0[2mms[22m[39m
+[31m       [31m×[31m returns 422 when currentOffer is missing[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m returns 422 when purchasePrice is missing[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m returns 422 when purchasePrice is zero[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m proceeds with valid purchasePrice and calculates managedSaleFee[39m[32m 1[2mms[22m[39m
+       [32m✓[39m requires seller role for confirm_closing[32m 0[2mms[22m[39m
+[31m       [31m×[31m does NOT fall back to listing askingPrice for closing[39m[32m 1[2mms[22m[39m
+       [32m✓[39m requires LOI_SIGNED status for sign action[32m 0[2mms[22m[39m
+       [32m✓[39m requires UNDER_CONTRACT status for confirm_closing action[32m 1[2mms[22m[39m
+[90mstdout[2m | __tests__/rag/ingestion.test.ts[2m > [22m[2mRAG Ingestion Integration[2m > [22m[2mDocument with Forbidden Terms[2m > [22m[2mshould create embeddings for redacted chunks
+[22m[39mRedacted 1 forbidden term(s) from: [TEST] SBA Loan Guide with Competitor
+
+[90mstdout[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mSample Query Testing[2m > [22m[2mshould handle query: "How do I structure seller financing?"
+[22m[39mQuery "How do I structure seller financing?" returned 0 results
+
+[90mstdout[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mSample Query Testing[2m > [22m[2mshould handle query: "What are SBA loan requirements?"
+[22m[39mQuery "What are SBA loan requirements?" returned 0 results
+
+[90mstderr[2m | __tests__/rag/ingestion.test.ts[2m > [22m[2mRAG Ingestion Integration[2m > [22m[2mError Handling[2m > [22m[2mshould handle empty document gracefully
+[22m[39mError ingesting document: Error: Cannot generate embedding for empty text at index 0
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/rag/embeddings.ts:96:13
+    at Array.forEach (<anonymous>)
+    at generateEmbeddings [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/rag/embeddings.ts:94:9[90m)[39m
+    at ingestDocument [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/rag/ingestion.ts:64:30[90m)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/rag/ingestion.test.ts:143:22
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstdout[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mSample Query Testing[2m > [22m[2mshould handle query: "Calculate DSCR for business loan"
+[22m[39mQuery "Calculate DSCR for business loan" returned 0 results
+
+[90mstderr[2m | __tests__/rag/ingestion.test.ts[2m > [22m[2mRAG Ingestion Integration[2m > [22m[2mError Handling[2m > [22m[2mshould handle document with only whitespace
+[22m[39mError ingesting document: Error: Cannot generate embedding for empty text at index 0
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/rag/embeddings.ts:96:13
+    at Array.forEach (<anonymous>)
+    at generateEmbeddings [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/rag/embeddings.ts:94:9[90m)[39m
+    at ingestDocument [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/rag/ingestion.ts:64:30[90m)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/rag/ingestion.test.ts:158:22
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstdout[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mSample Query Testing[2m > [22m[2mshould handle query: "Difference between SDE and EBITDA"
+[22m[39mQuery "Difference between SDE and EBITDA" returned 0 results
+
+[90mstdout[2m | __tests__/kb-rag-system.test.ts[2m > [22m[2mRAG Knowledge Base - Article Coverage[2m > [22m[2mshould have articles in database
+[22m[39m📚 Knowledge Base Articles: 0
+
+[90mstderr[2m | __tests__/kb-rag-system.test.ts[2m > [22m[2mRAG Knowledge Base - Article Coverage[2m > [22m[2mshould have articles in database
+[22m[39m⚠️ No articles found. Run: npx ts-node scripts/seed-knowledge-base.ts
+
+[90mstdout[2m | __tests__/kb-rag-system.test.ts[2m > [22m[2mRAG Knowledge Base - Article Coverage[2m > [22m[2mshould have embeddings generated
+[22m[39m🧠 Embeddings Generated: 0
+
+[90mstderr[2m | __tests__/kb-rag-system.test.ts[2m > [22m[2mRAG Knowledge Base - Article Coverage[2m > [22m[2mshould have embeddings generated
+[22m[39m⚠️ No embeddings found. Vector search will not work.
+
+[90mstdout[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mSample Query Testing[2m > [22m[2mshould handle query: "Red flags in due diligence"
+[22m[39mQuery "Red flags in due diligence" returned 0 results
+
+[90mstdout[2m | __tests__/kb-rag-system.test.ts[2m > [22m[2mRAG Knowledge Base - Article Coverage[2m > [22m[2mshould list article categories
+[22m[39m📁 Categories: None
+
+[90mstdout[2m | __tests__/kb-rag-system.test.ts[2m > [22m[2mRAG Knowledge Base - Article Coverage[2m > [22m[2mshould list article audiences
+[22m[39m👥 Audiences: None
+
+ [31m❯[39m __tests__/kb-rag-system.test.ts [2m([22m[2m27 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 105[2mms[22m[39m
+       [32m✓[39m should search with basic query[32m 18[2mms[22m[39m
+       [32m✓[39m should filter by category[32m 3[2mms[22m[39m
+       [32m✓[39m should filter by audience[32m 2[2mms[22m[39m
+       [32m✓[39m should respect limit parameter[32m 2[2mms[22m[39m
+       [32m✓[39m should handle empty results gracefully[32m 3[2mms[22m[39m
+[31m       [31m×[31m should generate embeddings for text[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should generate consistent embeddings for same text[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should handle empty text[39m[32m 1[2mms[22m[39m
+       [32m✓[39m should calculate similarity between identical vectors[32m 0[2mms[22m[39m
+       [32m✓[39m should calculate similarity between different vectors[32m 0[2mms[22m[39m
+       [32m✓[39m should calculate similarity between similar vectors[32m 0[2mms[22m[39m
+       [32m✓[39m should have KBArticle model available[32m 1[2mms[22m[39m
+       [32m✓[39m should have KBEmbedding model available[32m 5[2mms[22m[39m
+       [32m✓[39m should query published articles[32m 3[2mms[22m[39m
+       [32m✓[39m should have proper article structure[32m 11[2mms[22m[39m
+       [32m✓[39m should return properly structured results[32m 1[2mms[22m[39m
+       [32m✓[39m should handle invalid category gracefully[32m 1[2mms[22m[39m
+       [32m✓[39m should handle very long queries[32m 3[2mms[22m[39m
+       [32m✓[39m should handle special characters in queries[32m 4[2mms[22m[39m
+       [32m✓[39m should perform hybrid search when enabled[32m 1[2mms[22m[39m
+       [32m✓[39m should perform keyword-only search when hybrid disabled[32m 1[2mms[22m[39m
+       [32m✓[39m should complete search within reasonable time[32m 1[2mms[22m[39m
+       [32m✓[39m should handle multiple concurrent searches[32m 30[2mms[22m[39m
+     [32m✓[39m should have articles in database[32m 2[2mms[22m[39m
+     [32m✓[39m should have embeddings generated[32m 2[2mms[22m[39m
+     [32m✓[39m should list article categories[32m 3[2mms[22m[39m
+     [32m✓[39m should list article audiences[32m 1[2mms[22m[39m
+[90mstdout[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mEnhanced Chunking[2m > [22m[2mshould respect token limits in chunks
+[22m[39mChunk 1 size: 475 tokens
+Chunk 2 size: 477 tokens
+Chunk 3 size: 106 tokens
+
+[90mstderr[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mPerformance Monitoring[2m > [22m[2mshould handle search function errors gracefully
+[22m[39mSearch performance monitoring error: Error: Search failed
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/kb-search-enhanced.test.ts:403:55
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1240:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1206:10[90m)[39m
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1650:37
+    at Traces.$ [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.U4xDYhzZ.js:115:27[90m)[39m
+    at trace [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4mvitest[24m/dist/chunks/test.BT8LKgU9.js:239:21[90m)[39m
+    at runTest [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1650:12[90m)[39m
+
+ [31m❯[39m __tests__/components/deal-stage-tracker.test.tsx [2m([22m[2m15 tests[22m[2m | [22m[31m5 failed[39m[2m)[22m[32m 121[2mms[22m[39m
+       [32m✓[39m renders current stage correctly[32m 26[2mms[22m[39m
+       [32m✓[39m marks earlier stages as completed with green styling[32m 8[2mms[22m[39m
+       [32m✓[39m marks later stages as upcoming with gray styling[32m 8[2mms[22m[39m
+       [32m✓[39m shows CANCELLED banner when currentStage is CANCELLED[32m 8[2mms[22m[39m
+       [32m✓[39m shows DISPUTED banner when currentStage is DISPUTED[32m 8[2mms[22m[39m
+[31m       [31m×[31m marks stages up to lastActiveStage as completed when CANCELLED[39m[32m 11[2mms[22m[39m
+[31m       [31m×[31m marks stages up to lastActiveStage as completed when DISPUTED[39m[32m 6[2mms[22m[39m
+[31m       [31m×[31m marks stages after lastActiveStage as upcoming when CANCELLED[39m[32m 5[2mms[22m[39m
+       [32m✓[39m handles terminal state without lastActiveStage - all stages upcoming[32m 7[2mms[22m[39m
+       [32m✓[39m handles CLOSED state as terminal (success path)[32m 5[2mms[22m[39m
+       [32m✓[39m renders compact view correctly[32m 10[2mms[22m[39m
+       [32m✓[39m handles terminal state in compact mode with lastActiveStage[32m 4[2mms[22m[39m
+[31m       [31m×[31m handles lastActiveStage at first stage when CANCELLED[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m handles lastActiveStage at last non-terminal stage when DISPUTED[39m[32m 5[2mms[22m[39m
+       [32m✓[39m ignores lastActiveStage when currentStage is not terminal[32m 5[2mms[22m[39m
+ [32m✓[39m __tests__/rag/ingestion.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 131[2mms[22m[39m
+[90mstdout[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mArticle Coverage Verification[2m > [22m[2mshould find articles for core business acquisition topics
+[22m[39mTopic "seller financing": 0 results
+
+[90mstdout[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mArticle Coverage Verification[2m > [22m[2mshould find articles for core business acquisition topics
+[22m[39mTopic "SBA loan": 0 results
+
+[90mstdout[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mArticle Coverage Verification[2m > [22m[2mshould find articles for core business acquisition topics
+[22m[39mTopic "business valuation": 0 results
+
+[90mstdout[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mArticle Coverage Verification[2m > [22m[2mshould find articles for core business acquisition topics
+[22m[39mTopic "due diligence": 0 results
+
+[90mstdout[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mArticle Coverage Verification[2m > [22m[2mshould find articles for core business acquisition topics
+[22m[39mTopic "DSCR": 0 results
+
+[90mstdout[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mArticle Coverage Verification[2m > [22m[2mshould have embeddings for vector search capability
+[22m[39m🧠 Embeddings available: 0
+
+[90mstderr[2m | __tests__/kb-search-enhanced.test.ts[2m > [22m[2mEnhanced Knowledge Base Search[2m > [22m[2mArticle Coverage Verification[2m > [22m[2mshould have embeddings for vector search capability
+[22m[39m⚠️ No embeddings found. Vector search will use fallback.
+
+ [32m✓[39m __tests__/kb-search-enhanced.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 193[2mms[22m[39m
+[90mstderr[2m | __tests__/api/stripe-checkout.test.ts[2m > [22m[2mPOST /api/stripe/checkout[2m > [22m[2mSeller Plan Checkout[2m > [22m[2mshould reject invalid plan
+[22m[39m[Stripe Checkout] Error: ZodError: [
+  {
+    "code": "invalid_value",
+    "values": [
+      "PREMIUM",
+      "PRO",
+      "starter",
+      "featured",
+      "elite"
+    ],
+    "path": [
+      "plan"
+    ],
+    "message": "Invalid option: expected one of \"PREMIUM\"|\"PRO\"|\"starter\"|\"featured\"|\"elite\""
+  }
+]
+    at Module.POST [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mapp/api/stripe/checkout/route.ts:51:81[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/stripe-checkout.test.ts:128:24
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstderr[2m | __tests__/api/stripe-checkout.test.ts[2m > [22m[2mPOST /api/stripe/checkout[2m > [22m[2mValidation[2m > [22m[2mshould reject invalid checkout type
+[22m[39m[Stripe Checkout] Error: ZodError: [
+  {
+    "code": "invalid_value",
+    "values": [
+      "listing_upgrade",
+      "featured_placement",
+      "pro_seller_subscription",
+      "elite_buyer_subscription",
+      "listing_plan",
+      "seller_plan",
+      "buyer_pro",
+      "ai_deal_assistant"
+    ],
+    "path": [
+      "type"
+    ],
+    "message": "Invalid option: expected one of \"listing_upgrade\"|\"featured_placement\"|\"pro_seller_subscription\"|\"elite_buyer_subscription\"|\"listing_plan\"|\"seller_plan\"|\"buyer_pro\"|\"ai_deal_assistant\""
+  }
+]
+    at Module.POST [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mapp/api/stripe/checkout/route.ts:51:81[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/stripe-checkout.test.ts:190:24
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstderr[2m | __tests__/api/stripe-checkout.test.ts[2m > [22m[2mPOST /api/stripe/checkout[2m > [22m[2mValidation[2m > [22m[2mshould reject missing type
+[22m[39m[Stripe Checkout] Error: ZodError: [
+  {
+    "code": "invalid_value",
+    "values": [
+      "listing_upgrade",
+      "featured_placement",
+      "pro_seller_subscription",
+      "elite_buyer_subscription",
+      "listing_plan",
+      "seller_plan",
+      "buyer_pro",
+      "ai_deal_assistant"
+    ],
+    "path": [
+      "type"
+    ],
+    "message": "Invalid option: expected one of \"listing_upgrade\"|\"featured_placement\"|\"pro_seller_subscription\"|\"elite_buyer_subscription\"|\"listing_plan\"|\"seller_plan\"|\"buyer_pro\"|\"ai_deal_assistant\""
+  }
+]
+    at Module.POST [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mapp/api/stripe/checkout/route.ts:51:81[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/stripe-checkout.test.ts:201:24
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+ [32m✓[39m __tests__/api/stripe-checkout.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m __tests__/api/stage-advanced-activity.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+[90mstderr[2m | __tests__/api/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion Service[2m > [22m[2mdeleteDealroomSafely[2m > [22m[2mhard-deletes dealroom when no escrow exists
+[22m[39mError deleting dealroom: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at hasDealroomFee [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/services/dealroom-deletion.ts:64:40[90m)[39m
+    at Module.deleteDealroomSafely [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/services/dealroom-deletion.ts:113:26[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/dealroom-deletion.test.ts:114:22
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstdout[2m | __tests__/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion with Fees[2m > [22m[2mhasDealroomFee[2m > [22m[2mshould return false when no fee exists
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstderr[2m | __tests__/api/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion Service[2m > [22m[2mdeleteDealroomSafely[2m > [22m[2mrefuses hard-delete and returns error when escrow exists (default behavior)
+[22m[39mError deleting dealroom: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at hasDealroomFee [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/services/dealroom-deletion.ts:64:40[90m)[39m
+    at Module.deleteDealroomSafely [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/services/dealroom-deletion.ts:113:26[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/dealroom-deletion.test.ts:160:22
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstderr[2m | __tests__/api/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion Service[2m > [22m[2mdeleteDealroomSafely[2m > [22m[2msoft-deletes dealroom when escrow exists and allowSoftDelete is true
+[22m[39mError deleting dealroom: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at hasDealroomFee [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/services/dealroom-deletion.ts:64:40[90m)[39m
+    at Module.deleteDealroomSafely [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/services/dealroom-deletion.ts:113:26[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/dealroom-deletion.test.ts:184:22
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstderr[2m | __tests__/api/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion Service[2m > [22m[2mdeleteDealroomSafely[2m > [22m[2mhandles generic database errors
+[22m[39mError deleting dealroom: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at hasDealroomFee [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/services/dealroom-deletion.ts:64:40[90m)[39m
+    at Module.deleteDealroomSafely [90m(/Users/jaywest/SellerFin/seller-financing-platform/[39mlib/services/dealroom-deletion.ts:113:26[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/dealroom-deletion.test.ts:235:22
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstdout[2m | __tests__/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion with Fees[2m > [22m[2mhasDealroomFee[2m > [22m[2mshould return true when fee exists
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mgetUserEntitlements[2m > [22m[2mshould return default entitlements for user without subscription
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion with Fees[2m > [22m[2mvalidateDealroomDeletion[2m > [22m[2mshould pass validation when no fee exists
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mgetUserEntitlements[2m > [22m[2mshould return starter plan entitlements
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion with Fees[2m > [22m[2mvalidateDealroomDeletion[2m > [22m[2mshould throw error when fee exists
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion with Fees[2m > [22m[2mdeleteDealroomSafely[2m > [22m[2mshould successfully delete dealroom when no fee exists
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mgetUserEntitlements[2m > [22m[2mshould return featured plan entitlements
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion with Fees[2m > [22m[2mdeleteDealroomSafely[2m > [22m[2mshould fail deletion when fee exists (default behavior)
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mgetUserEntitlements[2m > [22m[2mshould return elite plan entitlements
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion with Fees[2m > [22m[2mdeleteDealroomSafely[2m > [22m[2mshould soft-delete when fee exists and allowSoftDelete is true
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mgetUserEntitlements[2m > [22m[2mshould include add-on entitlements
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+ [31m❯[39m __tests__/api/dealroom-deletion.test.ts [2m([22m[2m17 tests[22m[2m | [22m[31m5 failed[39m[2m)[22m[32m 22[2mms[22m[39m
+       [32m✓[39m returns true when escrow transaction exists[32m 1[2mms[22m[39m
+       [32m✓[39m returns false when no escrow transaction exists[32m 0[2mms[22m[39m
+[31m       [31m×[31m hard-deletes dealroom when no escrow exists[39m[32m 4[2mms[22m[39m
+       [32m✓[39m returns error when dealroom not found[32m 0[2mms[22m[39m
+       [32m✓[39m returns success when dealroom already soft-deleted[32m 0[2mms[22m[39m
+[31m       [31m×[31m refuses hard-delete and returns error when escrow exists (default behavior)[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m soft-deletes dealroom when escrow exists and allowSoftDelete is true[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m handles foreign key constraint error gracefully[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m handles generic database errors[39m[32m 0[2mms[22m[39m
+       [32m✓[39m soft-deletes a dealroom by setting deletedAt[32m 0[2mms[22m[39m
+       [32m✓[39m returns success if dealroom already soft-deleted[32m 0[2mms[22m[39m
+       [32m✓[39m returns error if dealroom not found[32m 0[2mms[22m[39m
+       [32m✓[39m restores a soft-deleted dealroom by clearing deletedAt[32m 0[2mms[22m[39m
+       [32m✓[39m returns success if dealroom not soft-deleted[32m 0[2mms[22m[39m
+       [32m✓[39m returns error if dealroom not found[32m 0[2mms[22m[39m
+     [32m✓[39m should delete escrow transaction before deleting dealroom in test mode[32m 12[2mms[22m[39m
+     [32m✓[39m demonstrates service behavior when escrow exists without soft-delete option[32m 0[2mms[22m[39m
+[90mstdout[2m | __tests__/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion with Fees[2m > [22m[2mdeleteDealroomSafely[2m > [22m[2mshould force hard-delete when fee exists and forceHardDelete is true (test mode)
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mgetUserEntitlements[2m > [22m[2mshould not grant entitlements for inactive subscriptions
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion with Fees[2m > [22m[2mdeleteDealroomSafely[2m > [22m[2mshould fail with constraint error when trying to force delete with fee still present
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mcanCreateListing[2m > [22m[2mshould prevent listing creation without subscription
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion with Fees[2m > [22m[2misForeignKeyConstraintError[2m > [22m[2mshould identify Prisma P2003 errors
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mcanCreateListing[2m > [22m[2mshould allow listing creation within quota
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion with Fees[2m > [22m[2mgetForeignKeyConstraintErrorMessage[2m > [22m[2mshould return user-friendly error message
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mcanCreateListing[2m > [22m[2mshould prevent listing creation when quota is exceeded
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/dealroom-deletion.test.ts[2m > [22m[2mDealroom Deletion with Fees[2m > [22m[2mCombined constraints (Fee + Escrow)[2m > [22m[2mshould fail deletion when both fee and escrow exist
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mcanCreateListing[2m > [22m[2mshould allow unlimited listings for elite plan
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mgetListingQuota[2m > [22m[2mshould return correct quota for starter plan
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+ [31m❯[39m __tests__/dealroom-deletion.test.ts [2m([22m[2m12 tests[22m[2m | [22m[31m12 failed[39m[2m)[22m[32m 46[2mms[22m[39m
+[31m       [31m×[31m should return false when no fee exists[39m[32m 19[2mms[22m[39m
+[31m       [31m×[31m should return true when fee exists[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should pass validation when no fee exists[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should throw error when fee exists[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should successfully delete dealroom when no fee exists[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should fail deletion when fee exists (default behavior)[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should soft-delete when fee exists and allowSoftDelete is true[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should force hard-delete when fee exists and forceHardDelete is true (test mode)[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should fail with constraint error when trying to force delete with fee still present[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m should identify Prisma P2003 errors[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should return user-friendly error message[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should fail deletion when both fee and escrow exist[39m[32m 2[2mms[22m[39m
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mFeature access checks[2m > [22m[2mshould grant analytics access for featured plan
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mFeature access checks[2m > [22m[2mshould deny analytics access for starter plan
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mFeature access checks[2m > [22m[2mshould grant AI tools access for elite plan
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+[90mstdout[2m | __tests__/entitlements.test.ts[2m > [22m[2mEntitlements System[2m > [22m[2mFeature access checks[2m > [22m[2mshould grant broker access only for elite plan
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation:
+
+
+The column `User.phoneNumber` does not exist in the current database.
+
+ [31m❯[39m __tests__/entitlements.test.ts [2m([22m[2m15 tests[22m[2m | [22m[31m15 failed[39m[2m)[22m[32m 50[2mms[22m[39m
+[31m       [31m×[31m should return default entitlements for user without subscription[39m[32m 19[2mms[22m[39m
+[31m       [31m×[31m should return starter plan entitlements[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should return featured plan entitlements[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should return elite plan entitlements[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should include add-on entitlements[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should not grant entitlements for inactive subscriptions[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should prevent listing creation without subscription[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should allow listing creation within quota[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should prevent listing creation when quota is exceeded[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should allow unlimited listings for elite plan[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should return correct quota for starter plan[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should grant analytics access for featured plan[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should deny analytics access for starter plan[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should grant AI tools access for elite plan[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should grant broker access only for elite plan[39m[32m 2[2mms[22m[39m
+[90mstdout[2m | lib/__tests__/ai-search.test.ts[2m > [22m[2mAI Search Interpreter[2m > [22m[2minterpretBuyerSearch[2m > [22m[2mshould parse price ranges
+[22m[39mnormalized businesses under $500k
+location { country: [32m'US'[39m }
+industries []
+
+[90mstdout[2m | lib/__tests__/ai-search.test.ts[2m > [22m[2mAI Search Interpreter[2m > [22m[2minterpretBuyerSearch[2m > [22m[2mshould parse price ranges with "between"
+[22m[39mnormalized business between $200k and $500k
+location { country: [32m'US'[39m }
+industries []
+
+[90mstdout[2m | lib/__tests__/ai-search.test.ts[2m > [22m[2mAI Search Interpreter[2m > [22m[2minterpretBuyerSearch[2m > [22m[2mshould parse location - state
+[22m[39mnormalized restaurant in California
+location { state: [32m'CA'[39m, country: [32m'US'[39m }
+industries [ [32m'RESTAURANT'[39m ]
+
+[90mstdout[2m | lib/__tests__/ai-search.test.ts[2m > [22m[2mAI Search Interpreter[2m > [22m[2minterpretBuyerSearch[2m > [22m[2mshould parse location - city
+[22m[39mnormalized business in Austin Texas
+location { city: [32m'austin'[39m, country: [32m'US'[39m }
+industries []
+
+[90mstdout[2m | lib/__tests__/ai-search.test.ts[2m > [22m[2mAI Search Interpreter[2m > [22m[2minterpretBuyerSearch[2m > [22m[2mshould detect seller financing requirement
+[22m[39mnormalized restaurant with seller financing
+location { country: [32m'US'[39m }
+industries [ [32m'RESTAURANT'[39m ]
+
+[90mstdout[2m | lib/__tests__/ai-search.test.ts[2m > [22m[2mAI Search Interpreter[2m > [22m[2minterpretBuyerSearch[2m > [22m[2mshould detect owner financing synonym
+[22m[39mnormalized business with owner financing
+location { country: [32m'US'[39m }
+industries []
+
+[90mstdout[2m | lib/__tests__/ai-search.test.ts[2m > [22m[2mAI Search Interpreter[2m > [22m[2minterpretBuyerSearch[2m > [22m[2mshould parse industry keywords
+[22m[39mnormalized restaurant for sale
+location { country: [32m'US'[39m }
+industries [ [32m'RESTAURANT'[39m ]
+
+[90mstdout[2m | lib/__tests__/ai-search.test.ts[2m > [22m[2mAI Search Interpreter[2m > [22m[2minterpretBuyerSearch[2m > [22m[2mshould handle complex queries
+[22m[39mnormalized profitable restaurant under $500k in Texas with seller financing
+location { state: [32m'TX'[39m, country: [32m'US'[39m }
+industries [ [32m'RESTAURANT'[39m ]
+
+[90mstdout[2m | lib/__tests__/ai-search.test.ts[2m > [22m[2mAI Search Interpreter[2m > [22m[2minterpretBuyerSearch[2m > [22m[2mshould extract keywords from query
+[22m[39mnormalized profitable established business
+location { country: [32m'US'[39m }
+industries []
+
+[90mstdout[2m | lib/__tests__/ai-search.test.ts[2m > [22m[2mAI Search Interpreter[2m > [22m[2minterpretBuyerSearch[2m > [22m[2mshould handle empty query
+[22m[39mnormalized 
+location { country: [32m'US'[39m }
+industries []
+
+[90mstdout[2m | lib/__tests__/ai-search.test.ts[2m > [22m[2mAI Search Interpreter[2m > [22m[2minterpretBuyerSearch[2m > [22m[2mshould handle special characters
+[22m[39mnormalized restaurant @ $500k!!!
+location { country: [32m'US'[39m }
+industries [ [32m'RESTAURANT'[39m ]
+
+ [32m✓[39m lib/__tests__/ai-search.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m lib/__tests__/finance.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m lib/rag/__tests__/redaction.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[90mstderr[2m | __tests__/api/listings.test.ts[2m > [22m[2m/api/listings[2m > [22m[2mPOST /api/listings[2m > [22m[2mhandles database errors
+[22m[39mError creating listing: Error: Database error
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/listings.test.ts:148:69
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1240:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1206:10[90m)[39m
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1650:37
+    at Traces.$ [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.U4xDYhzZ.js:115:27[90m)[39m
+    at trace [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4mvitest[24m/dist/chunks/test.BT8LKgU9.js:239:21[90m)[39m
+    at runTest [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1650:12[90m)[39m
+
+[90mstderr[2m | __tests__/api/listings.test.ts[2m > [22m[2m/api/listings[2m > [22m[2mGET /api/listings[2m > [22m[2mhandles database errors gracefully
+[22m[39mError fetching listings: Error: DB Error
+    at [90m/Users/jaywest/SellerFin/seller-financing-platform/[39m__tests__/api/listings.test.ts:277:71
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1240:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1206:10[90m)[39m
+    at [90mfile:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1650:37
+    at Traces.$ [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.U4xDYhzZ.js:115:27[90m)[39m
+    at trace [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4mvitest[24m/dist/chunks/test.BT8LKgU9.js:239:21[90m)[39m
+    at runTest [90m(file:///Users/jaywest/SellerFin/seller-financing-platform/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1650:12[90m)[39m
+
+ [32m✓[39m __tests__/api/listings.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m __tests__/api/forms-attach.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m lib/__tests__/utils.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+[90mstdout[2m | lib/__tests__/deal-score.test.ts[2m > [22m[2mDeal Score Calculator[2m > [22m[2mcalculateDealScore[2m > [22m[2mcalculates excellent deal score
+[22m[39mDealScore insights {
+  industry: [32m'DEFAULT'[39m,
+  insights: [
+    [32m'Fair valuation at 2.5× (industry range: 2-3.5×)'[39m,
+    [32m'Fair valuation for industry'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'seller financing available'[39m,
+    [32m'Strong seller financing: 80% available'[39m,
+    [32m'Strong seller financing'[39m,
+    [32m'Low down payment requirement'[39m,
+    [32m'Excellent debt coverage (DSCR: 1.80)'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'High buyer interest this week'[39m,
+    [32m'below market'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'premium pricing'[39m
+  ]
+}
+
+[90mstdout[2m | lib/__tests__/deal-score.test.ts[2m > [22m[2mDeal Score Calculator[2m > [22m[2mcalculateDealScore[2m > [22m[2mcalculates poor deal score
+[22m[39mDealScore insights {
+  industry: [32m'DEFAULT'[39m,
+  insights: [
+    [32m'premium pricing at 10.0× — may need negotiation'[39m,
+    [32m'premium pricing'[39m,
+    [32m'No seller financing — may require bank loan or full cash'[39m,
+    [32m'Low DSCR (0.80) — debt service may be challenging'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'below market'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Strong seller financing'[39m
+  ]
+}
+
+[90mstdout[2m | lib/__tests__/deal-score.test.ts[2m > [22m[2mDeal Score Calculator[2m > [22m[2mcalculateDealScore[2m > [22m[2mhandles technology industry multiples
+[22m[39mDealScore insights {
+  industry: [32m'TECHNOLOGY'[39m,
+  insights: [
+    [32m'Fair valuation at 4.0× (industry range: 3-5×)'[39m,
+    [32m'Fair valuation for industry'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'seller financing available'[39m,
+    [32m'below market'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'Strong seller financing'[39m,
+    [32m'premium pricing'[39m
+  ]
+}
+
+[90mstdout[2m | lib/__tests__/deal-score.test.ts[2m > [22m[2mDeal Score Calculator[2m > [22m[2mcalculateDealScore[2m > [22m[2mhandles restaurant industry multiples
+[22m[39mDealScore insights {
+  industry: [32m'RESTAURANT'[39m,
+  insights: [
+    [32m'Fair valuation at 2.5× (industry range: 1.8-3.2×)'[39m,
+    [32m'Fair valuation for industry'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'No seller financing — may require bank loan or full cash'[39m,
+    [32m'below market'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'Strong seller financing'[39m,
+    [32m'premium pricing'[39m
+  ]
+}
+
+[90mstdout[2m | lib/__tests__/deal-score.test.ts[2m > [22m[2mDeal Score Calculator[2m > [22m[2mcalculateDealScore[2m > [22m[2midentifies undervalued deals
+[22m[39mDealScore insights {
+  industry: [32m'DEFAULT'[39m,
+  insights: [
+    [32m'Priced below market at 1.3× (industry avg: 2.8×)'[39m,
+    [32m'below market pricing'[39m,
+    [32m'below market'[39m,
+    [32m'seller financing available'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'Strong seller financing'[39m,
+    [32m'premium pricing'[39m
+  ]
+}
+
+[90mstdout[2m | lib/__tests__/deal-score.test.ts[2m > [22m[2mDeal Score Calculator[2m > [22m[2mcalculateDealScore[2m > [22m[2mhandles missing cashflow gracefully
+[22m[39mDealScore insights {
+  industry: [32m'DEFAULT'[39m,
+  insights: [
+    [32m'seller financing available'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'below market'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'Strong seller financing'[39m,
+    [32m'premium pricing'[39m
+  ]
+}
+
+[90mstdout[2m | lib/__tests__/deal-score.test.ts[2m > [22m[2mDeal Score Calculator[2m > [22m[2mcalculateDealScore[2m > [22m[2mcalculates DSCR scoring correctly
+[22m[39mDealScore insights {
+  industry: [32m'DEFAULT'[39m,
+  insights: [
+    [32m'premium pricing at 5.0× — may need negotiation'[39m,
+    [32m'premium pricing'[39m,
+    [32m'seller financing available'[39m,
+    [32m'Excellent debt coverage (DSCR: 2.00)'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'below market'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'Strong seller financing'[39m
+  ]
+}
+DealScore insights {
+  industry: [32m'DEFAULT'[39m,
+  insights: [
+    [32m'premium pricing at 5.0× — may need negotiation'[39m,
+    [32m'premium pricing'[39m,
+    [32m'seller financing available'[39m,
+    [32m'Low DSCR (0.90) — debt service may be challenging'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'below market'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Strong seller financing'[39m
+  ]
+}
+
+[90mstdout[2m | lib/__tests__/deal-score.test.ts[2m > [22m[2mDeal Score Calculator[2m > [22m[2mcalculateDealScore[2m > [22m[2mrewards seller financing properly
+[22m[39mDealScore insights {
+  industry: [32m'DEFAULT'[39m,
+  insights: [
+    [32m'premium pricing at 5.0× — may need negotiation'[39m,
+    [32m'premium pricing'[39m,
+    [32m'seller financing available'[39m,
+    [32m'Strong seller financing: 70% available'[39m,
+    [32m'Strong seller financing'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'below market'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Low DSCR'[39m
+  ]
+}
+DealScore insights {
+  industry: [32m'DEFAULT'[39m,
+  insights: [
+    [32m'premium pricing at 5.0× — may need negotiation'[39m,
+    [32m'premium pricing'[39m,
+    [32m'No seller financing — may require bank loan or full cash'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'below market'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'Strong seller financing'[39m
+  ]
+}
+
+[90mstdout[2m | lib/__tests__/deal-score.test.ts[2m > [22m[2mDeal Score Calculator[2m > [22m[2mcalculateDealScore[2m > [22m[2mhandles edge cases
+[22m[39mDealScore insights {
+  industry: [32m'DEFAULT'[39m,
+  insights: [
+    [32m'seller financing available'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'below market'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'Strong seller financing'[39m,
+    [32m'premium pricing'[39m
+  ]
+}
+DealScore insights {
+  industry: [32m'DEFAULT'[39m,
+  insights: [
+    [32m'premium pricing at 100.0× — may need negotiation'[39m,
+    [32m'premium pricing'[39m,
+    [32m'seller financing available'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'below market'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'Strong seller financing'[39m
+  ]
+}
+
+[90mstdout[2m | lib/__tests__/deal-score.test.ts[2m > [22m[2mDeal Score Calculator[2m > [22m[2mReal-world scenarios[2m > [22m[2mscores SaaS business correctly
+[22m[39mDealScore insights {
+  industry: [32m'TECHNOLOGY'[39m,
+  insights: [
+    [32m'Fair valuation at 5.0× (industry range: 3-5×)'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'seller financing available'[39m,
+    [32m'Strong seller financing: 60% available'[39m,
+    [32m'Strong seller financing'[39m,
+    [32m'Strong debt coverage (DSCR: 1.40)'[39m,
+    [32m'Strong debt coverage'[39m,
+    [32m'below market'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'premium pricing'[39m
+  ]
+}
+
+[90mstdout[2m | lib/__tests__/deal-score.test.ts[2m > [22m[2mDeal Score Calculator[2m > [22m[2mReal-world scenarios[2m > [22m[2mscores restaurant acquisition correctly
+[22m[39mDealScore insights {
+  industry: [32m'RESTAURANT'[39m,
+  insights: [
+    [32m'Fair valuation at 2.5× (industry range: 1.8-3.2×)'[39m,
+    [32m'Fair valuation for industry'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'seller financing available'[39m,
+    [32m'Strong seller financing: 70% available'[39m,
+    [32m'Strong seller financing'[39m,
+    [32m'below market'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'premium pricing'[39m
+  ]
+}
+
+[90mstdout[2m | lib/__tests__/deal-score.test.ts[2m > [22m[2mDeal Score Calculator[2m > [22m[2mReal-world scenarios[2m > [22m[2midentifies overpriced deals
+[22m[39mDealScore insights {
+  industry: [32m'DEFAULT'[39m,
+  insights: [
+    [32m'premium pricing at 10.0× — may need negotiation'[39m,
+    [32m'premium pricing'[39m,
+    [32m'No seller financing — may require bank loan or full cash'[39m,
+    [32m'Low DSCR (0.90) — debt service may be challenging'[39m,
+    [32m'Low DSCR'[39m,
+    [32m'Fair valuation'[39m,
+    [32m'below market'[39m,
+    [32m'Excellent debt coverage'[39m,
+    [32m'Strong seller financing'[39m
+  ]
+}
+
+ [32m✓[39m lib/__tests__/deal-score.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m lib/__tests__/stripe-products.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m lib/__tests__/cache.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+[90mstdout[2m | lib/financial/__tests__/amortization-calculator.test.ts[2m > [22m[2mAmortization Calculator[2m > [22m[2mReal-world seller financing scenarios[2m > [22m[2mManufacturing business with balloon payment simulation
+[22m[39mMonthly payment: $36811.86
+Balloon payment after 5 years: $818048.92
+
+ [32m✓[39m lib/financial/__tests__/amortization-calculator.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m lib/__tests__/deal-stage-intelligence.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m lib/__tests__/deal-health.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m lib/__tests__/seo.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m lib/__tests__/buyer-qualification.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[90mstderr[2m | __tests__/api/kb-api.test.ts[2m > [22m[2mKB System Health Checks[2m > [22m[2mshould verify OpenAI API key is configured
+[22m[39m⚠️ OPENAI_API_KEY not found. Embedding generation will fail.
+
+ [32m✓[39m __tests__/api/kb-api.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m __tests__/lib/privacy-utils.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [31m❯[39m .claude/magical-10x-test/test-files/__tests__/simple-calculator.test.ts [2m([22m[2m3 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 4[2mms[22m[39m
+       [32m✓[39m should calculate exact monthly payment[32m 1[2mms[22m[39m
+[31m       [31m×[31m should handle amounts that don't divide evenly[39m[32m 3[2mms[22m[39m
+       [32m✓[39m should calculate total with interest[32m 0[2mms[22m[39m
+ [31m❯[39m .claude/examples/llm-as-judge-skills/tests/skills.test.ts [2m([22m[2m10 tests[22m[2m | [22m[31m7 failed[39m[2m)[22m[33m 64477[2mms[22m[39m
+[31m       [31m×[31m should use chain-of-thought in scoring[39m[33m 7356[2mms[22m[39m
+[31m       [31m×[31m should handle multiple weighted criteria[39m[33m 6318[2mms[22m[39m
+[31m       [31m×[31m should mitigate position bias with swap[39m[33m 6319[2mms[22m[39m
+[31m       [31m×[31m should identify clear winner for quality difference[39m[33m 6333[2mms[22m[39m
+[31m       [31m×[31m should generate domain-specific rubrics[39m[33m 6537[2mms[22m[39m
+[31m       [31m×[31m should provide edge case guidance[39m[33m 6297[2mms[22m[39m
+[31m       [31m×[31m should utilize provided context in evaluation[39m[33m 6325[2mms[22m[39m
+     [33m[2m✓[22m[39m should validate DirectScore input schema [33m 6321[2mms[22m[39m
+     [33m[2m✓[22m[39m should validate PairwiseCompare output structure [33m 6307[2mms[22m[39m
+     [33m[2m✓[22m[39m should validate GenerateRubric output structure [33m 6362[2mms[22m[39m
+ [31m❯[39m vendor/agent-skills-for-context-engineering/examples/llm-as-judge-skills/tests/skills.test.ts [2m([22m[2m10 tests[22m[2m | [22m[31m7 failed[39m[2m)[22m[33m 66017[2mms[22m[39m
+[31m       [31m×[31m should use chain-of-thought in scoring[39m[33m 7902[2mms[22m[39m
+[31m       [31m×[31m should handle multiple weighted criteria[39m[33m 7406[2mms[22m[39m
+[31m       [31m×[31m should mitigate position bias with swap[39m[33m 6369[2mms[22m[39m
+[31m       [31m×[31m should identify clear winner for quality difference[39m[33m 6343[2mms[22m[39m
+[31m       [31m×[31m should generate domain-specific rubrics[39m[33m 6264[2mms[22m[39m
+[31m       [31m×[31m should provide edge case guidance[39m[33m 6329[2mms[22m[39m
+[31m       [31m×[31m should utilize provided context in evaluation[39m[33m 6412[2mms[22m[39m
+     [33m[2m✓[22m[39m should validate DirectScore input schema [33m 6328[2mms[22m[39m
+     [33m[2m✓[22m[39m should validate PairwiseCompare output structure [33m 6301[2mms[22m[39m
+     [33m[2m✓[22m[39m should validate GenerateRubric output structure [33m 6361[2mms[22m[39m
+ [31m❯[39m vendor/agent-skills-for-context-engineering/examples/llm-as-judge-skills/tests/evaluation.test.ts [2m([22m[2m9 tests[22m[2m | [22m[31m9 failed[39m[2m)[22m[33m 78372[2mms[22m[39m
+[31m     [31m×[31m should score a response against criteria[39m[33m 8019[2mms[22m[39m
+[31m     [31m×[31m should provide lower scores for poor responses[39m[33m 13389[2mms[22m[39m
+[31m     [31m×[31m should correctly identify the better response[39m[33m 6366[2mms[22m[39m
+[31m     [31m×[31m should handle similar responses appropriately[39m[33m 6324[2mms[22m[39m
+[31m     [31m×[31m should provide comparison details for each criterion[39m[33m 6384[2mms[22m[39m
+[31m     [31m×[31m should generate a complete rubric[39m[33m 6279[2mms[22m[39m
+[31m     [31m×[31m should respect strictness setting[39m[33m 12662[2mms[22m[39m
+[31m     [31m×[31m should provide integrated evaluation workflow[39m[33m 12629[2mms[22m[39m
+[31m     [31m×[31m should support chat-based evaluation[39m[33m 6318[2mms[22m[39m
+ [31m❯[39m .claude/examples/llm-as-judge-skills/tests/evaluation.test.ts [2m([22m[2m9 tests[22m[2m | [22m[31m9 failed[39m[2m)[22m[33m 78472[2mms[22m[39m
+[31m     [31m×[31m should score a response against criteria[39m[33m 8312[2mms[22m[39m
+[31m     [31m×[31m should provide lower scores for poor responses[39m[33m 13308[2mms[22m[39m
+[31m     [31m×[31m should correctly identify the better response[39m[33m 6362[2mms[22m[39m
+[31m     [31m×[31m should handle similar responses appropriately[39m[33m 6304[2mms[22m[39m
+[31m     [31m×[31m should provide comparison details for each criterion[39m[33m 6290[2mms[22m[39m
+[31m     [31m×[31m should generate a complete rubric[39m[33m 6299[2mms[22m[39m
+[31m     [31m×[31m should respect strictness setting[39m[33m 12596[2mms[22m[39m
+[31m     [31m×[31m should provide integrated evaluation workflow[39m[33m 12711[2mms[22m[39m
+[31m     [31m×[31m should support chat-based evaluation[39m[33m 6289[2mms[22m[39m

@@ -2,6 +2,25 @@
 
 > AI-powered seller financing marketplace platform
 
+## 🚀 Claude Code Integration Status
+
+**Status:** ✅ **FULLY INTEGRATED** - All skills, agents, commands, and hooks active
+
+| Component | Count | Status |
+|-----------|-------|--------|
+| Skills | 51+ | ✅ Active |
+| Agents | 147+ | ✅ Available |
+| Slash Commands | 26+ | ✅ Ready |
+| Automation Hooks | 20+ | ✅ Running |
+| Submodule Skills | 3 repos | ✅ Installed |
+
+### Quick Access
+- **[.claude/QUICK_START.md](.claude/QUICK_START.md)** - Start here!
+- **[docs/CLAUDE_CODE_WORKFLOW_GUIDE.md](docs/CLAUDE_CODE_WORKFLOW_GUIDE.md)** - 26 best practices
+- **[.claude/INSTALLATION_VERIFICATION.md](.claude/INSTALLATION_VERIFICATION.md)** - Skills verification
+
+---
+
 ## Agent Dispatch Protocol
 
 For complex, multi-domain tasks requiring specialized expertise, this project uses the Agent Organizer system located in `.claude/agents/`.
@@ -419,9 +438,105 @@ npx prisma validate
 
 ---
 
+
+## Claude Code Skills & Capabilities
+
+### Installed Skill Repositories (Git Submodules)
+
+| Repository | Location | Purpose |
+|------------|----------|---------|
+| **continuous-learning** | `.claude/skills/continuous-learning/` | Autonomous knowledge extraction - creates new skills from solutions |
+| **openskills** | `.claude/skills/openskills/` | Universal skills loader and CLI for managing skills |
+| **superpowers** | `.claude/skills/superpowers/` | 14 composable development workflow skills |
+
+### Superpowers Skills (14)
+
+**Process & Planning:**
+- `brainstorming` - Initial ideation and approach planning
+- `writing-plans` - Creating structured implementation plans
+- `executing-plans` - Following plans systematically
+
+**Development:**
+- `test-driven-development` - TDD workflow with tests-first
+- `subagent-driven-development` - Specialized agents for complex tasks
+- `dispatching-parallel-agents` - Managing multiple agents simultaneously
+
+**Quality & Review:**
+- `verification-before-completion` - Pre-completion checks
+- `systematic-debugging` - Structured debugging methodology
+- `requesting-code-review` - Preparing code reviews
+- `receiving-code-review` - Handling feedback
+
+**Git & Workflow:**
+- `finishing-a-development-branch` - Branch completion checklist
+- `using-git-worktrees` - Working with multiple branches
+
+**Meta:**
+- `using-superpowers` - How to use all skills
+- `writing-skills` - Creating new skills
+
+### Custom SellerFin Skills (45+)
+
+Located in `.claude/skills/`:
+- `core-components` - Design system components
+- `formik-patterns` - Form handling patterns
+- `react-ui-patterns` - React best practices
+- `testing-patterns` - Testing strategies
+- `systematic-debugging` - Debugging methodology
+- `context-optimization` - Context engineering
+- `fintech-developer` - Fintech-specific patterns
+- ...and 38+ more specialized skills
+
+### Slash Commands
+
+**Development Commands:**
+```
+/review           - Comprehensive code review
+/debug            - Systematic debugging
+/test             - Run tests with reporting
+/optimize         - Performance analysis
+/refactor         - Safe refactoring
+/ship             - Pre-deployment checklist + PR
+```
+
+**Project Commands:**
+```
+/code-quality     - Code quality checks
+/pr-review        - Pull request review
+/onboard          - Onboarding docs
+/security-scan    - Security audit
+```
+
+### Automation Hooks
+
+These run automatically on every code change:
+
+| Hook | Trigger | Action |
+|------|---------|--------|
+| **Auto-format** | `.js/.ts/.tsx` edit | Prettier formatting |
+| **Type-check** | `.ts/.tsx` edit | TypeScript validation |
+| **Test-run** | `.test.ts` edit | Run related tests |
+| **Dep-install** | `package.json` edit | npm install |
+| **Branch-protect** | Any edit | Block edits on main |
+| **Skill-eval** | Every prompt | Match relevant skills |
+
+### Continuous Learning
+
+After completing tasks, you may see evaluation prompts asking:
+1. Did the task require non-obvious investigation?
+2. Was the solution reusable and valuable?
+3. Should this knowledge be preserved as a new skill?
+
+**Manual Invocation:** Say `/retrospective` to review the session
+
+---
+
 ## Contact & Resources
 
 - **Documentation**: `/docs/` directory
 - **API Reference**: `/docs/API_REFERENCE.md`
 - **Deployment Guide**: `/STAGING_DEPLOYMENT.md`
 - **Development Guide**: `/DEVELOPMENT_GUIDE.md`
+- **Claude Code Workflow**: `/docs/CLAUDE_CODE_WORKFLOW_GUIDE.md`
+- **Skills Installation**: `/.claude/INSTALLATION_VERIFICATION.md`
+- **Quick Start**: `/.claude/QUICK_START.md`

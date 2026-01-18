@@ -201,12 +201,74 @@ Use this template for thorough PR reviews:
 |-----------|-------------------|
 | New API endpoint | `tool-design`, `context-fundamentals` |
 | Complex feature | `multi-agent-patterns`, `memory-systems` |
-| Debugging | `context-degradation`, `evaluation` |
+| Debugging | `context-degradation`, `evaluation`, `systematic-debugging` |
 | Performance work | `context-optimization`, `context-compression` |
-| Setting up tests | `evaluation`, `advanced-evaluation` |
-| Project planning | `project-development` |
+| Setting up tests | `evaluation`, `advanced-evaluation`, `testing-patterns` |
+| Project planning | `project-development`, `writing-plans` |
+| Code review | `requesting-code-review`, `receiving-code-review` |
+| Branch workflow | `finishing-a-development-branch`, `using-git-worktrees` |
 
-Skills are located at: `vendor/agent-skills-for-context-engineering/skills/`
+Skills are located at:
+- **Vendor skills**: `vendor/agent-skills-for-context-engineering/skills/`
+- **Custom skills**: `.claude/skills/`
+- **Superpowers**: `.claude/skills/superpowers/skills/`
+
+---
+
+## Claude Code Integration
+
+### Fully Integrated Components
+
+| Component | Count | Status |
+|-----------|-------|--------|
+| Skills | 51+ | ✅ Active |
+| Agents | 147+ | ✅ Available |
+| Slash Commands | 26+ | ✅ Ready |
+| Automation Hooks | 20+ | ✅ Running |
+
+### Key Slash Commands
+
+```
+/review           - Comprehensive code review
+/debug            - Systematic debugging with hypothesis generation
+/test             - Run tests with formatted reporting
+/optimize         - Performance analysis and optimization
+/refactor         - Safe refactoring with verification
+/ship             - Complete pre-deployment checklist + PR creation
+/code-quality     - Code quality checks
+/pr-review        - Pull request review
+```
+
+### Automation Hooks (Auto-triggered)
+
+| Hook | Trigger | Action |
+|------|---------|--------|
+| Auto-format | `.js/.ts/.tsx` edit | Prettier formatting |
+| Type-check | `.ts/.tsx` edit | TypeScript validation |
+| Test-run | `.test.ts` edit | Run related tests |
+| Dep-install | `package.json` edit | npm install |
+| Branch-protect | Any edit | Block edits on main |
+| Skill-eval | Every prompt | Match relevant skills |
+
+### Superpowers Skill Categories
+
+**Process & Planning:**
+- `brainstorming` - Initial ideation
+- `writing-plans` - Implementation planning
+- `executing-plans` - Systematic execution
+
+**Development:**
+- `test-driven-development` - TDD workflow
+- `subagent-driven-development` - Complex tasks
+- `dispatching-parallel-agents` - Multiple agents
+
+**Quality:**
+- `verification-before-completion` - Pre-completion checks
+- `systematic-debugging` - Structured debugging
+
+### Continuous Learning
+
+The continuous-learning skill automatically evaluates each session and may create new skills from non-obvious solutions. Say `/retrospective` to manually trigger.
 
 ---
 
@@ -215,3 +277,6 @@ Skills are located at: `vendor/agent-skills-for-context-engineering/skills/`
 - [AI_TOOLING.md](mdc:docs/AI_TOOLING.md) - Full setup and usage guide
 - [claude-mem README](mdc:vendor/claude-mem/README.md) - Memory system documentation
 - [Agent Skills README](mdc:vendor/agent-skills-for-context-engineering/README.md) - Skills overview
+- [Claude Code Workflow Guide](mdc:docs/CLAUDE_CODE_WORKFLOW_GUIDE.md) - 26 best practices
+- [Skills Installation Verification](mdc:.claude/INSTALLATION_VERIFICATION.md) - Skills verification
+- [Quick Start Guide](mdc:.claude/QUICK_START.md) - Getting started
