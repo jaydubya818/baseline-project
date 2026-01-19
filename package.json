@@ -146,6 +146,7 @@
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/coverage-v8": "^4.0.15",
+    "agent-browser": "^0.6.0",
     "critters": "^0.0.23",
     "eslint-config-next": "^16.0.10",
     "jsdom": "^25.0.1",
