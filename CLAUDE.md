@@ -72,10 +72,11 @@ Any change impacting these flows requires E2E validation.
 - Next-step recommendations
 
 **AI is NOT allowed for:**
-- Core scoring math
-- Financial calculations
-- Entitlement decisions
-- State transitions
+- Core scoring math (point allocation, weighting, thresholds)
+- Financial calculations or projections
+- Entitlement, billing, or access-control decisions
+- Deal, listing, or dealroom state transitions
+- Writing directly to authoritative system-of-record fields
 
 **All AI outputs must include:**
 - Inputs used
@@ -91,6 +92,52 @@ Any change impacting these flows requires E2E validation.
 - LLMs may enhance, not decide
 - Missing data must lower confidence, not hallucinate values
 - All deal scores must be reproducible with the same inputs
+
+---
+
+## Agent Dispatch (For Complex Work)
+
+For tasks involving multiple domains (frontend + backend + database + auth + payments + AI), use the Agent Organizer system.
+
+Use:
+```
+@agent-organizer "task description"
+```
+
+Prefer agent dispatch for:
+- Cross-cutting architectural changes
+- Security- or payment-related work
+- AI pipeline, scoring, or underwriting logic
+- System-wide refactors or migrations
+
+---
+
+## High-Risk Areas (Extra Care Required)
+
+Changes in the following areas require extra validation, explicit reasoning, and end-to-end testing in real Chrome:
+
+- Payments & Stripe
+- Authentication, roles, and entitlements
+- Prisma schema & migrations
+- Dealroom state transitions
+- AI scoring inputs, outputs, and explanations
+
+Any modification in these areas must include:
+- Clear before/after behavior
+- Server-side enforcement (not UI-only)
+- Playwright E2E coverage or an explicit reason why not
+
+---
+
+## Background & Async Work
+
+Any long-running, compute-heavy, or batch operation (including deal re-evaluation, AI refresh jobs, notification fan-out, or scoring recomputation) must be implemented via background jobs or async workflows.
+
+Rules:
+- Do not block request/response paths with heavy computation
+- Prefer queues, scheduled jobs, or event-driven workflows
+- All async jobs must be idempotent and retry-safe
+- User-facing APIs should return quickly with a clear status
 
 ---
 
@@ -174,6 +221,23 @@ SellerFi is:
 - A trust machine
 
 **If a change reduces clarity, explainability, or trust — it's wrong.**
+
+---
+
+## Agent Orchestration Expectations
+
+SellerFi uses multi-agent execution for complex tasks.
+
+When a task involves:
+- Frontend + backend + database changes
+- Auth, billing, or entitlements
+- AI + deterministic logic
+- E2E workflows
+
+Cursor is expected to:
+- Decompose the task
+- Use sub-agents where appropriate
+- Validate integration points before declaring completion
 
 ---
 
