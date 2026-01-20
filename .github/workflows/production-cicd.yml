@@ -33,7 +33,7 @@ jobs:
         run: npm run lint || true  # Allow warnings for now (pre-existing)
       
       - name: Run TypeScript type check
-        run: npm run type-check
+        run: NODE_OPTIONS="--max-old-space-size=4096" npm run type-check
 
   # ═══════════════════════════════════════════════════════════
   # STAGE 2: SECURITY SCANNING
