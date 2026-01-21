@@ -4,14 +4,10 @@
 /node_modules
 /.pnp
 .pnp.js
+.yarn/install-state.gz
 
 # testing
 /coverage
-/test-results/
-/playwright-report/
-/playwright/.cache/
-/blob-report/
-/screenshots/
 
 # next.js
 /.next/
@@ -24,12 +20,6 @@
 .DS_Store
 *.pem
 
-# backup files
-*.bak
-*.bak2
-*.backup
-/backups/
-
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -38,14 +28,6 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
-.env.test
-!.env.staging
-!.env.example
-!.env.test.example
-
-# MCP configuration (contains API tokens)
-.mcp.json
-.cursor/mcp.json
 
 # vercel
 .vercel
@@ -54,10 +36,41 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# uploads (user-generated content)
-/uploads
-!/uploads/.gitkeep
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
 
-# vendor dependencies
-/vendor/
-.env.production
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Logs
+*.log
+dev.log
+build.log
+prod.log
+*.log.*
+
+# Taskmaster (keep structure, ignore temporary files)
+.taskmaster/state.json
+.taskmaster/.tmp/
+
+# Compound Engineering Plugin
+plans/.tmp/
+todos/.tmp/
+docs/solutions/.tmp/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db

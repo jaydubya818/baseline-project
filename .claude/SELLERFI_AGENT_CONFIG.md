@@ -13,6 +13,13 @@
 - **Search**: AI-powered with embeddings
 - **Analytics**: Custom analytics system
 
+**Development Tools**:
+- **Task Management**: Taskmaster AI (project-level tasks)
+- **Workflows**: Compound Engineering Plugin (implementation-level)
+- **Agents**: 178+ specialized agents (151 core + 27 Compound)
+- **Skills**: 65+ skills (51 core + 14 Compound)
+- **Commands**: 49+ slash commands (29 core + 20 Compound)
+
 ---
 
 ## 🎯 Priority Agent Teams
@@ -446,7 +453,105 @@ Regular performance audits:
 
 ---
 
+## 🔌 Compound Engineering Plugin Integration
+
+### Status
+**🔄 Pending Installation** (Requires Claude Code IDE)
+
+### Installation
+```
+# In Claude Code IDE:
+/plugin marketplace add https://github.com/EveryInc/compound-engineering-plugin
+/plugin install compound-engineering
+```
+
+### What It Adds
+- **27 Specialized Agents**: Review, research, design, workflow
+- **20 Slash Commands**: Planning, review, browser testing
+- **14 Skills**: Architecture, development, automation
+- **1 MCP Server**: Context7 for framework documentation
+
+### Core Workflows
+
+#### 1. Planning with Research
+```
+/workflows:plan "Add AI deal scoring feature"
+```
+**Runs**: `repo-research-analyst`, `best-practices-researcher`, `framework-docs-researcher`
+
+#### 2. Multi-Agent Code Review
+```
+/workflows:review #123
+```
+**Runs**: `security-sentinel`, `data-integrity-guardian`, `agent-native-reviewer`, `performance-oracle`, and 9+ more
+
+#### 3. Browser Testing
+```
+/test-browser #123
+```
+**Checks**: Zero console errors, page load, interactions
+
+#### 4. Knowledge Documentation
+```
+/workflows:compound "Implemented AI scoring with deterministic math"
+```
+**Creates**: Searchable documentation in `docs/solutions/`
+
+### SellerFi-Specific Benefits
+
+**Zero-Error Gate Enforcement:**
+- `/workflows:review` includes browser testing
+- P1 findings for any console errors
+
+**Security & Entitlements:**
+- `security-sentinel` audits all changes
+- `agent-native-reviewer` checks AI accessibility
+- P1 findings for missing server-side checks
+
+**Database Safety:**
+- `data-integrity-guardian` reviews migrations
+- `data-migration-expert` validates ID mappings
+- `deployment-verification-agent` creates Go/No-Go checklists
+
+**Knowledge Compounding:**
+- First time solving a problem: 30 min research
+- Document with `/workflows:compound`: 5 min
+- Next time: 2 min lookup
+- **Result**: Each problem solved makes future work easier
+
+### Integration with Taskmaster
+
+**Taskmaster** = Project-level task management  
+**Compound** = Implementation-level workflows
+
+**Use Both:**
+```bash
+# 1. Plan with Compound
+/workflows:plan "Add feature X"
+
+# 2. Parse into Taskmaster tasks
+task-master parse-prd plans/feat-x.md
+
+# 3. Track work in both systems
+task-master set-status --id=1.1 --status=done
+
+# 4. Review with Compound
+/workflows:review #123
+
+# 5. Document with Compound
+/workflows:compound "what I learned"
+```
+
+### See Also
+- **[Compound Workflows Guide](.claude/COMPOUND_WORKFLOWS.md)** - Detailed workflows
+- **[Compound Quick Start](.claude/COMPOUND_QUICK_START.md)** - Quick reference
+- **[Compound Testing Guide](.claude/COMPOUND_PLUGIN_TESTING.md)** - Testing instructions
+- **[Full Integration Guide](../docs/COMPOUND_ENGINEERING_INTEGRATION.md)** - Complete documentation
+
+---
+
 *SellerFin Custom Agent Configuration*
 *Platform: Seller Financing Platform*
-*Last Updated: December 20, 2024*
-*Agents Available: 147*
+*Last Updated: January 21, 2026*
+*Core Agents: 151 | Compound Agents: 27 | Total: 178+*
+*Skills: 65+ | Commands: 49+*

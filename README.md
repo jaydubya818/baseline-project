@@ -124,23 +124,79 @@ SellerFi is a private marketplace that eliminates the friction in business acqui
 
 ### 📚 Skills & Agents Library
 
-This project includes **200+ Claude skills and 108 specialized agents**:
+This project includes **65+ Claude skills and 178+ specialized agents**:
 
 ```
 .claude/
-├── skills/              # Reusable skill modules
+├── skills/              # Reusable skill modules (65+)
 │   ├── fintech-developer
 │   ├── nextjs-fullstack-architect
 │   ├── ui-ux-designer
 │   ├── cloud-infrastructure-architect
-│   └── ... (100+ more)
-├── agents/              # Specialized agent configurations
-│   ├── code-reviewer
-│   ├── test-generator
-│   ├── documentation-writer
-│   └── ... (108 agents)
+│   ├── compound-docs        # Knowledge compounding
+│   ├── git-worktree         # Parallel development
+│   └── ... (60+ more)
+├── agents/              # Specialized agent configurations (178+)
+│   ├── orchestration/       # 11 orchestrators
+│   ├── development/         # 24 developers
+│   ├── quality/             # 15 QA agents
+│   ├── security/            # 4 security auditors
+│   ├── review/              # 14 code reviewers (Compound)
+│   ├── research/            # 4 research agents (Compound)
+│   └── ... (106+ more)
+├── commands/            # Slash commands (49+)
+│   ├── /review              # Code review
+│   ├── /workflows:plan      # Detailed planning (Compound)
+│   ├── /workflows:review    # Multi-agent review (Compound)
+│   ├── /workflows:compound  # Knowledge documentation (Compound)
+│   └── ... (45+ more)
 └── workflows/           # Multi-step automation chains
 ```
+
+### 🔌 Compound Engineering Plugin
+
+**Status**: 🔄 Pending Installation (Requires Claude Code IDE)
+
+SellerFi integrates the **Compound Engineering Plugin** for enhanced development workflows:
+
+**Philosophy**: *Each unit of engineering work should make subsequent units easier—not harder.*
+
+**Installation** (In Claude Code IDE):
+```
+/plugin marketplace add https://github.com/EveryInc/compound-engineering-plugin
+/plugin install compound-engineering
+```
+
+**What It Adds**:
+- **27 Specialized Agents**: Review, research, design, workflow automation
+- **20 Slash Commands**: Planning, review, browser testing, parallel resolution
+- **14 Skills**: Architecture, development tools, git worktrees, browser automation
+
+**Core Workflows**:
+
+| Workflow | Command | Purpose |
+|----------|---------|---------|
+| **PLAN** | `/workflows:plan` | Create detailed plans with parallel research |
+| **WORK** | `/workflows:work` | Execute with git worktrees and task tracking |
+| **REVIEW** | `/workflows:review` | Multi-agent code review + browser testing |
+| **COMPOUND** | `/workflows:compound` | Document learnings for future reference |
+
+**Integration with Taskmaster**:
+- **Taskmaster** = Project-level task management
+- **Compound** = Implementation-level workflows
+- Both systems complement each other
+
+**Key Benefits**:
+- ✅ Zero console errors enforcement (browser testing)
+- ✅ Multi-agent security audits (13+ parallel agents)
+- ✅ Knowledge compounding (first time: 30min → next time: 2min)
+- ✅ SellerFi rule enforcement (determinism, server-side validation)
+
+**Documentation**:
+- [Compound Quick Start](.claude/COMPOUND_QUICK_START.md)
+- [Compound Workflows](.claude/COMPOUND_WORKFLOWS.md)
+- [Full Integration Guide](docs/COMPOUND_ENGINEERING_INTEGRATION.md)
+- [Testing Guide](.claude/COMPOUND_PLUGIN_TESTING.md)
 
 ---
 
@@ -212,9 +268,13 @@ seller-financing-platform/
 ├── prisma/                   # Database
 │   ├── schema.prisma         # Data model
 │   └── migrations/           # Migration history
-└── .taskmaster/              # AI task management
-    ├── tasks/                # Task definitions
-    └── docs/                 # PRDs & specs
+├── .taskmaster/              # Taskmaster AI (project tasks)
+│   ├── tasks/                # Task definitions
+│   └── docs/                 # PRDs & specs
+├── plans/                    # Compound plans (detailed implementation)
+├── todos/                    # Compound todos (review findings)
+└── docs/
+    └── solutions/            # Compound knowledge base (9 categories)
 ```
 
 ---
@@ -238,6 +298,20 @@ npm run lint             # ESLint
 npm run type-check       # TypeScript check
 npm run test             # Run tests
 npm run test:e2e         # Playwright E2E tests
+
+# Taskmaster (Project-Level Task Management)
+task-master list         # List all tasks
+task-master next         # Get next task to work on
+task-master show <id>    # View task details
+task-master expand --id=<id>  # Break down task into subtasks
+task-master set-status --id=<id> --status=done  # Mark complete
+
+# Compound Plugin (Implementation-Level Workflows)
+# Note: These commands require Claude Code IDE
+/workflows:plan "feature"     # Create detailed plan
+/workflows:review #PR         # Multi-agent review
+/workflows:compound "learning" # Document knowledge
+/test-browser #PR             # Browser testing
 
 # Deployment
 npm run deploy:preview   # Deploy to preview
@@ -320,6 +394,36 @@ MIT License — see [LICENSE](LICENSE) for details.
 - [Vercel](https://vercel.com) — Deployment platform
 - [Prisma](https://prisma.io) — Database toolkit
 - [Stripe](https://stripe.com) — Payment infrastructure
+- [Taskmaster AI](https://github.com/taskmaster-ai) — AI-powered task management
+- [Compound Engineering Plugin](https://github.com/EveryInc/compound-engineering-plugin) — Knowledge compounding workflows
+
+---
+
+## 📚 Additional Documentation
+
+### AI Development Environment
+- [Agent Configuration](.claude/SELLERFI_AGENT_CONFIG.md) — 178+ specialized agents
+- [Agent Index](.claude/agents/index.md) — Complete agent catalog
+- [Quick Start Guide](.claude/QUICK_START.md) — Getting started with agents
+
+### Compound Engineering Plugin
+- [Compound Quick Start](.claude/COMPOUND_QUICK_START.md) — Quick reference
+- [Compound Workflows](.claude/COMPOUND_WORKFLOWS.md) — SellerFi-specific workflows
+- [Integration Guide](docs/COMPOUND_ENGINEERING_INTEGRATION.md) — Complete integration
+- [Testing Guide](.claude/COMPOUND_PLUGIN_TESTING.md) — Testing instructions
+- [Installation Summary](COMPOUND_PLUGIN_INSTALLATION_SUMMARY.md) — Setup checklist
+
+### Taskmaster
+- [Taskmaster Setup](TASKMASTER_SETUP.md) — Configuration guide
+- [Development Workflow](.cursor/rules/taskmaster/dev_workflow.mdc) — Workflow patterns
+- [Command Reference](.cursor/rules/taskmaster/taskmaster.mdc) — All commands
+
+### Project Documentation
+- [API Reference](docs/API_REFERENCE.md) — API contracts
+- [Testing Guide](docs/TESTING.md) — E2E + Chrome testing
+- [Database Setup](docs/DATABASE_SETUP.md) — PostgreSQL + Prisma
+- [Stripe Setup](docs/STRIPE_SETUP_GUIDE.md) — Payments & entitlements
+- [Troubleshooting](docs/TROUBLESHOOTING.md) — Known issues
 
 ---
 
