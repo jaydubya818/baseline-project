@@ -95,10 +95,13 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Build application
-        run: npm run build
+        run: npx next build
         env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/test"
-          AUTH_SECRET: "test-secret-key-for-ci"
+          NODE_OPTIONS: --max-old-space-size=4096
+          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
+          NEXTAUTH_URL: http://localhost:3000
+          NEXTAUTH_SECRET: dummy-secret-for-build
+          AUTH_SECRET: dummy-secret-for-build
 
       - name: Run E2E tests
         # E2E tests require a real database connection. Skip until proper CI database setup.
@@ -224,11 +227,14 @@ jobs:
         run: npx tsc --noEmit
 
       - name: Build production
-        run: npm run build
+        run: npx next build
         env:
           NODE_ENV: production
-          DATABASE_URL: ${{ env.DATABASE_URL }}
-          AUTH_SECRET: ${{ env.AUTH_SECRET }}
+          NODE_OPTIONS: --max-old-space-size=6144
+          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
+          NEXTAUTH_URL: http://localhost:3000
+          NEXTAUTH_SECRET: dummy-secret-for-build
+          AUTH_SECRET: dummy-secret-for-build
           NEXT_TELEMETRY_DISABLED: 1
 
       - name: Analyze bundle size
