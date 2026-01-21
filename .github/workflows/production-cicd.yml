@@ -164,11 +164,11 @@ jobs:
         run: npx prisma generate
       
       - name: Build application
-        run: npm run build
+        run: npx next build
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
+          NEXTAUTH_URL: http://localhost:3000
+          NEXTAUTH_SECRET: dummy-secret-for-build
       
       - name: Analyze bundle size
         run: npx tsx scripts/analyze-bundle.ts || true
