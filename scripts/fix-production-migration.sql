@@ -1,15 +1,7 @@
 -- Fix Failed Migration in Production Database
 -- Run this directly on your Neon/Vercel production database
 
--- Step 1: Mark the failed migration as rolled back
-UPDATE "_prisma_migrations"
-SET finished_at = started_at,
-    migration_name = '20260124000000_postgres_optimizations',
-    logs = 'Manually rolled back - incompatible with managed database'
-WHERE migration_name = '20260124000000_postgres_optimizations'
-  AND finished_at IS NULL;
-
--- Step 2: Delete the failed migration record
+-- Delete the failed migration record so Prisma can re-apply a fixed version
 DELETE FROM "_prisma_migrations"
 WHERE migration_name = '20260124000000_postgres_optimizations';
 

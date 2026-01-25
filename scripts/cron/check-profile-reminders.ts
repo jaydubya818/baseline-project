@@ -42,7 +42,7 @@ function calculateProfileCompleteness(user: any): number {
     profileFields.forEach(field => {
       total++
       const value = user.buyerProfile[field]
-      if (value && (Array.isArray(value) ? value.length > 0 : true)) {
+      if (value !== null && value !== undefined && (Array.isArray(value) ? value.length > 0 : true)) {
         completed++
       }
     })
