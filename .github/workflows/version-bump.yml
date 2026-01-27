@@ -1,0 +1,124 @@
+name: Auto Version Bump
+
+on:
+  push:
+    branches: [master]
+    paths-ignore:
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/version-bump.yml'
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  version-bump:
+    name: Bump Version
+    runs-on: ubuntu-latest
+    # Only run if the commit is not from the version bump bot
+    if: "!contains(github.event.head_commit.message, '[skip-version-bump]')"
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Determine version bump type
+        id: bump-type
+        run: |
+          # Get the commit message
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          
+          # Determine bump type based on commit message
+          if echo "$COMMIT_MSG" | grep -qiE "^(BREAKING CHANGE|major):"; then
+            echo "type=major" >> $GITHUB_OUTPUT
+            echo "Version bump: MAJOR"
+          elif echo "$COMMIT_MSG" | grep -qiE "^(feat|feature|minor):"; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+            echo "Version bump: MINOR"
+          else
+            echo "type=patch" >> $GITHUB_OUTPUT
+            echo "Version bump: PATCH"
+          fi
+      
+      - name: Get current version
+        id: current-version
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $CURRENT_VERSION"
+      
+      - name: Bump version
+        id: new-version
+        run: |
+          npm version ${{ steps.bump-type.outputs.type }} --no-git-tag-version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "New version: $NEW_VERSION"
+      
+      - name: Update version in footer
+        run: |
+          # Update version in footer component if it exists
+          if [ -f "components/footer.tsx" ]; then
+            sed -i "s/v[0-9]\+\.[0-9]\+\.[0-9]\+/v${{ steps.new-version.outputs.version }}/g" components/footer.tsx
+          fi
+          
+          # Update version in any other files that display version
+          find . -type f \( -name "*.tsx" -o -name "*.ts" -o -name "*.jsx" -o -name "*.js" \) \
+            -not -path "*/node_modules/*" \
+            -not -path "*/.next/*" \
+            -not -path "*/dist/*" \
+            -exec grep -l "v[0-9]\+\.[0-9]\+\.[0-9]\+" {} \; | while read file; do
+            echo "Updating version in $file"
+            sed -i "s/v[0-9]\+\.[0-9]\+\.[0-9]\+/v${{ steps.new-version.outputs.version }}/g" "$file"
+          done
+      
+      - name: Commit and push version bump
+        run: |
+          git add package.json package-lock.json
+          git add -A  # Add any other files that were updated
+          
+          # Create commit message
+          COMMIT_MSG="chore: bump version to v${{ steps.new-version.outputs.version }} [skip-version-bump]"
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "$COMMIT_MSG"
+            git push origin master
+            
+            # Create git tag
+            git tag "v${{ steps.new-version.outputs.version }}"
+            git push origin "v${{ steps.new-version.outputs.version }}"
+            
+            echo "✅ Version bumped from v${{ steps.current-version.outputs.version }} to v${{ steps.new-version.outputs.version }}"
+          fi
+      
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.new-version.outputs.version }}
+          release_name: Release v${{ steps.new-version.outputs.version }}
+          body: |
+            ## Changes in v${{ steps.new-version.outputs.version }}
+            
+            ${{ github.event.head_commit.message }}
+            
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/v${{ steps.current-version.outputs.version }}...v${{ steps.new-version.outputs.version }}
+          draft: false
+          prerelease: false

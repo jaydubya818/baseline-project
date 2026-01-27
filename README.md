@@ -198,6 +198,47 @@ SellerFi integrates the **Compound Engineering Plugin** for enhanced development
 - [Full Integration Guide](docs/COMPOUND_ENGINEERING_INTEGRATION.md)
 - [Testing Guide](.claude/COMPOUND_PLUGIN_TESTING.md)
 
+### 🌐 Browser Automation & AI Guidelines
+
+**agent-browser** (v0.8.3) - Headless browser automation CLI optimized for AI agents:
+
+```bash
+# Install globally
+npm install -g agent-browser
+agent-browser install  # Download Chromium
+
+# Example workflow (optimal for AI)
+agent-browser open https://example.com
+agent-browser snapshot -i              # Get interactive elements with refs
+agent-browser click @e2                # Click using ref from snapshot
+agent-browser fill @e3 "text"          # Fill input using ref
+agent-browser screenshot page.png      # Capture screenshot
+agent-browser close                    # Close browser
+```
+
+**Key Features**:
+- 🎯 **Ref-based selection** - Deterministic element targeting from snapshots
+- 🌳 **Accessibility tree** - Semantic element discovery (optimal for LLMs)
+- ⚡ **Fast Rust CLI** - Native binary with Node.js fallback
+- 🔌 **CDP support** - Connect to existing browser instances
+- 📸 **Screenshot & PDF** - Visual verification and documentation
+
+**Karpathy Guidelines** - Behavioral guidelines to reduce common LLM coding mistakes:
+
+Located at `.claude/skills/karpathy-guidelines.md`, these principles apply to all coding tasks:
+
+1. **Think Before Coding** - Don't assume, surface tradeoffs, ask when uncertain
+2. **Simplicity First** - Minimum code that solves the problem, no speculation
+3. **Surgical Changes** - Touch only what you must, clean up only your mess
+4. **Goal-Driven Execution** - Define success criteria, loop until verified
+
+Based on [Andrej Karpathy's observations](https://github.com/forrestchang/andrej-karpthy-skills) about AI coding pitfalls.
+
+**Documentation**:
+- [Installation Summary](INSTALLATION_SUMMARY.md) - Setup and test results
+- [agent-browser GitHub](https://github.com/vercel-labs/agent-browser) - Full CLI reference
+- [Karpathy Skills](https://github.com/forrestchang/andrej-karpthy-skills) - Original guidelines
+
 ---
 
 ## 🚀 Quick Start
@@ -297,6 +338,11 @@ npm run db:seed          # Seed sample data
 npm run lint             # ESLint
 npm run type-check       # TypeScript check
 npm run test             # Run tests
+
+# Version Management
+npm run version:bump:patch   # Bump patch version (1.0.0 → 1.0.1)
+npm run version:bump:minor   # Bump minor version (1.0.0 → 1.1.0)
+npm run version:bump:major   # Bump major version (1.0.0 → 2.0.0)
 npm run test:e2e         # Playwright E2E tests
 
 # Taskmaster (Project-Level Task Management)

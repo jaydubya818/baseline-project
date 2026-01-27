@@ -47,7 +47,11 @@
     "rag:gate": "tsx scripts/rag-redaction-gate.ts",
     "audit:csp": "tsx scripts/audit-csp-compliance.ts",
     "ai:bootstrap": "bash scripts/bootstrap-ai-tooling.sh",
-    "ai:help": "echo '\n🤖 SellerFi AI Tooling\n=====================\n\nDocs:     docs/AI_TOOLING.md\nRules:    .cursor/rules/ai-tooling.mdc\n\nVendor:\n  → vendor/claude-mem/\n  → vendor/agent-skills-for-context-engineering/\n\nCommands:\n  npm run ai:bootstrap  - Initialize/update AI tooling\n  npm run ai:help       - Show this help\n\nSee docs/AI_TOOLING.md for full setup instructions.\n'"
+    "ai:help": "echo '\n🤖 SellerFi AI Tooling\n=====================\n\nDocs:     docs/AI_TOOLING.md\nRules:    .cursor/rules/ai-tooling.mdc\n\nVendor:\n  → vendor/claude-mem/\n  → vendor/agent-skills-for-context-engineering/\n\nCommands:\n  npm run ai:bootstrap  - Initialize/update AI tooling\n  npm run ai:help       - Show this help\n\nSee docs/AI_TOOLING.md for full setup instructions.\n'",
+    "version:bump": "node scripts/bump-version.js",
+    "version:bump:patch": "node scripts/bump-version.js patch --commit",
+    "version:bump:minor": "node scripts/bump-version.js minor --commit",
+    "version:bump:major": "node scripts/bump-version.js major --commit"
   },
   "keywords": [
     "seller-financing",
