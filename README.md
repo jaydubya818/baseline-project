@@ -239,6 +239,47 @@ Based on [Andrej Karpathy's observations](https://github.com/forrestchang/andrej
 - [agent-browser GitHub](https://github.com/vercel-labs/agent-browser) - Full CLI reference
 - [Karpathy Skills](https://github.com/forrestchang/andrej-karpthy-skills) - Original guidelines
 
+### 📈 Marketing Skills for AI Agents
+
+**25 Marketing Skills** - Specialized AI agent skills for conversion optimization, copywriting, SEO, and growth:
+
+```bash
+# Install all marketing skills
+npx skills add coreyhaines31/marketingskills --yes
+
+# Or install specific skills
+npx skills add coreyhaines31/marketingskills --skill seo-audit page-cro copywriting
+```
+
+**Skill Categories**:
+
+| Category | Skills |
+|----------|--------|
+| **Conversion Optimization** | page-cro, signup-flow-cro, onboarding-cro, form-cro, popup-cro, paywall-upgrade-cro |
+| **Content & Copy** | copywriting, copy-editing, email-sequence, social-content, content-strategy |
+| **SEO & Discovery** | seo-audit, programmatic-seo, competitor-alternatives, schema-markup |
+| **Paid & Distribution** | paid-ads, social-content |
+| **Measurement & Testing** | analytics-tracking, ab-test-setup |
+| **Growth Engineering** | free-tool-strategy, referral-program |
+| **Strategy & Monetization** | marketing-ideas, marketing-psychology, launch-strategy, pricing-strategy, product-marketing-context |
+
+**Usage Examples**:
+```
+"Help me optimize this landing page for conversions"  → Uses page-cro skill
+"Write homepage copy for my SaaS"                     → Uses copywriting skill
+"Set up GA4 tracking for signups"                     → Uses analytics-tracking skill
+"Audit my site for SEO issues"                        → Uses seo-audit skill
+"Create a 5-email welcome sequence"                   → Uses email-sequence skill
+```
+
+**Installed to 8 AI Agents**:
+- Antigravity, Claude Code, Clawdbot, Cursor, Gemini CLI, GitHub Copilot, OpenCode, Windsurf
+
+**Documentation**:
+- [Marketing Skills GitHub](https://github.com/coreyhaines31/marketingskills) - Full skill library
+- [Skills Website](https://marketing-skills.com) - Interactive documentation
+- Built by [Corey Haines](https://coreyhaines.com) - Technical marketer & founder
+
 ---
 
 ## 🚀 Quick Start
