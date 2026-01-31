@@ -995,5 +995,549 @@
       "updated": "2026-01-05T20:25:24.347Z",
       "description": "Tasks for master context"
     }
+  },
+  "professional-recommendations": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Implement Rate Limiting on Auth Endpoints",
+        "description": "Implement Upstash Redis rate limiting on all authentication endpoints to prevent brute force attacks.",
+        "details": "1. Install @upstash/ratelimit package\n2. Create rate limiting middleware at lib/api/rate-limit.ts\n3. Apply middleware to auth routes in app/api/auth/[...nextauth]/route.ts\n4. Configure limit to 5 attempts per minute per IP\n5. Return 429 status code with appropriate message when limit is exceeded\n6. Implement IP address extraction from request headers (considering X-Forwarded-For for proxied requests)\n7. Add Redis connection configuration in .env\n8. Create a withRateLimit HOC for API routes",
+        "testStrategy": "1. Write unit tests for rate limiting middleware\n2. Create integration tests that verify rate limiting behavior\n3. Test with multiple rapid requests to ensure 429 is returned after limit\n4. Verify rate limit resets after the specified time period\n5. Test with different IP addresses to ensure limits are per-IP",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Complete Photo Upload Implementation",
+        "description": "Implement full image upload functionality for listings with proper storage integration.",
+        "details": "1. Create lib/services/image-upload.ts for Google Cloud Storage integration\n2. Implement client-side image resizing to max 2400px width/height\n3. Add WebP conversion functionality\n4. Create a drag-and-drop upload component with react-dropzone\n5. Implement progress indicators during upload\n6. Add image preview with crop/rotate functionality using react-image-crop\n7. Enable image reordering with drag-and-drop using dnd-kit\n8. Update listing creation and edit forms to use the new upload component\n9. Configure proper CORS settings for GCS bucket\n10. Implement secure URL signing for uploads",
+        "testStrategy": "1. Unit test the image-upload service\n2. Test image resizing and WebP conversion functions\n3. Create component tests for the upload UI\n4. Test drag-and-drop functionality\n5. Verify progress indicators work correctly\n6. Test image reordering functionality\n7. Ensure proper error handling for failed uploads",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Add Auto-Save for Listing Edit Form",
+        "description": "Add auto-save functionality to the listing edit form to prevent data loss.",
+        "details": "1. Create a useDebouncedCallback hook with a 3-second debounce\n2. Implement a saveDraft API endpoint at app/api/listings/[id]/draft/route.ts\n3. Add save status indicator component showing 'Saving...' and 'Last saved at X' states\n4. Implement useBeforeUnload hook to warn users about unsaved changes\n5. Sync implementation with existing wizard auto-save pattern\n6. Store draft versions in a separate table with timestamps\n7. Add ability to revert to previous auto-saved versions\n8. Implement conflict resolution for simultaneous edits",
+        "testStrategy": "1. Unit test the debounce hook functionality\n2. Test the draft API endpoint\n3. Create component tests for the save indicator\n4. Verify auto-save triggers after the specified debounce period\n5. Test the unsaved changes warning\n6. Verify drafts are properly saved and can be retrieved",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Create Quick-Start Profile Flow",
+        "description": "Create a streamlined two-tier profile system to reduce friction for NDA access.",
+        "details": "1. Create components/buyer/quick-profile-modal.tsx\n2. Implement 5-field quick profile form with: name, phone, capital range, industry interest, timeline\n3. Create extended profile form for Elite features\n4. Configure modal to appear on first NDA access attempt\n5. Update database schema to store profile completion level\n6. Add migration for new profile fields\n7. Implement logic to prompt for extended profile completion later\n8. Add profile completion percentage indicator\n9. Create API endpoints for both profile types",
+        "testStrategy": "1. Create component tests for the quick profile modal\n2. Test form validation for both profile types\n3. Verify modal appears correctly on first NDA access\n4. Test database updates for profile completion level\n5. Verify the extended profile prompt appears at appropriate times\n6. Test the profile completion percentage calculation",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement Buyer Onboarding Email Sequence",
+        "description": "Implement automated drip email campaign for buyer onboarding with scheduled emails.",
+        "details": "1. Create email templates in lib/emails/buyer-onboarding/\n2. Implement the following templates:\n   - Day 0: Welcome + complete profile CTA\n   - Day 1: How to find your perfect deal\n   - Day 3: First saved search prompt\n   - Day 7: Elite buyer benefits\n3. Integrate with email service (Resend/SendGrid)\n4. Create scheduling logic for timed delivery\n5. Implement tracking for email opens and clicks\n6. Add unsubscribe functionality\n7. Create admin dashboard for email sequence management",
+        "testStrategy": "1. Unit test email template rendering\n2. Test scheduling logic\n3. Verify emails are sent at the correct intervals\n4. Test tracking pixel implementation\n5. Verify unsubscribe functionality works\n6. Test email rendering across different clients",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement Seller Onboarding Email Sequence",
+        "description": "Implement automated drip email campaign for seller onboarding with scheduled emails.",
+        "details": "1. Create email templates in lib/emails/seller-onboarding/\n2. Implement the following templates:\n   - Day 0: Welcome + create first listing CTA\n   - Day 1: Listing optimization tips\n   - Day 3: Pricing plan comparison\n   - Day 7: Success story showcase\n3. Integrate with email service (Resend/SendGrid)\n4. Create scheduling logic for timed delivery\n5. Implement tracking for email opens and clicks\n6. Add unsubscribe functionality\n7. Create admin dashboard for email sequence management",
+        "testStrategy": "1. Unit test email template rendering\n2. Test scheduling logic\n3. Verify emails are sent at the correct intervals\n4. Test tracking pixel implementation\n5. Verify unsubscribe functionality works\n6. Test email rendering across different clients",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Conduct Input Sanitization Audit",
+        "description": "Comprehensive security audit of all user input handling to prevent injection attacks.",
+        "details": "1. Audit all 193 API routes for SQL injection risks\n2. Verify no raw queries are vulnerable to injection\n3. Check for XSS vulnerabilities in dangerouslySetInnerHTML usage\n4. Validate file upload types and sizes\n5. Check for path traversal vulnerabilities\n6. Document findings and fixes\n7. Implement Zod validation for all API inputs\n8. Create a security report with recommendations\n9. Add Content-Security-Policy headers\n10. Implement input sanitization library for user-generated content",
+        "testStrategy": "1. Create automated security tests for common vulnerabilities\n2. Test SQL injection prevention\n3. Test XSS prevention\n4. Verify file upload validation\n5. Test path traversal prevention\n6. Conduct manual penetration testing",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement GDPR Compliance Features",
+        "description": "Add GDPR-required features for EU user compliance.",
+        "details": "1. Implement data export functionality\n   - Create API endpoint for data export\n   - Generate comprehensive JSON export of user data\n   - Include all personal data stored in the system\n2. Create account deletion workflow\n   - Implement soft delete with data retention policy\n   - Add confirmation process\n   - Create data cleanup job\n3. Add consent management center\n   - Track consent for different data processing activities\n   - Allow users to modify consent settings\n   - Store consent records with timestamps\n4. Create data processing records\n   - Document all data processing activities\n   - Include legal basis for processing\n5. Update privacy policy with processing details",
+        "testStrategy": "1. Test data export functionality for completeness\n2. Verify account deletion process removes appropriate data\n3. Test consent management UI and storage\n4. Verify consent is properly recorded with timestamps\n5. Test data retention policies",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Standardize Border Radius System",
+        "description": "Create consistent border radius design system throughout the application.",
+        "details": "1. Define radius scale in tailwind.config.js:\n   - sm: 4px\n   - md: 6px\n   - lg: 8px\n   - xl: 12px\n   - 2xl: 16px\n2. Update globals.css with CSS variables for radius values\n3. Audit all components using rounded-* classes\n4. Update components to use the standardized values\n5. Document usage guidelines in design system documentation\n6. Create utility classes for common radius patterns\n7. Update shadcn component theme to use the new radius system",
+        "testStrategy": "1. Visual regression testing to verify consistent border radius\n2. Audit codebase for non-compliant radius values\n3. Verify design system documentation is accurate\n4. Test responsive behavior of radius on different screen sizes",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Integrate Custom Badge Variants",
+        "description": "Extend shadcn Badge component with custom variants for the platform.",
+        "details": "1. Update components/ui/badge.tsx\n2. Add the following variants using cva:\n   - premium: gradient background with gold accent\n   - elite: gradient background with blue accent\n   - verified: green background with check icon\n   - popular: orange background\n3. Ensure type safety with TypeScript\n4. Add hover and focus states\n5. Ensure accessibility with proper contrast\n6. Add optional icon support\n7. Create documentation with examples",
+        "testStrategy": "1. Create component tests for each badge variant\n2. Test accessibility with axe\n3. Verify hover and focus states\n4. Test icon integration\n5. Verify type safety",
+        "priority": "medium",
+        "dependencies": [
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement Match Scores on Listing Cards",
+        "description": "Display personalized match scores in search results to help buyers find relevant listings.",
+        "details": "1. Update components/listings/listing-card.tsx\n2. Add match score badge in top-right corner\n3. Implement score calculation for authenticated users\n4. Add \"Best Match\" sort option to filters\n5. Create a visual indicator for high match scores (90%+)\n6. Implement tooltip explaining the match score\n7. Add animation for score reveal\n8. Ensure score is only shown for authenticated users",
+        "testStrategy": "1. Test match score calculation\n2. Verify score display on listing cards\n3. Test \"Best Match\" sort functionality\n4. Verify tooltip content\n5. Test authentication-based display logic\n6. Verify accessibility of the score display",
+        "priority": "medium",
+        "dependencies": [
+          10
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Enhance Saved Listings Organization",
+        "description": "Add folder/tag system for saved listings to improve organization.",
+        "details": "1. Update Prisma schema to add SavedListingFolder model\n2. Add notes and priority fields to SavedListing model\n3. Create migration for schema changes\n4. Build folder management UI\n   - Create folder\n   - Rename folder\n   - Delete folder\n   - Move listings between folders\n5. Implement quick compare functionality for side-by-side comparison\n6. Add status tracking for saved listings\n7. Implement drag-and-drop for organizing listings",
+        "testStrategy": "1. Test database schema changes\n2. Verify folder CRUD operations\n3. Test moving listings between folders\n4. Verify quick compare functionality\n5. Test status tracking\n6. Verify drag-and-drop functionality",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Create Dealroom Onboarding Tour",
+        "description": "Create interactive tour for first-time dealroom users to improve feature discovery.",
+        "details": "1. Install and configure @reactour/tour\n2. Define tour steps for key dealroom areas:\n   - Dashboard overview\n   - Saved listings\n   - Communication center\n   - Document storage\n   - Deal tracking\n3. Show tour on first dealroom visit\n4. Store completion status in user preferences\n5. Include skip option\n6. Add ability to restart tour from help menu\n7. Create highlight animations for tour targets",
+        "testStrategy": "1. Test tour step progression\n2. Verify tour appears on first visit\n3. Test skip functionality\n4. Verify completion status is stored\n5. Test tour restart from help menu\n6. Verify highlight animations",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Implement Seller Onboarding Flow",
+        "description": "Create guided first-listing experience for new sellers to improve conversion.",
+        "details": "1. Create app/(main)/seller/onboarding/page.tsx\n2. Implement the following steps:\n   - Step 1: Welcome modal with video introduction\n   - Step 2: Profile completion form\n   - Step 3: Guided first listing creation\n   - Step 4: Pricing plan selection\n   - Step 5: Dashboard tour\n3. Track onboarding completion in database\n4. Add progress indicator\n5. Allow saving and resuming the onboarding process\n6. Implement skip options for each step\n7. Add celebratory animation on completion",
+        "testStrategy": "1. Test each onboarding step\n2. Verify progress tracking\n3. Test save and resume functionality\n4. Verify skip options work correctly\n5. Test completion tracking\n6. Verify the celebratory animation",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Implement Real-Time Analytics Data",
+        "description": "Replace hardcoded trends with actual calculations for accurate analytics.",
+        "details": "1. Create lib/services/analytics.ts\n2. Implement getListingTrends function\n3. Calculate week-over-week and month-over-month changes\n4. Update seller analytics components to use real data\n5. Implement caching for performance\n6. Add data validation to ensure accuracy\n7. Create scheduled job to pre-calculate trends\n8. Add error handling for missing data periods",
+        "testStrategy": "1. Unit test analytics calculations\n2. Verify week-over-week calculations\n3. Test month-over-month calculations\n4. Verify data accuracy against raw database values\n5. Test caching mechanism\n6. Verify error handling for edge cases",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Reorganize API Routes",
+        "description": "Improve API route structure and consistency for better maintainability.",
+        "details": "1. Consolidate similar routes\n2. Add consistent error handling middleware\n3. Implement request validation with Zod\n4. Add rate limiting to sensitive endpoints\n5. Create lib/api/middleware.ts with withValidation helper\n6. Standardize response formats\n7. Add proper HTTP status codes\n8. Implement pagination for list endpoints\n9. Add proper documentation comments",
+        "testStrategy": "1. Test consolidated routes for functionality\n2. Verify error handling is consistent\n3. Test Zod validation\n4. Verify rate limiting on sensitive endpoints\n5. Test pagination\n6. Verify response formats are consistent",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Implement Referral Program",
+        "description": "Implement refer-a-friend program to drive user acquisition.",
+        "details": "1. Create referral model in database\n2. Generate unique referral links for users\n3. Implement rewards:\n   - Buyers: 1 month free Elite for successful referral\n   - Sellers: 1 month free Featured for successful referral\n4. Build dashboard widget for referral status\n5. Track conversions and attribution\n6. Create email notifications for successful referrals\n7. Add social sharing functionality\n8. Implement fraud prevention measures",
+        "testStrategy": "1. Test referral link generation\n2. Verify reward distribution\n3. Test dashboard widget\n4. Verify conversion tracking\n5. Test email notifications\n6. Verify social sharing functionality\n7. Test fraud prevention measures",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Enhance Social Proof Elements",
+        "description": "Add social proof elements throughout platform to build trust and credibility.",
+        "details": "1. Homepage: Implement recent deals closed ticker\n2. Listing pages: Add seller rating and reviews display\n3. Signup: Create success stories carousel\n4. Pricing page: Add customer testimonials section\n5. Ensure all data comes from actual database records\n6. Implement caching for performance\n7. Add animations for engagement\n8. Create admin interface for managing testimonials",
+        "testStrategy": "1. Verify recent deals ticker displays accurate data\n2. Test seller rating display\n3. Verify success stories carousel\n4. Test testimonials display\n5. Verify data is coming from the database\n6. Test caching mechanism\n7. Verify animations work correctly",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Improve AI Deal Matching Algorithm",
+        "description": "Enhance matching algorithm sophistication for better buyer-listing matches.",
+        "details": "1. Update lib/ai/matching.ts\n2. Factor in behavioral signals:\n   - Saved listings\n   - Viewed listings\n   - Time spent on page\n3. Add industry expertise weighting\n4. Implement geographic preference learning\n5. Consider past deal success patterns\n6. Add confidence score to matches\n7. Implement A/B testing framework for algorithm improvements\n8. Create admin dashboard for algorithm tuning",
+        "testStrategy": "1. Test matching algorithm with various inputs\n2. Verify behavioral signals are properly weighted\n3. Test industry expertise matching\n4. Verify geographic preference learning\n5. Test confidence score calculation\n6. Verify A/B testing framework\n7. Conduct user satisfaction surveys to validate improvements",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Create Automated Due Diligence Checklist",
+        "description": "Auto-generate customized checklists based on deal characteristics.",
+        "details": "1. Create checklist generation algorithm based on:\n   - Deal size\n   - Industry requirements\n   - Financing structure\n   - Buyer experience level\n2. Implement progress tracking\n3. Add notifications for checklist milestones\n4. Create template library for common checklist items\n5. Allow customization of generated checklists\n6. Implement document upload for completed items\n7. Add collaboration features for team due diligence",
+        "testStrategy": "1. Test checklist generation with various inputs\n2. Verify progress tracking\n3. Test notifications\n4. Verify template library functionality\n5. Test customization options\n6. Verify document upload for checklist items\n7. Test collaboration features",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "Implement Image Optimization Pipeline",
+        "description": "Comprehensive image optimization for web performance and user experience.",
+        "details": "1. Implement client-side resize to max 2400px\n2. Add WebP conversion on upload\n3. Generate multiple sizes for different contexts:\n   - thumbnail (200px)\n   - medium (800px)\n   - large (1600px)\n4. Configure Next.js Image component for all images\n5. Implement blur placeholders\n6. Add lazy loading for below-fold images\n7. Set proper cache headers\n8. Implement responsive image srcset",
+        "testStrategy": "1. Test image resizing functionality\n2. Verify WebP conversion\n3. Test multiple size generation\n4. Verify Next.js Image component implementation\n5. Test blur placeholders\n6. Verify lazy loading behavior\n7. Test cache headers\n8. Verify responsive images on different devices",
+        "priority": "medium",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "Add Error Boundary Implementation",
+        "description": "Add consistent error boundaries for improved error handling and user experience.",
+        "details": "1. Create app/(main)/error.tsx\n2. Add error boundaries at key points in the application\n3. Implement retry functionality\n4. Configure Sentry integration for error logging\n5. Create user-friendly error messages\n6. Add fallback UI components\n7. Implement offline detection and messaging\n8. Create error reporting mechanism for users",
+        "testStrategy": "1. Test error boundaries with simulated errors\n2. Verify retry functionality\n3. Test Sentry integration\n4. Verify user-friendly error messages\n5. Test fallback UI components\n6. Verify offline detection\n7. Test error reporting mechanism",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "Enhance Audit Logging",
+        "description": "Ensure comprehensive audit logging for security and compliance.",
+        "details": "1. Implement logging for all authentication events\n2. Track permission changes\n3. Log access to sensitive data fields\n4. Record all admin actions\n5. Track API key usage\n6. Ensure compliance with regulatory requirements\n7. Implement log rotation and retention policies\n8. Create admin interface for log review\n9. Add alerting for suspicious activities",
+        "testStrategy": "1. Verify authentication event logging\n2. Test permission change tracking\n3. Verify sensitive data access logging\n4. Test admin action recording\n5. Verify API key usage tracking\n6. Test log rotation and retention\n7. Verify admin interface for logs\n8. Test alerting for suspicious activities",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Refactor Navigation Component",
+        "description": "Split 1,145-line navigation.tsx into smaller components for better maintainability.",
+        "details": "1. Create components/navigation/index.tsx as the main entry point\n2. Split into logical components:\n   - desktop-nav.tsx\n   - mobile-nav.tsx\n   - user-menu.tsx\n   - nav-item.tsx\n   - nav-dropdown.tsx\n3. Use composition pattern for component assembly\n4. Improve testability by isolating components\n5. Maintain existing functionality and styling\n6. Add proper TypeScript interfaces for props\n7. Implement proper accessibility attributes",
+        "testStrategy": "1. Create component tests for each new component\n2. Verify existing functionality is maintained\n3. Test responsive behavior\n4. Verify accessibility\n5. Test keyboard navigation\n6. Conduct visual regression testing",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Improve Form Error Accessibility",
+        "description": "Ensure all forms follow accessibility standards for error states.",
+        "details": "1. Add aria-describedby to all form fields\n2. Implement aria-invalid for error states\n3. Ensure error messages use role=\"alert\"\n4. Audit all forms in the application\n5. Add focus management for error states\n6. Implement consistent error styling\n7. Add keyboard navigation for form errors\n8. Create reusable accessible form components",
+        "testStrategy": "1. Test with screen readers\n2. Verify aria attributes are correctly applied\n3. Test focus management\n4. Verify keyboard navigation\n5. Conduct accessibility audit with axe\n6. Test with various assistive technologies\n7. Verify error messages are properly announced",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Integrate Deal Evaluator on Listings",
+        "description": "Surface deal evaluator on listing pages to improve feature discovery.",
+        "details": "1. Add \"Evaluate This Deal\" button to listing detail sidebar\n2. Pass listingId as query parameter to evaluator\n3. Pre-populate evaluator with listing data\n4. Add tooltip explaining the feature\n5. Implement analytics tracking for feature usage\n6. Add results saving functionality\n7. Create comparison view for multiple evaluations\n8. Implement sharing of evaluation results",
+        "testStrategy": "1. Verify button placement and visibility\n2. Test pre-population of listing data\n3. Verify tooltip content\n4. Test analytics tracking\n5. Verify results saving\n6. Test comparison view\n7. Verify sharing functionality",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "Create Notification Center for Saved Searches",
+        "description": "Add prominent notification system for saved search alerts.",
+        "details": "1. Create notification center component\n2. Add bell icon with badge in header\n3. Track unread notification count\n4. Group notifications by saved search\n5. Implement mark as read functionality\n6. Add notification preferences\n7. Create real-time updates using WebSockets\n8. Implement notification storage and pruning",
+        "testStrategy": "1. Test notification display\n2. Verify unread count badge\n3. Test grouping by saved search\n4. Verify mark as read functionality\n5. Test notification preferences\n6. Verify real-time updates\n7. Test storage and pruning",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "Implement AI-Powered Listing Description Writer",
+        "description": "Add AI writing assistant for sellers to create optimized listing descriptions.",
+        "details": "1. Create \"Generate with AI\" button in listing editor\n2. Implement generation from bullet points\n3. Add SEO optimization features\n4. Create suggestion system for improvements\n5. Implement multiple tone options (professional, conversational, etc.)\n6. Use existing AI infrastructure\n7. Add character count and readability metrics\n8. Implement editing history",
+        "testStrategy": "1. Test AI generation with various inputs\n2. Verify SEO optimization\n3. Test suggestion system\n4. Verify different tone options\n5. Test integration with existing AI infrastructure\n6. Verify metrics calculation\n7. Test editing history",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "Implement Bulk Listing Management",
+        "description": "Enable bulk operations for power sellers to improve efficiency.",
+        "details": "1. Add select multiple listings UI with checkboxes\n2. Implement bulk status change functionality\n3. Add bulk price adjustment with percentage option\n4. Create bulk duplicate feature\n5. Implement export to CSV functionality\n6. Add selection counter and actions toolbar\n7. Implement undo functionality for bulk actions\n8. Add confirmation dialogs for destructive actions",
+        "testStrategy": "1. Test selection UI\n2. Verify bulk status change\n3. Test bulk price adjustment\n4. Verify bulk duplicate functionality\n5. Test CSV export\n6. Verify selection counter\n7. Test undo functionality\n8. Verify confirmation dialogs",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 30,
+        "title": "Enhance Term Sheet Builder",
+        "description": "Integrate term sheet preview into listing creation for better user experience.",
+        "details": "1. Implement real-time term sheet preview\n2. Add downloadable template functionality\n3. Create saved templates system for reuse\n4. Connect to existing term sheet builder\n5. Add customization options for terms\n6. Implement version history\n7. Add collaboration features\n8. Create PDF export functionality",
+        "testStrategy": "1. Test real-time preview updates\n2. Verify template download\n3. Test saved templates system\n4. Verify integration with existing builder\n5. Test customization options\n6. Verify version history\n7. Test collaboration features\n8. Verify PDF export",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 31,
+        "title": "Optimize Database Queries",
+        "description": "Optimize database queries for improved performance and scalability.",
+        "details": "1. Add indexes for frequently queried columns\n2. Implement query pagination for all list endpoints\n3. Use Prisma select to avoid over-fetching data\n4. Add @@index annotations in schema.prisma\n5. Consider read replicas for analytics queries\n6. Implement query caching where appropriate\n7. Add query performance monitoring\n8. Create database performance dashboard",
+        "testStrategy": "1. Benchmark query performance before and after\n2. Verify pagination implementation\n3. Test select optimization\n4. Verify index effectiveness\n5. Test read replica configuration\n6. Verify caching mechanism\n7. Test performance monitoring",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 32,
+        "title": "Implement Component Code Splitting",
+        "description": "Use dynamic imports for heavy components to improve initial load performance.",
+        "details": "1. Identify large components for splitting\n2. Implement dynamic imports with Next.js dynamic\n3. Add loading states for dynamically imported components\n4. Set ssr: false for browser-only components\n5. Measure and optimize initial bundle size\n6. Implement preloading for critical paths\n7. Add error handling for chunk loading failures\n8. Create performance monitoring for load times",
+        "testStrategy": "1. Measure bundle size before and after\n2. Test loading states\n3. Verify SSR configuration\n4. Test preloading behavior\n5. Verify error handling\n6. Test performance on slow connections\n7. Verify chunk loading behavior",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 33,
+        "title": "Optimize Animation Performance",
+        "description": "Optimize animations for better performance on low-end devices.",
+        "details": "1. Reduce particle count in animations\n2. Use will-change CSS property sparingly and strategically\n3. Implement reduced motion alternatives\n4. Consider removing heavy animations on mobile\n5. Add support for prefers-reduced-motion media query\n6. Optimize animation frame rate\n7. Use hardware-accelerated properties (transform, opacity)\n8. Implement animation throttling for low-end devices",
+        "testStrategy": "1. Test performance on low-end devices\n2. Verify reduced motion alternatives\n3. Test prefers-reduced-motion support\n4. Measure frame rates before and after\n5. Verify hardware acceleration\n6. Test throttling mechanism\n7. Conduct user testing on various devices",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 34,
+        "title": "Enhance Content Marketing Integration",
+        "description": "Improve SEO and content strategy integration throughout the platform.",
+        "details": "1. Implement SEO-optimized article URLs\n2. Add related articles section on listing pages\n3. Integrate newsletter signup throughout the platform\n4. Create guest content section\n5. Update knowledge base with fresh content\n6. Implement structured data for rich snippets\n7. Add social sharing functionality\n8. Create content performance analytics",
+        "testStrategy": "1. Verify SEO-friendly URLs\n2. Test related articles functionality\n3. Verify newsletter integration\n4. Test guest content section\n5. Verify knowledge base updates\n6. Test structured data implementation\n7. Verify social sharing\n8. Test analytics tracking",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 35,
+        "title": "Implement Progressive Web App Features",
+        "description": "Add Progressive Web App capabilities for improved mobile experience.",
+        "details": "1. Add service worker for offline functionality\n2. Create app manifest for \"Add to Home Screen\" support\n3. Implement web push notifications\n4. Test PWA functionality across devices\n5. Add offline page\n6. Implement asset caching strategy\n7. Add install prompt\n8. Create offline data synchronization",
+        "testStrategy": "1. Test offline functionality\n2. Verify \"Add to Home Screen\" behavior\n3. Test push notifications\n4. Verify cross-device compatibility\n5. Test offline page\n6. Verify caching strategy\n7. Test install prompt\n8. Verify data synchronization",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 36,
+        "title": "Create AI-Powered Price Suggestions",
+        "description": "Add pricing assistant for sellers to determine optimal listing prices.",
+        "details": "1. Implement market comparable analysis\n2. Add multiple valuation methods:\n   - SDE-based\n   - EBITDA-based\n   - Revenue-based\n3. Create sensitivity analysis tool\n4. Implement \"What if\" scenario modeling\n5. Integrate with listing creation flow\n6. Add confidence intervals for suggestions\n7. Create historical pricing trends visualization\n8. Implement price optimization recommendations",
+        "testStrategy": "1. Test market analysis with various inputs\n2. Verify different valuation methods\n3. Test sensitivity analysis\n4. Verify scenario modeling\n5. Test integration with listing creation\n6. Verify confidence intervals\n7. Test historical trends visualization\n8. Verify optimization recommendations",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 37,
+        "title": "Implement FAQ Chatbot",
+        "description": "Add AI chatbot for instant answers to frequently asked questions.",
+        "details": "1. Implement RAG-powered responses from knowledge base\n2. Create handoff mechanism to support for complex issues\n3. Ensure 24/7 availability\n4. Add common question suggestions\n5. Use existing AI infrastructure\n6. Implement conversation history\n7. Add feedback mechanism for responses\n8. Create analytics for common questions",
+        "testStrategy": "1. Test RAG responses for accuracy\n2. Verify support handoff\n3. Test availability\n4. Verify question suggestions\n5. Test integration with existing AI\n6. Verify conversation history\n7. Test feedback mechanism\n8. Verify analytics tracking",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 38,
+        "title": "Add Accessibility Labels to Icon Buttons",
+        "description": "Add aria-label to all icon-only buttons for improved accessibility.",
+        "details": "1. Audit all icon buttons in the application\n2. Add descriptive aria-label attributes\n3. Ensure compliance with accessibility standards\n4. Test with screen readers\n5. Create documentation for accessibility best practices\n6. Implement consistent pattern for icon button accessibility\n7. Add tooltips for icon buttons\n8. Create automated testing for accessibility labels",
+        "testStrategy": "1. Test with screen readers\n2. Verify aria-label attributes\n3. Conduct accessibility audit\n4. Test with keyboard navigation\n5. Verify tooltip functionality\n6. Test automated accessibility checks",
+        "priority": "low",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 39,
+        "title": "Create Design Token Documentation",
+        "description": "Create comprehensive design tokens reference for consistent implementation.",
+        "details": "1. Document all color tokens\n2. Document spacing and typography tokens\n3. Include usage examples for each token\n4. Add to docs folder\n5. Create visual reference guide\n6. Implement automated token documentation generation\n7. Add dark mode token mapping\n8. Create component-specific token usage guide",
+        "testStrategy": "1. Verify documentation accuracy\n2. Test automated generation\n3. Verify visual references\n4. Test dark mode token mapping\n5. Review with design team for completeness",
+        "priority": "low",
+        "dependencies": [
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 40,
+        "title": "Enhance Listing Comparison Tool",
+        "description": "Improve comparison tool discoverability and functionality.",
+        "details": "1. Add \"Compare\" checkbox on listing cards\n2. Implement floating \"Compare X Listings\" button\n3. Highlight key differences between listings\n4. Limit comparison to maximum 4 listings\n5. Add side-by-side view\n6. Implement feature comparison table\n7. Add export to PDF functionality\n8. Create saved comparisons feature",
+        "testStrategy": "1. Test checkbox functionality\n2. Verify floating button behavior\n3. Test difference highlighting\n4. Verify maximum listing limit\n5. Test side-by-side view\n6. Verify feature comparison table\n7. Test PDF export\n8. Verify saved comparisons",
+        "priority": "low",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 41,
+        "title": "Improve TypeScript Strict Mode Compliance",
+        "description": "Reduce ESLint warnings and improve type safety throughout the codebase.",
+        "details": "1. Target reduction of warnings from 2000 to 1000\n2. Enable noUncheckedIndexedAccess in tsconfig.json\n3. Fix any type usages throughout the codebase\n4. Add stricter return types for functions\n5. Implement proper type guards\n6. Create utility types for common patterns\n7. Add exhaustive type checking for switch statements\n8. Implement proper error typing",
+        "testStrategy": "1. Run TypeScript compiler in strict mode\n2. Verify warning count reduction\n3. Test type guard functionality\n4. Verify utility types\n5. Test exhaustive type checking\n6. Run ESLint with --max-warnings flag",
+        "priority": "low",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 42,
+        "title": "Implement API Response Caching",
+        "description": "Implement comprehensive caching strategy for API responses.",
+        "details": "1. Add revalidate for static-ish data\n2. Set appropriate Cache-Control headers\n3. Implement private caching for user-specific data\n4. Reduce server load through strategic caching\n5. Add cache invalidation for data updates\n6. Implement stale-while-revalidate pattern\n7. Create cache warming for common requests\n8. Add cache analytics for hit/miss tracking",
+        "testStrategy": "1. Test revalidation behavior\n2. Verify Cache-Control headers\n3. Test private caching\n4. Measure server load reduction\n5. Verify cache invalidation\n6. Test stale-while-revalidate\n7. Verify cache warming\n8. Test analytics tracking",
+        "priority": "low",
+        "dependencies": [
+          16
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 43,
+        "title": "Add Predictive Deal Analytics",
+        "description": "Implement predictive analytics features for deal insights.",
+        "details": "1. Create time to close estimation algorithm\n2. Implement deal success probability calculation\n3. Add price negotiation forecasting\n4. Create buyer intent scoring system\n5. Implement historical data analysis\n6. Add visualization for predictions\n7. Create confidence intervals for predictions\n8. Implement A/B testing for prediction accuracy",
+        "testStrategy": "1. Test time to close estimation\n2. Verify success probability calculation\n3. Test price negotiation forecasting\n4. Verify buyer intent scoring\n5. Test historical data analysis\n6. Verify visualization accuracy\n7. Test confidence intervals\n8. Verify A/B testing framework",
+        "priority": "low",
+        "dependencies": [
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 44,
+        "title": "Optimize Seller Dashboard for Mobile",
+        "description": "Improve seller dashboard experience on mobile devices.",
+        "details": "1. Implement collapsible metric cards\n2. Add swipeable analytics charts\n3. Create bottom sheet for quick actions\n4. Simplify mobile navigation\n5. Optimize data visualization for small screens\n6. Implement touch-friendly controls\n7. Add pull-to-refresh functionality\n8. Create mobile-specific layouts",
+        "testStrategy": "1. Test on various mobile devices\n2. Verify collapsible cards\n3. Test swipeable charts\n4. Verify bottom sheet functionality\n5. Test data visualization on small screens\n6. Verify touch controls\n7. Test pull-to-refresh\n8. Verify mobile layouts",
+        "priority": "low",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 45,
+        "title": "Enhance Notification Center",
+        "description": "Add advanced notification features for improved user experience.",
+        "details": "1. Implement email digest options\n2. Add in-app notification preferences\n3. Create browser push notification support\n4. Add notification history view\n5. Implement notification categories\n6. Add notification actions (buttons in notifications)\n7. Create notification templates system\n8. Implement notification analytics",
+        "testStrategy": "1. Test email digest functionality\n2. Verify notification preferences\n3. Test push notifications\n4. Verify history view\n5. Test notification categories\n6. Verify notification actions\n7. Test templates system\n8. Verify analytics tracking",
+        "priority": "low",
+        "dependencies": [
+          27
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 46,
+        "title": "Implement Advanced Search Filters",
+        "description": "Enhance search capabilities with more powerful filtering options.",
+        "details": "1. Add more granular filters for listings\n2. Implement filter presets/templates system\n3. Add recent searches functionality\n4. Create search history view\n5. Implement saved filter sets\n6. Add range sliders for numeric filters\n7. Create multi-select dropdowns\n8. Implement type-ahead search suggestions",
+        "testStrategy": "1. Test granular filters\n2. Verify filter presets\n3. Test recent searches\n4. Verify search history\n5. Test saved filter sets\n6. Verify range sliders\n7. Test multi-select dropdowns\n8. Verify search suggestions",
+        "priority": "low",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 47,
+        "title": "Create Performance Monitoring Dashboard",
+        "description": "Add admin performance dashboard for system monitoring.",
+        "details": "1. Implement real-time metrics display\n2. Add error rates visualization\n3. Create API response time tracking\n4. Add user session analytics\n5. Implement system health monitoring\n6. Add alerting for performance issues\n7. Create historical performance trends\n8. Implement custom metric tracking",
+        "testStrategy": "1. Verify real-time metrics\n2. Test error rate visualization\n3. Verify API response time tracking\n4. Test session analytics\n5. Verify system health monitoring\n6. Test alerting system\n7. Verify historical trends\n8. Test custom metrics",
+        "priority": "low",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2026-01-31T07:33:38.421Z",
+      "updated": "2026-01-31T07:36:45.125Z",
+      "description": "Tasks for professional-recommendations context"
+    }
   }
 }

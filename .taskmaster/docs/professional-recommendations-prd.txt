@@ -1,0 +1,441 @@
+# Professional Recommendations PRD
+# SellerFi Platform Enhancement - 47 Recommendations Implementation
+
+## Project Overview
+This PRD defines the implementation of 47 professional recommendations across 8 categories to enhance the SellerFi platform's competitiveness, user satisfaction, and business outcomes.
+
+## Technology Stack
+- Next.js 16 (App Router)
+- TypeScript
+- PostgreSQL with Prisma
+- shadcn/ui components
+- Tailwind CSS
+- Framer Motion for animations
+
+## Priority Distribution
+- Critical (8): Must complete first
+- High (15): Complete in Phase 2
+- Medium (14): Complete in Phase 3
+- Low (10): Backlog/Phase 4
+
+---
+
+## PHASE 1: CRITICAL FIXES (8 Tasks)
+
+### Task 1.1: Rate Limiting on Auth Endpoints [CRITICAL]
+Implement Upstash Redis rate limiting on all authentication endpoints to prevent brute force attacks.
+- Add @upstash/ratelimit package
+- Create rate limiting middleware at lib/api/rate-limit.ts
+- Apply to auth routes: app/api/auth/[...nextauth]/route.ts
+- Limit: 5 attempts per minute per IP
+- Return 429 status for exceeded limits
+- Add tests for rate limiting behavior
+
+### Task 1.2: Complete Photo Upload Implementation [CRITICAL]
+Implement full image upload functionality for listings with proper storage integration.
+- Create lib/services/image-upload.ts for Google Cloud Storage
+- Add client-side resize before upload (max 2400px)
+- Implement WebP conversion
+- Create drag-and-drop upload component
+- Add progress indicators
+- Implement preview with crop/rotate functionality
+- Enable image reorder capability
+- Update listing creation and edit forms
+
+### Task 1.3: Auto-Save for Listing Edit Form [CRITICAL]
+Add auto-save functionality to the listing edit form to prevent data loss.
+- Add useDebouncedCallback hook (3 second debounce)
+- Create saveDraft API endpoint
+- Show save status indicator (Saving.../Last saved X)
+- Add useBeforeUnload warning for unsaved changes
+- Sync with existing wizard auto-save pattern
+
+### Task 1.4: Quick-Start Profile Flow [CRITICAL]
+Create a streamlined two-tier profile system to reduce friction for NDA access.
+- Create components/buyer/quick-profile-modal.tsx
+- Implement 5-field quick profile: name, phone, capital range, industry interest, timeline
+- Create extended profile for Elite features
+- Show modal on first NDA attempt
+- Store profile completion level in database
+- Offer to complete extended profile later
+
+### Task 1.5: Onboarding Email Sequence - Buyers [CRITICAL]
+Implement automated drip email campaign for buyer onboarding.
+- Day 0: Welcome + complete profile CTA
+- Day 1: How to find your perfect deal
+- Day 3: First saved search prompt
+- Day 7: Elite buyer benefits
+- Create email templates in lib/emails/buyer-onboarding/
+- Integrate with email service (Resend/SendGrid)
+- Add scheduling logic
+
+### Task 1.6: Onboarding Email Sequence - Sellers [CRITICAL]
+Implement automated drip email campaign for seller onboarding.
+- Day 0: Welcome + create first listing CTA
+- Day 1: Listing optimization tips
+- Day 3: Pricing plan comparison
+- Day 7: Success story showcase
+- Create email templates in lib/emails/seller-onboarding/
+- Integrate with email service
+- Add scheduling logic
+
+### Task 1.7: Input Sanitization Audit [CRITICAL]
+Comprehensive security audit of all user input handling.
+- Audit all 193 API routes for SQL injection risks
+- Verify no raw queries vulnerable to injection
+- Check for XSS in dangerouslySetInnerHTML usage
+- Validate file upload types and sizes
+- Check path traversal vulnerabilities
+- Document findings and fixes
+
+### Task 1.8: GDPR Compliance Features [CRITICAL]
+Add GDPR-required features for EU user compliance.
+- Implement data export functionality
+- Create account deletion workflow
+- Add consent management center
+- Create data processing records
+- Update privacy policy with processing details
+
+---
+
+## PHASE 2: HIGH PRIORITY (15 Tasks)
+
+### Task 2.1: Standardize Border Radius System
+Create consistent border radius design system.
+- Define radius scale in tailwind.config.js: sm(4px), md(6px), lg(8px), xl(12px), 2xl(16px)
+- Update globals.css with CSS variables
+- Audit and update all components using rounded-* classes
+- Document usage guidelines
+
+### Task 2.2: Integrate Custom Badge Variants
+Extend shadcn Badge component with custom variants.
+- Add premium, elite, verified, popular variants
+- Implement gradient backgrounds
+- Update components/ui/badge.tsx with cva variants
+- Ensure type safety
+
+### Task 2.3: Show Match Scores on Listing Cards
+Display personalized match scores in search results.
+- Add match score badge to components/listings/listing-card.tsx
+- Position in top-right corner
+- Add "Best Match" sort option to filters
+- Ensure score calculation runs for authenticated users
+
+### Task 2.4: Enhanced Saved Listings Organization
+Add folder/tag system for saved listings.
+- Create SavedListingFolder model in Prisma schema
+- Add notes and priority fields to SavedListing
+- Build folder management UI
+- Implement quick compare (side-by-side)
+- Track status changes
+
+### Task 2.5: Dealroom Onboarding Tour
+Create interactive tour for first-time dealroom users.
+- Install and configure @reactour/tour
+- Define tour steps for key areas
+- Show on first dealroom visit
+- Store completion status in user preferences
+- Include skip option
+
+### Task 2.6: Seller Onboarding Flow
+Create guided first-listing experience for new sellers.
+- Create app/(main)/seller/onboarding/page.tsx
+- Step 1: Welcome modal with video
+- Step 2: Profile completion
+- Step 3: Guided first listing
+- Step 4: Pricing plan selection
+- Step 5: Dashboard tour
+- Track onboarding completion
+
+### Task 2.7: Real-Time Analytics Data
+Replace hardcoded trends with actual calculations.
+- Create lib/services/analytics.ts
+- Implement getListingTrends function
+- Calculate week-over-week and month-over-month changes
+- Update seller analytics components
+- Ensure data accuracy
+
+### Task 2.8: API Route Organization
+Improve API route structure and consistency.
+- Consolidate similar routes
+- Add consistent error handling middleware
+- Implement request validation with Zod
+- Add rate limiting to sensitive endpoints
+- Create lib/api/middleware.ts with withValidation helper
+
+### Task 2.9: Referral Program
+Implement refer-a-friend program.
+- Create referral model in database
+- Generate unique referral links
+- Buyers: 1 month free Elite for referral
+- Sellers: 1 month free Featured for referral
+- Build dashboard widget for referral status
+- Track conversions
+
+### Task 2.10: Social Proof Enhancement
+Add social proof elements throughout platform.
+- Homepage: Recent deals closed ticker
+- Listing pages: Seller rating + reviews display
+- Signup: Success stories carousel
+- Pricing: Customer testimonials
+- Ensure real data from database
+
+### Task 2.11: AI Deal Matching Improvements
+Enhance matching algorithm sophistication.
+- Factor in behavioral signals (saved, viewed, time on page)
+- Add industry expertise weighting
+- Implement geographic preference learning
+- Consider past deal success patterns
+- Update lib/ai/matching.ts
+
+### Task 2.12: Automated Due Diligence Checklist
+Auto-generate customized checklists.
+- Generate based on deal size
+- Consider industry requirements
+- Factor in financing structure
+- Adjust for buyer experience level
+- Add progress tracking and notifications
+
+### Task 2.13: Image Optimization Pipeline
+Comprehensive image optimization for web.
+- Client-side resize (max 2400px)
+- WebP conversion on upload
+- Generate multiple sizes (thumbnail, medium, large)
+- Use Next.js Image component
+- Implement blur placeholders
+- Lazy load below-fold images
+- Set proper cache headers
+
+### Task 2.14: Error Boundary Implementation
+Add consistent error boundaries.
+- Create app/(main)/error.tsx
+- Add error boundaries at key points
+- Implement retry functionality
+- Log errors to Sentry
+- User-friendly error messages
+
+### Task 2.15: Audit Logging Enhancement
+Ensure comprehensive audit logging.
+- Log all authentication events
+- Track permission changes
+- Log data access (sensitive fields)
+- Record admin actions
+- Track API key usage
+- Ensure compliance with requirements
+
+---
+
+## PHASE 3: MEDIUM PRIORITY (14 Tasks)
+
+### Task 3.1: Refactor Navigation Component
+Split 1,145-line navigation.tsx into smaller components.
+- Create components/navigation/index.tsx
+- Split into desktop-nav.tsx, mobile-nav.tsx
+- Create user-menu.tsx, nav-item.tsx, nav-dropdown.tsx
+- Improve testability and maintainability
+
+### Task 3.2: Form Error Accessibility
+Ensure all forms follow accessibility standards.
+- Add aria-describedby to all form fields
+- Add aria-invalid for error states
+- Ensure error messages use role="alert"
+- Audit all forms in the application
+
+### Task 3.3: Deal Evaluator Integration on Listings
+Surface deal evaluator on listing pages.
+- Add "Evaluate This Deal" button to listing detail sidebar
+- Pass listingId as query parameter
+- Pre-populate evaluator with listing data
+- Improve feature discovery
+
+### Task 3.4: Notification Center for Saved Searches
+Add prominent notification system.
+- Create notification center component
+- Add bell icon with badge in header
+- Track unread notification count
+- Group by saved search
+- Mark as read functionality
+
+### Task 3.5: AI-Powered Listing Description Writer
+Add AI writing assistant for sellers.
+- Create "Generate with AI" button
+- Generate from bullet points
+- Optimize for SEO
+- Suggest improvements
+- Multiple tone options
+- Use existing AI infrastructure
+
+### Task 3.6: Bulk Listing Management
+Enable bulk operations for power sellers.
+- Add select multiple listings UI
+- Bulk status change
+- Bulk price adjustment (percentage)
+- Bulk duplicate
+- Export to CSV
+
+### Task 3.7: Term Sheet Builder Enhancement
+Integrate term sheet preview into listing creation.
+- Real-time term sheet preview
+- Downloadable template
+- Saved templates for reuse
+- Connect to existing term sheet builder
+
+### Task 3.8: Database Query Optimization
+Optimize queries for scale.
+- Add indexes for frequently queried columns
+- Implement query pagination
+- Use Prisma select to avoid over-fetching
+- Add @@index annotations in schema.prisma
+- Consider read replicas for analytics
+
+### Task 3.9: Component Code Splitting
+Dynamic imports for heavy components.
+- Identify large components
+- Implement dynamic imports with loading states
+- Set ssr: false for browser-only components
+- Reduce initial bundle size
+
+### Task 3.10: Animation Performance
+Optimize animations for low-end devices.
+- Reduce particle count
+- Use will-change sparingly
+- Implement reduced motion alternative
+- Consider removing on mobile
+- Add prefers-reduced-motion support
+
+### Task 3.11: Content Marketing Integration
+Enhance SEO and content strategy.
+- SEO-optimized article URLs
+- Related articles on listing pages
+- Newsletter integration
+- Guest content section
+- Update knowledge base
+
+### Task 3.12: Mobile App Consideration (PWA)
+Implement Progressive Web App features.
+- Add service worker for offline
+- Create app manifest for "Add to Home Screen"
+- Implement push notifications via web push
+- Test PWA functionality
+
+### Task 3.13: AI-Powered Price Suggestions
+Add pricing assistant for sellers.
+- Market comparable analysis
+- Multiple valuation methods (SDE, EBITDA, revenue)
+- Sensitivity analysis
+- "What if" scenarios
+- Integrate with listing creation
+
+### Task 3.14: Chatbot for FAQ Deflection
+Add AI chatbot for instant answers.
+- RAG-powered responses from KB
+- Handoff to support for complex issues
+- 24/7 availability
+- Common question suggestions
+- Use existing AI infrastructure
+
+---
+
+## PHASE 4: LOW PRIORITY (10 Tasks)
+
+### Task 4.1: Icon Button Labels
+Add aria-label to all icon-only buttons.
+- Audit all icon buttons
+- Add descriptive labels
+- Ensure accessibility compliance
+
+### Task 4.2: Design Token Documentation
+Create comprehensive design tokens reference.
+- Document all color tokens
+- Document spacing, typography
+- Include usage examples
+- Add to docs folder
+
+### Task 4.3: Listing Comparison Enhancement
+Improve comparison tool discoverability.
+- Add "Compare" checkbox on listing cards
+- Show floating "Compare X Listings" button
+- Highlight key differences
+- Max 4 listings comparison
+
+### Task 4.4: TypeScript Strict Mode Enhancements
+Reduce ESLint warnings.
+- Target: reduce from 2000 to 1000
+- Enable noUncheckedIndexedAccess
+- Fix any type usages
+- Add stricter return types
+
+### Task 4.5: API Response Caching
+Implement caching strategy.
+- Add revalidate for static-ish data
+- Set Cache-Control headers
+- Implement private caching for user data
+- Reduce server load
+
+### Task 4.6: Predictive Deal Analytics
+Add predictive analytics features.
+- Time to close estimate
+- Deal success probability
+- Price negotiation forecast
+- Buyer intent scoring
+
+### Task 4.7: Seller Dashboard Mobile Optimization
+Optimize dashboard for mobile.
+- Collapsible metric cards
+- Swipeable analytics charts
+- Bottom sheet for quick actions
+- Simplified mobile navigation
+
+### Task 4.8: Notification Center Enhancement
+Add advanced notification features.
+- Email digest options
+- In-app notification preferences
+- Browser push notifications
+- Notification history
+
+### Task 4.9: Advanced Search Filters
+Enhance search capabilities.
+- More granular filters
+- Filter presets/templates
+- Recent searches
+- Search history
+
+### Task 4.10: Performance Monitoring Dashboard
+Add admin performance dashboard.
+- Real-time metrics
+- Error rates visualization
+- API response times
+- User session analytics
+
+---
+
+## Technical Requirements
+
+### Testing
+- All critical features require E2E tests with Playwright
+- Unit tests for business logic
+- Run npm run lint, npm run type-check, npm run build before completion
+- Zero console errors in browser
+
+### Security
+- All endpoints must be authenticated
+- Role-based access control enforced server-side
+- Input validation with Zod
+- No secrets in logs
+
+### Documentation
+- Update relevant documentation
+- Add inline comments for complex logic
+- Update API documentation
+
+### Git Workflow
+- Work on feature/professional-recommendations-implementation branch
+- Do NOT merge to master
+- Create atomic commits for each task
+
+## Success Criteria
+- All 47 recommendations implemented
+- Zero console errors
+- All tests passing
+- Build succeeds
+- Performance maintained or improved

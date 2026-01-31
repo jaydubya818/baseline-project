@@ -11,7 +11,7 @@ import Stripe from 'stripe'
 import { SELLER_PLANS, BUYER_PLANS } from '../lib/stripe-products'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-11-20.acacia',
+  apiVersion: '2025-12-15.clover',
 })
 
 async function syncProducts() {
@@ -56,10 +56,11 @@ async function syncProducts() {
       console.log(`  STRIPE_PRICE_${key}_MONTHLY=${price.id}`)
     }
 
-    // Sync Buyer Pro
-    console.log('\n\n📦 Creating Buyer Pro Plan:')
-    const buyerProPlan = BUYER_PLANS.PRO
+    // Sync Buyer Plans
+    console.log('\n\n📦 Creating Buyer Plans:')
     
+    // Buyer Pro
+    const buyerProPlan = BUYER_PLANS.PRO
     const buyerProduct = await stripe.products.create({
       name: buyerProPlan.name,
       description: buyerProPlan.description,
@@ -87,6 +88,37 @@ async function syncProducts() {
     console.log(`\n  Add to .env:`)
     console.log(`  STRIPE_PRODUCT_BUYER_PRO=${buyerProduct.id}`)
     console.log(`  STRIPE_PRICE_BUYER_PRO_MONTHLY=${buyerPrice.id}`)
+
+    // Elite Buyer
+    console.log('\n\n📦 Creating Elite Buyer Plan:')
+    const eliteBuyerPlan = BUYER_PLANS.ELITE
+    const eliteProduct = await stripe.products.create({
+      name: eliteBuyerPlan.name,
+      description: eliteBuyerPlan.description,
+      metadata: {
+        type: 'buyer_plan',
+        plan_id: eliteBuyerPlan.id,
+      },
+    })
+    
+    console.log(`  ✓ Product created: ${eliteProduct.id}`)
+    
+    const elitePrice = await stripe.prices.create({
+      product: eliteProduct.id,
+      unit_amount: eliteBuyerPlan.basePrice,
+      currency: 'usd',
+      recurring: {
+        interval: 'month',
+      },
+      metadata: {
+        plan_id: eliteBuyerPlan.id,
+      },
+    })
+    
+    console.log(`  ✓ Price created: ${elitePrice.id}`)
+    console.log(`\n  Add to .env:`)
+    console.log(`  STRIPE_PRODUCT_BUYER_ELITE=${eliteProduct.id}`)
+    console.log(`  STRIPE_PRICE_BUYER_ELITE_MONTHLY=${elitePrice.id}`)
 
     console.log('\n\n✅ Sync complete!')
     console.log('\n⚠️  TODO: Copy the env vars above to your .env file')
