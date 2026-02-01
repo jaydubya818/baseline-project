@@ -74,3 +74,4 @@ docs/solutions/.tmp/
 
 # OS
 Thumbs.db
+.env.production
