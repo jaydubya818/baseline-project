@@ -1,4 +1,4 @@
-# 🏦 Baseline Project Set up
+# 🏦 Baseline Project
 
 <p align="center">
   <img src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js" alt="Next.js" />
@@ -8,10 +8,7 @@
   <img src="https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=for-the-badge&logo=tailwindcss" alt="Tailwind" />
 </p>
 
-</p
-
 <p align="center">
-  <a href="https://seller-fi.vercel.app">🌐 Live Demo</a> •
   <a href="#features">✨ Features</a> •
   <a href="#ai-development-environment">🤖 AI Dev Environment</a> •
   <a href="#quick-start">🚀 Quick Start</a>
@@ -20,7 +17,7 @@
 ---
 
 ### Platform Features
-- 🏠 **Beautiful UI/UX** — Stripe-inspired design with Framer Motion animations
+- 🏠 **Beautiful UI/UX** — Modern design with Framer Motion animations
 - 📱 **Fully Responsive** — Desktop-first with mobile optimization
 - 🌙 **Dark Mode** — System-aware theme switching
 - ⚡ **Real-time Updates** — SSE-powered notifications and messaging
@@ -47,7 +44,7 @@
 
 ## 🤖 AI Development Environment
 
-> **"Claude on performance-enhancing drugs"** — This project was built with a revolutionary AI-assisted development environment that 10x's productivity.
+> **"Claude on performance-enhancing drugs"** — This baseline project showcases a revolutionary AI-assisted development environment that 10x's productivity.
 
 ### 🧠 Core AI Architecture
 
@@ -127,7 +124,7 @@ This project includes **65+ Claude skills and 178+ specialized agents**:
 
 **Status**: 🔄 Pending Installation (Requires Claude Code IDE)
 
-SellerFi integrates the **Compound Engineering Plugin** for enhanced development workflows:
+This baseline project integrates the **Compound Engineering Plugin** for enhanced development workflows:
 
 **Philosophy**: *Each unit of engineering work should make subsequent units easier—not harder.*
 
@@ -160,7 +157,7 @@ SellerFi integrates the **Compound Engineering Plugin** for enhanced development
 - ✅ Zero console errors enforcement (browser testing)
 - ✅ Multi-agent security audits (13+ parallel agents)
 - ✅ Knowledge compounding (first time: 30min → next time: 2min)
-- ✅ SellerFi rule enforcement (determinism, server-side validation)
+- ✅ Strict rule enforcement (determinism, server-side validation)
 
 **Documentation**:
 - [Compound Quick Start](.claude/COMPOUND_QUICK_START.md)
@@ -265,8 +262,8 @@ npx skills add coreyhaines31/marketingskills --skill seo-audit page-cro copywrit
 
 ```bash
 # Clone the repository
-git clone https://github.com/jaydubya818/SellerFi.git
-cd seller-financing-platform
+git clone https://github.com/yourusername/baseline-project.git
+cd baseline-project
 
 # Install dependencies
 npm install
@@ -293,7 +290,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 ## 📁 Project Structure
 
 ```
-seller-financing-platform/
+baseline-project/
 ├── app/                       # Next.js App Router
 │   ├── (auth)/               # Authentication pages
 │   ├── (main)/               # Main application
@@ -419,7 +416,7 @@ Sample listings include SaaS businesses, restaurants, manufacturing companies, a
 
 ## 🎨 Design Philosophy
 
-SellerFi follows a **Stripe-inspired design system**:
+This project follows a **modern design system**:
 
 - **Typography**: Clean, professional fonts with clear hierarchy
 - **Colors**: Emerald/teal primary with slate neutrals
@@ -459,13 +456,13 @@ MIT License — see [LICENSE](LICENSE) for details.
 ## 📚 Additional Documentation
 
 ### AI Development Environment
-- [Agent Configuration](.claude/SELLERFI_AGENT_CONFIG.md) — 178+ specialized agents
+- [Agent Configuration](.claude/AGENT_CONFIG.md) — 178+ specialized agents
 - [Agent Index](.claude/agents/index.md) — Complete agent catalog
 - [Quick Start Guide](.claude/QUICK_START.md) — Getting started with agents
 
 ### Compound Engineering Plugin
 - [Compound Quick Start](.claude/COMPOUND_QUICK_START.md) — Quick reference
-- [Compound Workflows](.claude/COMPOUND_WORKFLOWS.md) — SellerFi-specific workflows
+- [Compound Workflows](.claude/COMPOUND_WORKFLOWS.md) — Project-specific workflows
 - [Integration Guide](docs/COMPOUND_ENGINEERING_INTEGRATION.md) — Complete integration
 - [Testing Guide](.claude/COMPOUND_PLUGIN_TESTING.md) — Testing instructions
 - [Installation Summary](COMPOUND_PLUGIN_INSTALLATION_SUMMARY.md) — Setup checklist
@@ -489,6 +486,5 @@ MIT License — see [LICENSE](LICENSE) for details.
 </p>
 
 <p align="center">
-  <a href="https://seller-fi.vercel.app">Visit SellerFi</a> •
-  <a href="https://github.com/jaydubya818/SellerFi">GitHub</a>
+  <strong>Baseline Project - Production-Ready Next.js Starter</strong>
 </p>

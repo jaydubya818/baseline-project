@@ -4,7 +4,7 @@ globs: "**/*"
 alwaysApply: true
 ---
 
-# AI Tooling Guidelines for SellerFi
+# AI Tooling Guidelines
 
 This rule provides workflows and prompt templates for using claude-mem and context engineering skills effectively.
 
@@ -65,7 +65,7 @@ At the end of a coding session, summarize:
 
 ## Reusable Prompt Templates
 
-### 1. Plan → Implement → Test (SellerFi-safe)
+### 1. Plan → Implement → Test
 
 Use this template for feature development:
 
@@ -79,7 +79,7 @@ Use this template for feature development:
 - **Risk Assessment**: [What could go wrong?]
 
 ### 2. IMPLEMENT
-Follow these SellerFi conventions:
+Follow these conventions:
 - Use Tailwind for styling
 - Use Framer Motion for animations
 - Use Zod for API validation

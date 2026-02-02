@@ -50,7 +50,7 @@ npm run dev
 
 ### PostgreSQL Advanced Optimizations (Jan 2026)
 
-**Context:** Comprehensive PostgreSQL optimization implementation combining multiple advanced patterns for production-ready database performance and security.
+**Context:** Comprehensive PostgreSQL optimization implementation combining multiple advanced patterns for production-ready database performance and security. Example patterns for any Next.js/Prisma application.
 
 **Impact:** 100x faster search, 50x user capacity, database-level security
 
@@ -214,10 +214,10 @@ pgbouncer:
 **Environment Configuration:**
 ```bash
 # Direct connection (migrations only)
-DATABASE_URL="postgresql://user:pass@postgres:5432/sellerfi"
+DATABASE_URL="postgresql://user:pass@postgres:5432/myapp"
 
 # Pooled connection (application runtime)
-DATABASE_POOL_URL="postgresql://user:pass@pgbouncer:6432/sellerfi?pgbouncer=true"
+DATABASE_POOL_URL="postgresql://user:pass@pgbouncer:6432/myapp?pgbouncer=true"
 ```
 
 **Prisma Configuration:**
@@ -244,37 +244,37 @@ datasource db {
 **Pattern:**
 ```sql
 -- Migration: Create limited application role
-CREATE ROLE sellerfi_app LOGIN PASSWORD 'secure_password';
+CREATE ROLE myapp_app LOGIN PASSWORD 'secure_password';
 
 -- Grant minimal permissions
-GRANT CONNECT ON DATABASE sellerfi TO sellerfi_app;
-GRANT USAGE ON SCHEMA public TO sellerfi_app;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO sellerfi_app;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO sellerfi_app;
+GRANT CONNECT ON DATABASE myapp TO myapp_app;
+GRANT USAGE ON SCHEMA public TO myapp_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO myapp_app;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO myapp_app;
 
 -- Revoke dangerous permissions
-REVOKE CREATE ON SCHEMA public FROM sellerfi_app;
-REVOKE DROP ON ALL TABLES IN SCHEMA public FROM sellerfi_app;
+REVOKE CREATE ON SCHEMA public FROM myapp_app;
+REVOKE DROP ON ALL TABLES IN SCHEMA public FROM myapp_app;
 
 -- Set future defaults
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
-  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO sellerfi_app;
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO myapp_app;
 ```
 
 **Environment Pattern:**
 ```bash
 # Admin role (migrations only)
-DATABASE_URL="postgresql://admin:pass@localhost:5432/sellerfi"
+DATABASE_URL="postgresql://admin:pass@localhost:5432/myapp"
 
 # Application role (runtime, limited privileges)
-DATABASE_APP_URL="postgresql://sellerfi_app:pass@localhost:6432/sellerfi?pgbouncer=true"
+DATABASE_APP_URL="postgresql://myapp_app:pass@localhost:6432/myapp?pgbouncer=true"
 ```
 
 **Key Insights:**
 - Never use superuser/admin role for application queries
 - Application role should NOT have DROP, CREATE SCHEMA, etc.
 - Use different roles for migrations vs runtime
-- Test permissions: `SELECT has_table_privilege('sellerfi_app', 'Listing', 'DROP');` should return false
+- Test permissions: `SELECT has_table_privilege('myapp_app', 'Listing', 'DROP');` should return false
 
 #### 5. Performance Monitoring with pg_stat_statements
 
