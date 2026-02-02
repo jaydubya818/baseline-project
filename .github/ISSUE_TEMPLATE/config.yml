@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/jaydubya818/baseline-project/discussions
+    about: Ask questions, share ideas, and discuss the AI Development Toolkit
+  - name: 📖 Documentation
+    url: https://github.com/jaydubya818/baseline-project/blob/master/README.md
+    about: Read the comprehensive documentation and guides
+  - name: ⚠️ Important Disclaimer
+    url: https://github.com/jaydubya818/baseline-project/blob/master/DISCLAIMER.md
+    about: Understand what's included vs not included in this toolkit

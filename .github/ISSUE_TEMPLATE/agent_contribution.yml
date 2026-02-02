@@ -1,0 +1,160 @@
+name: 🤖 AI Agent Contribution
+description: Contribute a new AI agent or improve an existing one
+title: "[Agent]: "
+labels: ["agent", "contribution"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing an AI agent! This helps grow the toolkit for everyone.
+
+  - type: input
+    id: agent-name
+    attributes:
+      label: Agent Name
+      description: What is the name of the agent?
+      placeholder: e.g., security-auditor, performance-optimizer
+    validations:
+      required: true
+
+  - type: dropdown
+    id: contribution-type
+    attributes:
+      label: Contribution Type
+      description: Is this a new agent or an improvement to an existing one?
+      options:
+        - New Agent
+        - Enhancement to Existing Agent
+        - Bug Fix for Existing Agent
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Agent Category
+      description: Which category does this agent belong to?
+      options:
+        - Development
+        - Orchestration
+        - Quality Assurance
+        - Security
+        - Review
+        - Research
+        - Testing
+        - Documentation
+        - DevOps
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: purpose
+    attributes:
+      label: Agent Purpose
+      description: What does this agent do? What problem does it solve?
+      placeholder: This agent helps developers by...
+    validations:
+      required: true
+
+  - type: textarea
+    id: capabilities
+    attributes:
+      label: Agent Capabilities
+      description: List the specific capabilities and tasks this agent can perform
+      placeholder: |
+        - Capability 1: ...
+        - Capability 2: ...
+        - Capability 3: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: usage
+    attributes:
+      label: Usage Examples
+      description: Provide concrete examples of how to use this agent
+      placeholder: |
+        Example 1: @agent-name "task description"
+        Example 2: When working on X, invoke with...
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: List any other agents, skills, or tools this agent depends on
+      placeholder: |
+        - Requires: agent-x for Y
+        - Works best with: skill-z
+        - Optional: tool-a for enhanced functionality
+
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Configuration
+      description: Any special configuration or setup required?
+      placeholder: Environment variables, API keys, tool installations, etc.
+
+  - type: dropdown
+    id: ai-model
+    attributes:
+      label: Recommended AI Model
+      description: Which AI model works best with this agent?
+      options:
+        - Any (model-agnostic)
+        - Claude (Anthropic)
+        - GPT-4 (OpenAI)
+        - Gemini (Google)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: testing
+    attributes:
+      label: Testing
+      description: How have you tested this agent? What scenarios have you tried?
+      placeholder: |
+        - Tested on: [project types, codebases]
+        - Results: [what worked well, what didn't]
+        - Edge cases: [any limitations or known issues]
+    validations:
+      required: true
+
+  - type: textarea
+    id: file-location
+    attributes:
+      label: File Location
+      description: Where should this agent file be placed?
+      placeholder: .claude/agents/[category]/[agent-name].md
+    validations:
+      required: true
+
+  - type: textarea
+    id: documentation
+    attributes:
+      label: Documentation
+      description: Have you prepared documentation for this agent?
+      placeholder: |
+        - Agent file: [link or attachment]
+        - Examples: [link to examples]
+        - Related docs: [any additional documentation]
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Contribution Checklist
+      description: Please confirm the following
+      options:
+        - label: Agent follows the project's agent template format
+          required: true
+        - label: Agent has been tested with real use cases
+          required: true
+        - label: Documentation includes clear usage examples
+          required: true
+        - label: Agent name is descriptive and follows naming conventions
+          required: true
+        - label: I have read the CONTRIBUTING.md guidelines
+          required: true

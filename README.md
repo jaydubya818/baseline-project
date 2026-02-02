@@ -622,11 +622,34 @@ This is intentionally a **toolkit**, not a complete application. We provide the 
 Check out the `AGENTS.md` and `CLAUDE.md` files for detailed examples of how we used these tools to build production applications.
 
 **"How do I contribute?"**  
-We welcome contributions! See the issues page for areas where we need help, especially:
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines. We especially need:
 - Additional AI agent configurations
 - New skills for specialized tasks  
 - Documentation improvements
 - Example implementations
+
+---
+
+## 🤝 Community & Support
+
+### Get Help
+- **📖 Documentation** - Start with [README.md](README.md) and [DISCLAIMER.md](DISCLAIMER.md)
+- **💬 Discussions** - Ask questions and share ideas in [GitHub Discussions](https://github.com/jaydubya818/baseline-project/discussions)
+- **🐛 Issues** - Report bugs using our [issue templates](.github/ISSUE_TEMPLATE/)
+- **📚 Examples** - See [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md) for patterns
+
+### Contribute
+- **🤖 AI Agents** - Contribute new agents or improve existing ones
+- **🎓 Skills** - Share Claude skills you've created
+- **📝 Documentation** - Help improve docs and guides
+- **💡 Ideas** - Share feature requests and suggestions
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
+
+### Stay Updated
+- **⭐ Star** this repository to stay informed
+- **👀 Watch** for updates and new releases
+- **🔔 Discussions** - Enable notifications for important announcements
 
 ---
 

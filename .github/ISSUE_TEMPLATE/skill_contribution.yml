@@ -1,0 +1,192 @@
+name: 🎓 Claude Skill Contribution
+description: Contribute a new Claude skill or improve an existing one
+title: "[Skill]: "
+labels: ["skill", "contribution"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing a Claude skill! Skills help extend the capabilities of the toolkit.
+
+  - type: input
+    id: skill-name
+    attributes:
+      label: Skill Name
+      description: What is the name of the skill?
+      placeholder: e.g., database-optimization, api-security-audit
+    validations:
+      required: true
+
+  - type: dropdown
+    id: contribution-type
+    attributes:
+      label: Contribution Type
+      description: Is this a new skill or an improvement to an existing one?
+      options:
+        - New Skill
+        - Enhancement to Existing Skill
+        - Bug Fix for Existing Skill
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Skill Category
+      description: Which category does this skill belong to?
+      options:
+        - Architecture & Design
+        - Development & Coding
+        - Testing & QA
+        - Security & Compliance
+        - Performance & Optimization
+        - Documentation
+        - DevOps & Infrastructure
+        - Data & Database
+        - UI/UX Design
+        - Project Management
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: when-to-use
+    attributes:
+      label: When to Use This Skill
+      description: Describe when this skill should be activated or used
+      placeholder: |
+        This skill should be used when:
+        - Scenario 1: ...
+        - Scenario 2: ...
+        - Scenario 3: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: how-it-works
+    attributes:
+      label: How It Works
+      description: Explain the skill's approach, methodology, or workflow
+      placeholder: |
+        This skill works by:
+        1. Step 1: ...
+        2. Step 2: ...
+        3. Step 3: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Usage Examples
+      description: Provide concrete examples of the skill in action
+      placeholder: |
+        Example 1:
+        Input: ...
+        Output: ...
+        
+        Example 2:
+        Input: ...
+        Output: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: capabilities
+    attributes:
+      label: Skill Capabilities
+      description: List the specific capabilities this skill provides
+      placeholder: |
+        - Capability 1: ...
+        - Capability 2: ...
+        - Capability 3: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies & Prerequisites
+      description: List any tools, knowledge, or other skills required
+      placeholder: |
+        - Required tools: ...
+        - Required knowledge: ...
+        - Related skills: ...
+        - API keys needed: ...
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References & Resources
+      description: Link to relevant documentation, articles, or resources
+      placeholder: |
+        - Official docs: ...
+        - Best practices: ...
+        - Related articles: ...
+        - Example implementations: ...
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Skill Complexity
+      description: How complex is this skill?
+      options:
+        - Beginner - Easy to understand and use
+        - Intermediate - Requires some domain knowledge
+        - Advanced - Requires significant expertise
+    validations:
+      required: true
+
+  - type: textarea
+    id: testing
+    attributes:
+      label: Testing & Validation
+      description: How have you tested and validated this skill?
+      placeholder: |
+        - Tested on: [project types, scenarios]
+        - Results: [effectiveness, accuracy]
+        - Limitations: [known issues, edge cases]
+    validations:
+      required: true
+
+  - type: textarea
+    id: file-structure
+    attributes:
+      label: File Structure
+      description: Describe the skill's file structure
+      placeholder: |
+        .claude/skills/skill-name/
+        ├── SKILL.md (main documentation)
+        ├── references/ (optional)
+        │   └── additional-docs.md
+        └── examples/ (optional)
+            └── example-usage.md
+
+  - type: textarea
+    id: documentation
+    attributes:
+      label: Documentation
+      description: Have you prepared documentation for this skill?
+      placeholder: |
+        - SKILL.md file: [link or attachment]
+        - Reference materials: [links]
+        - Examples: [links]
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Contribution Checklist
+      description: Please confirm the following
+      options:
+        - label: Skill follows the project's skill template format
+          required: true
+        - label: SKILL.md includes all required sections
+          required: true
+        - label: Skill has been tested with real use cases
+          required: true
+        - label: Examples are clear and demonstrate value
+          required: true
+        - label: References are accurate and up-to-date
+          required: true
+        - label: I have read the CONTRIBUTING.md guidelines
+          required: true

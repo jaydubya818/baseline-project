@@ -1,0 +1,138 @@
+name: 📚 Documentation
+description: Report documentation issues or suggest improvements
+title: "[Docs]: "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve our documentation! Clear docs make the toolkit accessible to everyone.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation issue is this?
+      options:
+        - Bug/Error in Documentation
+        - Missing Documentation
+        - Unclear/Confusing Documentation
+        - Outdated Documentation
+        - Improvement Suggestion
+        - New Tutorial/Guide Needed
+        - Translation
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: location
+    attributes:
+      label: Documentation Location
+      description: Which documentation is affected?
+      options:
+        - README.md
+        - CONTRIBUTING.md
+        - DISCLAIMER.md
+        - Agent Documentation (.claude/agents/)
+        - Skill Documentation (.claude/skills/)
+        - Taskmaster Documentation (.taskmaster/)
+        - GitHub Workflows Documentation
+        - Code Comments
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: Issue Description
+      description: Describe the documentation issue or what's missing
+      placeholder: |
+        Current state: ...
+        Problem: ...
+        Impact: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: location-details
+    attributes:
+      label: Specific Location
+      description: Provide the specific file path, section, or line number
+      placeholder: |
+        File: path/to/file.md
+        Section: "## Section Name"
+        Line: 123
+        URL: https://github.com/...
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested Improvement
+      description: How should the documentation be improved?
+      placeholder: |
+        Suggested changes:
+        - Change 1: ...
+        - Change 2: ...
+        
+        Or provide corrected text:
+        ```markdown
+        Corrected documentation here...
+        ```
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or Context
+      description: Provide examples or additional context if helpful
+      placeholder: |
+        - Example of confusion: ...
+        - Related documentation: ...
+        - Screenshots: ...
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this documentation fix?
+      options:
+        - Critical - Blocks understanding or causes errors
+        - High - Significantly impacts user experience
+        - Medium - Moderate improvement needed
+        - Low - Minor improvement or enhancement
+    validations:
+      required: true
+
+  - type: dropdown
+    id: willing-to-contribute
+    attributes:
+      label: Willing to Contribute
+      description: Would you be willing to submit a PR to fix this?
+      options:
+        - "Yes, I can submit a PR"
+        - "Yes, with guidance on how to contribute"
+        - "No, but I can review proposed changes"
+        - "No, just reporting the issue"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other information that would be helpful
+      placeholder: Any additional context...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following
+      options:
+        - label: I have checked that this documentation issue hasn't been reported already
+          required: true
+        - label: I have provided specific location information
+          required: true
+        - label: I have suggested how to improve the documentation
+          required: false
