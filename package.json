@@ -1,7 +1,7 @@
 {
   "name": "baseline-project",
   "version": "1.0.0",
-  "description": "Baseline Project - Production-ready Next.js starter with AI development environment",
+  "description": "AI Development Toolkit - 178+ agents, 65+ skills, and production-grade workflows for 10x development",
   "private": true,
   "engines": {
     "node": ">=20.0.0"
