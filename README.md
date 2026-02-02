@@ -8,9 +8,7 @@
   <img src="https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=for-the-badge&logo=tailwindcss" alt="Tailwind" />
 </p>
 
-<p align="center">
-  <strong>A production-grade fintech marketplace connecting business sellers with qualified buyers through seller financing.</strong>
-</p>
+</p
 
 <p align="center">
   <a href="https://seller-fi.vercel.app">🌐 Live Demo</a> •
@@ -20,34 +18,6 @@
 </p>
 
 ---
-
-## 🎯 What is SellerFi?
-
-SellerFi is a private marketplace that eliminates the friction in business acquisitions by:
-
-- **No Broker Commissions** — Direct buyer-seller connections
-- **Built-in Seller Financing** — Structured deal terms with amortization calculators
-- **NDA-Protected Listings** — Confidential business information with access controls
-- **Secure Dealrooms** — Private spaces for negotiations, documents, and messaging
-- **AI-Powered Search** — Find exactly what you're looking for in plain English
-
----
-
-## ✨ Features
-
-### For Buyers
-- 🔍 **AI-Powered Search** — Natural language queries like "SaaS under $500K in Texas"
-- 📊 **Smart Match Scores** — Compatibility ratings based on your profile
-- 🗂️ **Dealboxes** — Save searches with custom filters and get email alerts
-- 💼 **Elite Buyer Tier** — Priority access, advanced filters, and dedicated support
-- 📝 **NDA Signing** — Instant access to confidential financials
-
-### For Sellers
-- 📈 **Premium Listings** — Featured placement and enhanced visibility
-- 🔐 **NDA Controls** — Approve/deny access to sensitive documents
-- 💬 **Secure Dealrooms** — Real-time messaging with potential buyers
-- 📄 **Document Vault** — Organize due diligence materials
-- 📊 **Analytics Dashboard** — Track views, inquiries, and engagement
 
 ### Platform Features
 - 🏠 **Beautiful UI/UX** — Stripe-inspired design with Framer Motion animations
