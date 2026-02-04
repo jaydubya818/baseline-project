@@ -1,0 +1,176 @@
+{
+  "meta": {
+    "generatedAt": "2026-02-03T00:00:00.000Z",
+    "tasksAnalyzed": 20,
+    "thresholdScore": 5,
+    "tag": "jerome-dental"
+  },
+  "complexityAnalysis": [
+    {
+      "taskId": 1,
+      "taskTitle": "Project Infrastructure and Monorepo Setup",
+      "complexityScore": 7,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down into: 1) Monorepo tooling setup (turborepo/nx), 2) Next.js app initialization, 3) FastAPI backend setup with Poetry, 4) Local agent Python setup with PyInstaller config, 5) Shared package configuration",
+      "reasoning": "Multiple technology stacks (JavaScript/Python), monorepo configuration complexity, cross-project dependencies"
+    },
+    {
+      "taskId": 2,
+      "taskTitle": "Cloud Database Schema Design (PostgreSQL)",
+      "complexityScore": 6,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down into: 1) Core models (Practice, User), 2) Schedule and Huddle models, 3) Audit logging schema design, 4) Migration scripts and indexes",
+      "reasoning": "Multiple related models, audit logging requirements, HIPAA compliance considerations"
+    },
+    {
+      "taskId": 3,
+      "taskTitle": "FastAPI Authentication System with JWT and RBAC",
+      "complexityScore": 8,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Break down into: 1) JWT token generation/validation, 2) Login/logout endpoints, 3) RBAC decorator implementation, 4) Password hashing, 5) MFA for Manager role, 6) Session management",
+      "reasoning": "Security-critical, multiple auth flows, MFA requirement, RBAC complexity"
+    },
+    {
+      "taskId": 4,
+      "taskTitle": "FastAPI Schedule Ingestion Endpoint",
+      "complexityScore": 5,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down into: 1) Pydantic schema design, 2) Endpoint implementation, 3) Rate limiting and validation, 4) Async huddle trigger",
+      "reasoning": "Moderate complexity, clear requirements, standard API patterns"
+    },
+    {
+      "taskId": 5,
+      "taskTitle": "LangGraph HuddleSupervisor Implementation",
+      "complexityScore": 9,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Break down into: 1) LangGraph setup and state design, 2) Graph node definitions, 3) Edge/routing logic, 4) State persistence, 5) Error handling, 6) Telemetry integration",
+      "reasoning": "New technology (LangGraph), complex state management, multiple interacting agents, error handling complexity"
+    },
+    {
+      "taskId": 6,
+      "taskTitle": "IngestionAgent Implementation",
+      "complexityScore": 7,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down into: 1) Agent class structure, 2) OCR text cleanup, 3) Data normalization, 4) Procedure code validation, 5) Error handling",
+      "reasoning": "LLM integration, handling messy input data, multiple input formats"
+    },
+    {
+      "taskId": 7,
+      "taskTitle": "RiskScannerAgent Implementation",
+      "complexityScore": 8,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down into: 1) Rules engine architecture, 2) Medical risk rules, 3) Financial risk rules, 4) Scheduling risk rules, 5) Practice customization",
+      "reasoning": "Complex business rules, multiple risk categories, LLM-assisted evaluation, configurability requirements"
+    },
+    {
+      "taskId": 8,
+      "taskTitle": "RevenueAgent Implementation",
+      "complexityScore": 6,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down into: 1) Opportunity identification logic, 2) Revenue calculation, 3) Prioritization algorithm, 4) Talking points generation",
+      "reasoning": "Moderate complexity, business logic focus, LLM integration for talking points"
+    },
+    {
+      "taskId": 9,
+      "taskTitle": "WriterAgent Implementation",
+      "complexityScore": 7,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down into: 1) Summary generation prompts, 2) Clinical summary implementation, 3) Hygiene/Admin summaries, 4) Tone and format consistency",
+      "reasoning": "Heavy LLM prompt engineering, three distinct output types, quality/consistency requirements"
+    },
+    {
+      "taskId": 10,
+      "taskTitle": "Morning Huddle API Endpoints",
+      "complexityScore": 5,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down into: 1) Huddle retrieval endpoints, 2) Role-specific filtering, 3) Caching implementation, 4) Audit logging integration",
+      "reasoning": "Standard REST API patterns, clear requirements"
+    },
+    {
+      "taskId": 11,
+      "taskTitle": "Local Agent - PMS Data Extraction",
+      "complexityScore": 9,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Break down into: 1) Extractor architecture, 2) Dentrix ODBC integration, 3) Playwright screen scraping, 4) CSV parsing, 5) SQLite caching, 6) Error handling",
+      "reasoning": "Multiple integration methods, legacy system interaction, screen scraping complexity, error handling critical"
+    },
+    {
+      "taskId": 12,
+      "taskTitle": "Local Agent - PHI Sanitization",
+      "complexityScore": 8,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down into: 1) Sanitizer architecture, 2) PII hashing implementation, 3) Token mapping, 4) Validation, 5) Audit logging",
+      "reasoning": "HIPAA-critical, security-sensitive, must be thorough and verifiable"
+    },
+    {
+      "taskId": 13,
+      "taskTitle": "Local Agent - Cloud API Communication",
+      "complexityScore": 6,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down into: 1) HTTP client with retry logic, 2) TLS/authentication, 3) Payload compression, 4) Queue for failed uploads",
+      "reasoning": "Standard patterns but reliability is critical, offline handling needed"
+    },
+    {
+      "taskId": 14,
+      "taskTitle": "Local Agent - Windows Service and Scheduling",
+      "complexityScore": 7,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down into: 1) Windows service wrapper, 2) Task Scheduler integration, 3) System tray UI, 4) Installer creation, 5) Logging/recovery",
+      "reasoning": "Platform-specific (Windows), service lifecycle complexity, installer creation"
+    },
+    {
+      "taskId": 15,
+      "taskTitle": "Next.js Authentication UI",
+      "complexityScore": 6,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down into: 1) Login/register pages, 2) Auth context/hooks, 3) Protected routes, 4) MFA UI, 5) Password reset flow",
+      "reasoning": "Multiple auth flows, secure token handling, MFA complexity"
+    },
+    {
+      "taskId": 16,
+      "taskTitle": "Morning Huddle Dashboard Components",
+      "complexityScore": 5,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down into: 1) HuddleCard component, 2) RiskFlag/Opportunity cards, 3) ScheduleTimeline, 4) Loading/empty states",
+      "reasoning": "Standard React component development, clear design requirements"
+    },
+    {
+      "taskId": 17,
+      "taskTitle": "Role-Specific Dashboard Views",
+      "complexityScore": 6,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down into: 1) Dentist/Hygienist dashboards, 2) Admin/Manager dashboards, 3) Role-based routing, 4) Personalization features",
+      "reasoning": "Four distinct views, role-based logic, shared component architecture"
+    },
+    {
+      "taskId": 18,
+      "taskTitle": "Chat Interface for Q&A",
+      "complexityScore": 7,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down into: 1) Chat UI components, 2) Backend chat endpoint, 3) Streaming responses, 4) Context awareness, 5) Mobile layout",
+      "reasoning": "LLM streaming integration, context management, real-time UX"
+    },
+    {
+      "taskId": 19,
+      "taskTitle": "HIPAA Compliance Implementation",
+      "complexityScore": 8,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down into: 1) Audit log implementation, 2) Encryption verification, 3) Access logging, 4) Admin audit interface, 5) Compliance documentation",
+      "reasoning": "Regulatory compliance, cross-cutting concerns, documentation requirements"
+    },
+    {
+      "taskId": 20,
+      "taskTitle": "End-to-End Testing Suite",
+      "complexityScore": 8,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down into: 1) Test infrastructure setup, 2) Frontend E2E tests, 3) Backend integration tests, 4) Full pipeline tests, 5) CI/CD integration",
+      "reasoning": "Multiple test frameworks, cross-system testing, pipeline complexity"
+    }
+  ],
+  "summary": {
+    "highComplexityTasks": [3, 5, 7, 11, 12, 19, 20],
+    "mediumComplexityTasks": [1, 2, 6, 8, 9, 13, 14, 15, 17, 18],
+    "lowComplexityTasks": [4, 10, 16],
+    "totalSubtasksRecommended": 95
+  }
+}
