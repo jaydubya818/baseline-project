@@ -1556,56 +1556,61 @@
             "id": 1,
             "title": "Configure monorepo root with Turborepo or npm workspaces",
             "description": "Set up root package.json with workspace configuration and shared scripts",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-02-04T23:21:28.067Z"
           },
           {
             "id": 2,
             "title": "Initialize Next.js app in /apps/web",
             "description": "Create Next.js 14+ app with TypeScript, Tailwind CSS, and Shadcn/UI",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               1
             ],
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-02-04T23:21:28.104Z"
           },
           {
             "id": 3,
             "title": "Initialize FastAPI backend in /apps/api",
             "description": "Set up Python FastAPI project with Poetry/uv, configure pyproject.toml",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               1
             ],
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-02-04T23:21:28.115Z"
           },
           {
             "id": 4,
             "title": "Initialize local agent in /apps/local-agent",
             "description": "Create Python project with Playwright, PyInstaller config for Windows .exe",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               1
             ],
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-02-04T23:21:28.139Z"
           },
           {
             "id": 5,
             "title": "Create shared Pydantic package in /packages/shared",
             "description": "Set up shared Python package with common Pydantic models and utilities",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               3,
               4
             ],
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-02-04T23:21:28.153Z"
           }
         ],
         "complexity": 7,
         "recommendedSubtasks": 5,
         "expansionPrompt": "Break down into: 1) Monorepo tooling setup (turborepo/nx), 2) Next.js app initialization, 3) FastAPI backend setup with Poetry, 4) Local agent Python setup with PyInstaller config, 5) Shared package configuration",
-        "updatedAt": "2026-02-04T02:56:31.327Z"
+        "updatedAt": "2026-02-04T23:21:28.153Z"
       },
       {
         "id": "2",
@@ -2813,7 +2818,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-02-04T02:56:31.330Z",
+      "lastModified": "2026-02-04T23:21:28.153Z",
       "taskCount": 20,
       "completedCount": 1,
       "tags": [
